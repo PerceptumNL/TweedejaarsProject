@@ -7,6 +7,20 @@ from unidecode import unidecode
 import numpy as np
 from scipy import sparse
 import copy
+from nltk.stem.snowball import SnowballStemmer
+
+stemmer = SnowballStemmer('english')
+    
+def stem_tokens(tokens, stemmer):
+    stemmed = []
+    for item in tokens:
+        stemmed.append(stemmer.stem(item))
+    return stemmed
+
+def tokenize(text):
+    tokens = nltk.word_tokenize(text)
+    stems = stem_tokens(tokens, stemmer)
+    return stems
 
 def preprocess(text):
     """
@@ -16,7 +30,7 @@ def preprocess(text):
     # regex to also decode hex entities
     hexentityMassage = [(re.compile('&#x([^;]+);'), lambda m: '&#%d;' % int(m.group(1), 16))]
     glossary_tag = BeautifulSoup(html_stripped, convertEntities=BeautifulSoup.HTML_ENTITIES, markupMassage=hexentityMassage)
-    glossary_unicode = glossary_tag.text.encode('utf-8')
+    glossary_unicode = unicode(glossary_tag.text.encode('utf-8'))
     return unidecode(glossary_unicode)
     
 def glos(tag):
@@ -45,7 +59,7 @@ def find_links(data_, new_doc_idx):
 
     from sklearn.feature_extraction.text import TfidfVectorizer
 
-    vectorizer = TfidfVectorizer(use_idf=True)
+    vectorizer = TfidfVectorizer(use_idf=True, tokenizer=tokenize)
     vectorizer.fit(glossaries.values())
     glossary_bows = vectorizer.transform(glossaries.values())
     glossary_bows = dict(zip(glossaries.keys(), glossary_bows))
@@ -61,7 +75,6 @@ def find_links(data_, new_doc_idx):
     new_doc_descriptor = sum(map(lambda x: glossary_bows[x], new_doc['tags'])) + zero_vector
 
     from sklearn.neighbors import NearestNeighbors
-
     nn = NearestNeighbors()
     nn.fit(sparse.vstack(dict(descriptors).values()))
     dist, idx = nn.kneighbors(new_doc_descriptor, 40)
