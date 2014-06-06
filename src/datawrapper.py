@@ -50,17 +50,6 @@ class DataWrapper(object):
         """
         return self.data['items'][item]
 
-    def preprocessed_key(self, item, key):
-        """
-        Returns the preprocessed content of one particular key of an item if set. 
-        Otherwise returns an empty string.
-        """
-        item = self.data[key][item]
-        if key in item:
-            return preprocessing.preprocess_text(item[key])
-        else:
-            return ''
-
     def preprocessed_text(self, item):
         """
         Returns the preprocessed text of item if set. Otherwise returns and
