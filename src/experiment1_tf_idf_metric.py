@@ -56,15 +56,16 @@ def find_links(data_, new_doc_idx):
     descriptors = []
     for key, tags in doc_tags:
         bows = map(lambda x: glossary_bows[x], tags)
-        descriptor = (sum(bows) + zero_vector) #/ float(len(tags) + 1)
+        descriptor = (sum(bows) + zero_vector) / float(len(tags) + 1)
         descriptors += [(key, descriptor)]
 
     # Get all tags for the new document
-    new_doc_descriptor = sum(map(lambda x: glossary_bows[x], new_doc['tags'])) + zero_vector
+    #new_doc_descriptor = sum(map(lambda x: glossary_bows[x], new_doc['tags'])) + zero_vector
+    new_doc_descriptor = (sum(map(lambda x: glossary_bows[x], new_doc['tags'])) + zero_vector) / float(len(new_doc['tags']) + 1)
 
     from sklearn.neighbors import NearestNeighbors
 
-    nn = NearestNeighbors()
+    nn = NearestNeighbors(algorithm='brute')
     nn.fit(sparse.vstack(dict(descriptors).values()))
     dist, idx = nn.kneighbors(new_doc_descriptor, 40)
 
