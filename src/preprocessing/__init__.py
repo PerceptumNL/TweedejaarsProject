@@ -21,4 +21,4 @@ def preprocess_text(text):
             convertEntities=BeautifulSoup.HTML_ENTITIES, 
             markupMassage=hexentityMassage)
     text_unicode = text_tag.text.encode('utf-8')
-    return unidecode(unicode(text_unicode))
+    return unidecode(unicode(text_unicode, errors='ignore'))
