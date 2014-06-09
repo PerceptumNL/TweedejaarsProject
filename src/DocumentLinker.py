@@ -1,15 +1,16 @@
 
 from datawrapper import DataWrapper
 import vectorizers
+import distance
 import sys
 
 class DocumentLinker(object):
 
-    def __init__(self, datafile, k=10):
+    def __init__(self, datafile, k=1000):
         self.data = DataWrapper(datafile)
         self.k = k
 
-    def get_links(self, document, vtype='textvectorizer', dtype='cosine'):
+    def get_links(self, document, vtype='textvectorizer', dtype='euclidean'):
         try:
             vectorizer = getattr(__import__('vectorizers.' + vtype), vtype)
         except ImportError:
@@ -17,11 +18,18 @@ class DocumentLinker(object):
             sys.exit(1)
 
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
+        print(self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype))
 
-    def nearest_neighbor(k, dtype):
-        pass
+    def nearest_neighbor(self, data_vec, new_vec, k, dtype):
+        try:
+            dmeasure= getattr(distance, dtype)
+        except AttributeError:
+            print('Distance measure {0} does not exist'.format(dtype))
+
+        distances = [(v[0], dmeasure(new_vec, v[1])) for v in data_vec]
+        return sorted(distances, key=lambda x:x[1])[0:k]
 
 if __name__ == '__main__':
     new_doc = 'dit is een nieuw document Learning Analytics'
     linker = DocumentLinker('../data/export_starfish_tjp.pickle')
-    linker.get_links(new_doc)
+    linker.get_links(new_doc, dtype='cosine')

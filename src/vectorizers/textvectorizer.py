@@ -9,7 +9,7 @@ def vectorize(data, new_doc):
 
     data_bows = vectorizer.transform(data.preprocessed_texts())
     new_doc_pre = preprocessing.preprocess_text(new_doc)
-    new_doc_bow = vectorizer.transform(new_doc_pre)
+    new_doc_bow = vectorizer.transform([new_doc_pre])
 
     return(zip(data.items, data_bows), new_doc_bow)
 
