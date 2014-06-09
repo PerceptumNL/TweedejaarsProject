@@ -50,6 +50,26 @@ class DataWrapper(object):
         """
         return self.data['items'][item]
 
+ 	def preprocessed_content(self, item):
+ 		"""
+        Returns the preprocessed content (e.g. text and title) of item 
+        """
+ 		if item['type'] == 'Person':
+ 	 		headline = self.preprocessed_by_key(item, 'headline')
+         	about = self.preprocessed_by_key(item, 'about')
+         	return headline + ' ' + about
+ 		else:
+ 			text = data_.preprocessed_by_key(x, 'text')
+         	title = data_.preprocessed_by_key(x, 'title')
+         	return title + ' ' + text
+
+    def preprocessed_contents(self):
+    	"""
+        Returns a generator that yields preprocessed contents in all items.
+        """
+    	for item in self.items:
+    		yield self.preprocessed_content(item)
+
     def preprocessed_by_key(self, item, key):
         """
         Returns the preprocessed text of item if set. Otherwise returns and
