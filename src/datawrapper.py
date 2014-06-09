@@ -105,5 +105,8 @@ class DataWrapper(object):
         Returns the glossary text of a tag if set. Otherwise returns an
         empty string.
         """
-        return self.preprocessed_text(self.tag(tag)['glossary'])
+        glossary_id = self.tag(tag)['glossary']
+        if(glossary_id):
+            return preprocessing.preprocess_text(self.item(glossary_id)['text'])
+        return ''
 
