@@ -72,6 +72,13 @@ class DataWrapper(object):
         else:
             return ''
 
+    def preprocessed_texts(self):
+        """
+        Returns a generator that yields preprocessed texts in all items.
+        """
+        for item in self.items:
+            yield self.preprocessed_text(item)
+
     def tag_glossary(self, tag):
         """
         Returns the glossary text of a tag if set. Otherwise returns an
