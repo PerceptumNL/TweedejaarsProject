@@ -93,7 +93,7 @@ def run():
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype='glossaries_of_tags', dtype='cosine')
+        linker.get_links(new_doc, vtype='tag_smoothing', dtype='cosine')
         links = linker.formatted_links(filename)
         docs[c] = links
         c += 1
