@@ -28,7 +28,7 @@ class DocumentLinker(object):
 
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
 
-        print(self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype))
+        return self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
@@ -44,8 +44,17 @@ class DocumentLinker(object):
         distances = [(v[0], dmeasure(new_vec, v[1])) for v in data_vec]
         return sorted(distances, key=lambda x:x[1])[0:k]
 
-if __name__ == '__main__':
+
+def run():
     data = DataWrapper('../data/export_starfish_tjp.pickle')
     for new_doc, datawrapper in data.test_data():
-        linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, dtype='cosine')
+        linker = DocumentLinker(datawrapper, k=20)
+        print(linker.get_links(new_doc, vtype='weighted_tagvectorizer', dtype='cosine'))
+
+
+if __name__ == '__main__':
+    run()
+
+
+
+
