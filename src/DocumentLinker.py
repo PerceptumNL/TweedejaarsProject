@@ -35,7 +35,7 @@ class DocumentLinker(object):
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
-        return self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
+        return self.links
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
@@ -79,7 +79,7 @@ def run():
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype='textvectorizer', dtype='cosine')
+        linker.get_links(new_doc, vtype='weighted_tagvectorizer', dtype='cosine')
         links = linker.formatted_links(filename)
         docs[c] = links
         c += 1

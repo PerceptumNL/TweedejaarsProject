@@ -7,10 +7,10 @@ def vectorize(data, new_doc):
 
     vectorizer = TfidfVectorizer(use_idf=True)
     glossaries = dict(map(lambda x: (x, data.tag_glossary(x)), data.tags()))
-    vectorizer.fit(glossaries)
+    vectorizer.fit(glossaries.values())
 
     # Get all glossaries for all tags
-    glossary_bows = vectorizer.transform(glossaries)
+    glossary_bows = vectorizer.transform(glossaries.values())
     glossary_bows = dict(zip(glossaries.keys(), glossary_bows))
 
     zero_vector = sparse.csc_matrix((1, len(vectorizer.get_feature_names())))

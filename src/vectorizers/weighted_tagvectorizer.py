@@ -42,7 +42,8 @@ def vectorize(data, new_doc):
     # The number of dimensions in the bow vector
     v_dim = len(vectorizer.get_feature_names())
     # lambda function to create descriptors
-    create_desc = lambda x: create_descriptor(x, tag_bows, tag_counter, v_dim)
+    create_desc = lambda x: create_descriptor(x, tag_bows, tag_counter, 
+                                              v_dim, len(data.data['items']))
 
     # Create descriptors for all known documents and new document
     item_descriptors = [create_desc(tags) for tags in  item_tags]
@@ -51,10 +52,10 @@ def vectorize(data, new_doc):
     # Asssociate document ids with descriptors and return.
     return(zip(data.items(), item_descriptors), new_doc_descriptor)
 
-def create_descriptor(tags, tag_bows, tag_counter, dimension):
-    s_inv = lambda x: x**-1 if x != 0 else 0 # safe inverse
+def create_descriptor(tags, tag_bows, tag_counter, dimension, doc_count):
+    s_idf = lambda x: 1 - (x/doc_count) if x != 0 else 0 # safe idf
     zero = sparse.csc_matrix((1, dimension))
-    weighted_bows = [tag_bows[t] * s_inv(tag_counter[t]) for t in tags]
+    weighted_bows = [tag_bows[t] * s_idf(tag_counter[t]) for t in tags]
     zero = sparse.csc_matrix((1, dimension))
-    return s_inv(len(tags)) * sum(weighted_bows + [zero])
+    return sum(weighted_bows + [zero])
 
