@@ -61,8 +61,22 @@ class DocumentLinker(object):
             title = self.data.value_for_keys(link[0], 'title', 'name')
             linktype = self.data.value_for_keys(link[0], 'type')
             content = self.data.value_for_keys(link[0], 'headline', 'about', 'title', 'text')
-            correct = link in self.document['links'] 
+            correct = link[0] in self.document['links'] 
             nlinks[link[0]] = ({'type': linktype, 'title': title, 'content': content, 'correct': correct})
+
+        links = [i[0] for i in self.links]
+
+        for link in self.document['links']:
+            if not(link in links):
+                try:
+                    title = self.data.value_for_keys(link, 'title', 'name')
+                    linktype = self.data.value_for_keys(link, 'type')
+                    content = self.data.value_for_keys(link, 'headline', 'about', 'title', 'text')
+                    nlinks[link] = ({'type': linktype, 'title': title, 'not_recalled': True, 'correct': correct})
+                except Exception:
+                    print('Error occured')
+                    print(str(link))
+                    continue;
 
         # Bring current doc in proper format
         title = self.data.value_for_keys_with_item(self.document, 'title', 'name')
@@ -72,14 +86,14 @@ class DocumentLinker(object):
 
 def run():
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    filename = "../data/first_results/textvectorizer.json"
+    filename = "../data/first_results/glossaries_of_tags_cosine_d.json"
 
     c = 0
     docs = {}
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype='textvectorizer', dtype='cosine')
+        linker.get_links(new_doc, vtype='glossaries_of_tags', dtype='cosine')
         links = linker.formatted_links(filename)
         docs[c] = links
         c += 1

@@ -21,8 +21,15 @@
              display: none;
         }
 
+        h3 {
+            color: red;
+        }
         .correct {
             color: green;
+        }
+
+        .not_recalled {
+            color: gray;
         }
 
     </style>
@@ -34,7 +41,7 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
 $(document).ready(function() {
-    $.getJSON( "content.json", function( data ) {
+    $.getJSON( "glossaries_of_tags_cosine_d.json", function( data ) {
         var items = [];
 
         $.each( data, function( key, val ) {
@@ -47,6 +54,8 @@ $(document).ready(function() {
                 html += "<li>"
                 if(val.correct) { 
                     html += "<h3 class='correct'>"
+                } else if(val.not_recalled) {
+                    html += "<h3 class='not_recalled'>"
                 } else {
                     html += "<h3>"
                 }
