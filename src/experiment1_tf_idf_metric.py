@@ -8,8 +8,22 @@ import numpy as np
 from scipy import sparse
 import copy
 from decimal import *
+from nltk.stem.snowball import SnowballStemmer
 
 
+stemmer = SnowballStemmer('english')
+    
+def stem_tokens(tokens, stemmer):
+    stemmed = []
+    for item in tokens:
+        stemmed.append(stemmer.stem(item))
+    return stemmed
+
+def tokenize(text):
+    tokens = nltk.word_tokenize(text)
+    stems = stem_tokens(tokens, stemmer)
+    return stems
+    
 def preprocess(text):
     """
     Preproccess text. This is described in the 'preprocessing' notebook.
