@@ -8,15 +8,17 @@ is created from the concatenated and preprocessed values for the
 about, headline, title and text field on every item.
 """
 
-def vectorize(data, new_doc):
-    keys = ('about', 'headline', 'title', 'text')
-    new_doc_text = data.value_for_keys_with_item(new_doc, *keys)
-    new_doc_pre = preprocessing.preprocess_text(new_doc_text)
+def vectorize(data, new_doc, local=False):
+    content = ('headline', 'about', 'title', 'text')    
+    new_doc_pre = data.value_for_keys_with_item(new_doc, *content)
 
     vectorizer = TfidfVectorizer(use_idf=True)
-    vectorizer.fit(data.value_for_keys(None, *keys))
+    vectorizer.fit(data.value_for_keys(None, *content))
 
-    data_bows = vectorizer.transform(data.value_for_keys(None, *keys))
+    data_bows = vectorizer.transform(data.value_for_keys(None, *content))
     new_doc_bow = vectorizer.transform([new_doc_pre])
+
+    if(local):
+        return(zip(data.items(), data_bows), new_doc_bow, vectorizer)
 
     return(zip(data.items(), data_bows), new_doc_bow)
