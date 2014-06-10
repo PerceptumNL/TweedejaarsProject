@@ -3,6 +3,7 @@ from datawrapper import DataWrapper
 import vectorizers
 import distance
 import sys
+import itertools
 
 class DocumentLinker(object):
 
@@ -46,6 +47,6 @@ class DocumentLinker(object):
 
 if __name__ == '__main__':
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    for new_doc, datawrapper  in data.test_data():
+    for new_doc, datawrapper in  itertools.islice(data.test_data(), 0, 5):
         linker = DocumentLinker(datawrapper)
         linker.get_links(new_doc, dtype='cosine')
