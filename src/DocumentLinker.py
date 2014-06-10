@@ -5,6 +5,7 @@ import distance
 import sys
 import itertools
 import json 
+from decimal import *
 
 class DocumentLinker(object):
 
@@ -60,7 +61,7 @@ class DocumentLinker(object):
             title = data.value_for_keys(link[0], 'title', 'name')
             linktype = data.value_for_keys(link[0], 'type')
             content = data.value_for_keys(link[0], 'headline', 'about', 'title', 'text')
-            correct = link in self.document['links'] 
+            correct = link[0] in self.document['links'] 
             nlinks[link[0]] = ({'type': linktype, 'title': title, 'content': content, 'correct': correct})
 
         # Bring current doc in proper format
@@ -71,17 +72,30 @@ class DocumentLinker(object):
 
 if __name__ == '__main__':
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    filename = "../src/content.json"
+    filename = "../data/first_results/textvectorizer.json"
 
     c = 0
     docs = {}
-    for new_doc, datawrapper in  itertools.islice(data.test_data(), 0, 5):
+    percentage = 0
+    for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        links = linker.get_links(new_doc, vtype='textvectorizer', dtype='cosine').formatted_links(filename)
+        links = linker.get_links(new_doc, vtype='textvectorizer', dtype='euclidean').formatted_links(filename)
         docs[c] = links
         c += 1
-        print('Saved')
+        correct = 0
+        for link in linker.links:
+            if(link[0] in new_doc['links']):
+                correct += 1
+        if(len(new_doc['links']) > 0):
+            percentage_correct = Decimal(correct)/len(new_doc['links'])
+        else:
+            percentage_correct = 0
+            print('No links')
+            c -= 1
+        percentage += percentage_correct
+        print('Percentage correct: {0}'.format(percentage_correct))
 
+    print('Average percentage correct: {0}'.format(Decimal(percentage)/c))
     file = open(filename, "w")
     file.write(json.dumps(docs))
     file.close()
