@@ -46,6 +46,6 @@ class DocumentLinker(object):
 
 if __name__ == '__main__':
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    for new_doc, datawrapper  in data.test_data():
+    for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
         linker.get_links(new_doc, dtype='cosine')

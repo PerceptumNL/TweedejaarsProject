@@ -27,7 +27,6 @@ class DataWrapper(object):
         with open(self.datafile) as f:
             self.data = pickle.load(f)
 
-    @property
     def tags(self):
         """
         Returns a generator for all tags in the datafile.
@@ -41,7 +40,6 @@ class DataWrapper(object):
         """
         return self.data['tags'][tag]
 
-    @property
     def items(self):
         """
         A generator for all items in the datefile.
@@ -55,55 +53,34 @@ class DataWrapper(object):
         """
         return self.data['items'][item]
 
-    def preprocessed_content(self, item):
+    def value_for_keys(self, item_id=None, *keys):
         """
-        Returns the preprocessed text of item if set. Otherwise returns and
-        empty string.
+        Returns the preprocessed concatenated values for keys. If no
+        item_id is given a generator that will return the values for all
+        items in the data storage.
         """
-        if self.data['items'][item]['type'] == 'Person':
-            about = self.preprocessed_by_key(item, 'about')
-            headline = self.preprocessed_by_key(item, 'headline')
-            return headline + ' ' + about
-
-        title = self.preprocessed_by_key(item, 'title')
-        text = self.preprocessed_by_key(item, 'text')
-        return title + ' ' + text 
-
-    def preprocessed_contents(self):
-        """
-        Returns a generator that yields preprocessed texts in all items.
-        """
-        for item in self.items:
-            yield self.preprocessed_content(item)
-
-    def preprocessed_by_key(self, item, key):
-        """
-        Returns the preprocessed text of item if set. Otherwise returns and
-        empty string.
-        """
-        item = self.data['items'][item]
-        if key in item:
-            return preprocessing.preprocess_text(item[key])
+        if item_id is None:
+            return self.__value_for_keys(*keys)
         else:
-            return ''
+            item = self.item(item_id)
+            return self.value_for_keys_with_item(item, *keys)
 
-    def preprocessed_text(self, item):
+    def __value_for_keys(self, *keys):
         """
-        Returns the preprocessed text of item if set. Otherwise returns and
-        empty string.
+        Returns a generator that will yield the concatenated values of
+        keys of all items in the data storage.
         """
-        item = self.data['items'][item]
-        if 'text' in item:
-            return preprocessing.preprocess_text(item['text'])
-        else:
-            return ''
+        for item_id in self.items():
+            item = self.item(item_id)
+            yield self.value_for_keys_with_item(item, *keys)
 
-    def preprocessed_texts(self):
+    def value_for_keys_with_item(self, item, *keys):
         """
-        Returns a generator that yields preprocessed texts in all items.
+        Returns the concatenated preprocessed values for keys in the
+        item dictionary.
         """
-        for item in self.items:
-            yield self.preprocessed_text(item)
+        val = ' '.join([item.get(k, '') for k in keys])
+        return preprocessing.preprocess_text(val)
 
     def tag_glossary(self, tag):
         """
