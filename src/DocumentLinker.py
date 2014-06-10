@@ -72,7 +72,7 @@ class DocumentLinker(object):
                     title = self.data.value_for_keys(link, 'title', 'name')
                     linktype = self.data.value_for_keys(link, 'type')
                     content = self.data.value_for_keys(link, 'headline', 'about', 'title', 'text')
-                    nlinks[link] = ({'type': linktype, 'title': title, 'not_recalled': True, 'correct': correct})
+                    nlinks[link] = ({'type': linktype, 'title': title, 'not_recalled': True, 'content': content})
                 except Exception:
                     print('Error occured')
                     print(str(link))
@@ -86,14 +86,14 @@ class DocumentLinker(object):
 
 def run():
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    filename = "../data/first_results/glossaries_of_tags_cosine_d.json"
+    filename = "../data/first_results/weighted_text_cosine.json"
 
     c = 0
     docs = {}
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype='glossaries_of_tags', dtype='cosine')
+        linker.get_links(new_doc, vtype='weighted_text_vectorizer', dtype='cosine')
         links = linker.formatted_links(filename)
         docs[c] = links
         c += 1
