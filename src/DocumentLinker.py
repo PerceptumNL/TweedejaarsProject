@@ -6,12 +6,12 @@ import sys
 
 class DocumentLinker(object):
 
-    def __init__(self, datafile, k=10):
+    def __init__(self, datawrapper, k=10):
         """
         Initializes the document linker. Sets up a datafile and sets the
         value for k that is used by the nearest neighbor algorithm.
         """
-        self.data = DataWrapper(datafile)
+        self.data = datawrapper
         self.k = k
 
     def get_links(self, document, vtype='textvectorizer', dtype='euclidean'):
@@ -27,6 +27,7 @@ class DocumentLinker(object):
             sys.exit(1)
 
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
+
         print(self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype))
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
@@ -44,6 +45,7 @@ class DocumentLinker(object):
         return sorted(distances, key=lambda x:x[1])[0:k]
 
 if __name__ == '__main__':
-    new_doc = 'dit is een nieuw document Learning Analytics'
-    linker = DocumentLinker('../data/export_starfish_tjp.pickle')
-    linker.get_links(new_doc, dtype='euclidean')
+    data = DataWrapper('../data/export_starfish_tjp.pickle')
+    for new_doc, datawrapper  in data.test_data():
+        linker = DocumentLinker(datawrapper)
+        linker.get_links(new_doc, dtype='cosine')
