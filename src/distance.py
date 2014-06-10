@@ -27,13 +27,15 @@ def euclidean(a, b):
 
 def cosine(a, b):
     """
-    returns the cosine distance between vector a and vector b.
+    returns the cosine distance between vector a and vector b. Will return
+    a negative value such that the maximum value has the lowest distance.
     """
     norm_a = __norm(a)
     norm_b = __norm(b)
     dot = __dotproduct(a,b)
-
+    
+    # prevent ZeroDivisionErrors
     if norm_a * norm_b * dot == 0:
-        return 1e99
+        return 0
     else:
-        return dot / (norm_a*norm_b)
+        return -np.abs(dot / (norm_a*norm_b))
