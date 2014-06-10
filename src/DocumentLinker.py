@@ -4,6 +4,7 @@ import vectorizers
 import distance
 import sys
 import itertools
+import json 
 
 class DocumentLinker(object):
 
@@ -14,6 +15,8 @@ class DocumentLinker(object):
         """
         self.data = datawrapper
         self.k = k
+        self.links = None
+        self.document = None
 
     def get_links(self, document, vtype='textvectorizer', dtype='euclidean'):
         """
@@ -27,9 +30,11 @@ class DocumentLinker(object):
             print('Unable to load vectorizers.{0}'.format(vtype))
             sys.exit(1)
 
+        self.document = document
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
+        self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
-        print(self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype))
+        return self
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
@@ -45,8 +50,40 @@ class DocumentLinker(object):
         distances = [(v[0], dmeasure(new_vec, v[1])) for v in data_vec]
         return sorted(distances, key=lambda x:x[1])[0:k]
 
+    def formatted_links(self, filename):
+        if(not self.links):
+            print('First create links')
+            return False
+        nlinks = {}
+
+        for link in self.links:
+            title = data.value_for_keys(link[0], 'title', 'name')
+            linktype = data.value_for_keys(link[0], 'type')
+            content = data.value_for_keys(link[0], 'headline', 'about', 'title', 'text')
+            correct = link in self.document['links'] 
+            nlinks[link[0]] = ({'type': linktype, 'title': title, 'content': content, 'correct': correct})
+
+        # Bring current doc in proper format
+        title = data.value_for_keys_with_item(self.document, 'title', 'name')
+        content = data.value_for_keys_with_item(self.document, 'headline', 'about', 'title', 'text')
+        doc = {'type': self.document['type'], 'links': nlinks, 'title': title, 'content': content}
+        return doc 
+
 if __name__ == '__main__':
     data = DataWrapper('../data/export_starfish_tjp.pickle')
+    filename = "../src/content.json"
+
+    c = 0
+    docs = {}
     for new_doc, datawrapper in  itertools.islice(data.test_data(), 0, 5):
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype='glossaries_of_tags', dtype='cosine')
+        links = linker.get_links(new_doc, vtype='textvectorizer', dtype='cosine').formatted_links(filename)
+        docs[c] = links
+        c += 1
+        print('Saved')
+
+    file = open(filename, "w")
+    file.write(json.dumps(docs))
+    file.close()
+
+
