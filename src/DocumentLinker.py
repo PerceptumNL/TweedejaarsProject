@@ -35,7 +35,7 @@ class DocumentLinker(object):
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
-        return self
+        return self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
@@ -58,19 +58,19 @@ class DocumentLinker(object):
         nlinks = {}
 
         for link in self.links:
-            title = data.value_for_keys(link[0], 'title', 'name')
-            linktype = data.value_for_keys(link[0], 'type')
-            content = data.value_for_keys(link[0], 'headline', 'about', 'title', 'text')
-            correct = link[0] in self.document['links'] 
+            title = self.data.value_for_keys(link[0], 'title', 'name')
+            linktype = self.data.value_for_keys(link[0], 'type')
+            content = self.data.value_for_keys(link[0], 'headline', 'about', 'title', 'text')
+            correct = link in self.document['links'] 
             nlinks[link[0]] = ({'type': linktype, 'title': title, 'content': content, 'correct': correct})
 
         # Bring current doc in proper format
-        title = data.value_for_keys_with_item(self.document, 'title', 'name')
-        content = data.value_for_keys_with_item(self.document, 'headline', 'about', 'title', 'text')
+        title = self.data.value_for_keys_with_item(self.document, 'title', 'name')
+        content = self.data.value_for_keys_with_item(self.document, 'headline', 'about', 'title', 'text')
         doc = {'type': self.document['type'], 'links': nlinks, 'title': title, 'content': content}
         return doc 
 
-if __name__ == '__main__':
+def run():
     data = DataWrapper('../data/export_starfish_tjp.pickle')
     filename = "../data/first_results/textvectorizer.json"
 
@@ -79,7 +79,8 @@ if __name__ == '__main__':
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        links = linker.get_links(new_doc, vtype='textvectorizer', dtype='euclidean').formatted_links(filename)
+        linker.get_links(new_doc, vtype='textvectorizer', dtype='cosine')
+        links = linker.formatted_links(filename)
         docs[c] = links
         c += 1
         correct = 0
@@ -100,4 +101,5 @@ if __name__ == '__main__':
     file.write(json.dumps(docs))
     file.close()
 
-
+if __name__ == '__main__':
+    run()
