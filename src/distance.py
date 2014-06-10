@@ -5,13 +5,17 @@ vectors in for example the nearest neighbor algorithm.
 """
 
 import numpy as np
+from scipy.sparse import issparse
 
 def __dotproduct(a, b):
     """
     Returns the doc product of a and b. Also works on sparse matrices and
     allways returns a float instead of 1x1 matrix.
     """
-    return sum(a.dot(b.T).data)
+    if issparse(a) and issparse(b):
+        return sum(a.dot(b.T).data)
+    else:
+        return np.inner(a, b)
 
 def __norm(a):
     """
