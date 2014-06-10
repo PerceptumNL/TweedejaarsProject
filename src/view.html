@@ -21,6 +21,13 @@
              display: none;
         }
 
+        span {
+            display: inline-block;
+            border: 1px dotted grey;
+            margin: 3px;
+            padding: 2px;
+        }
+
         h3 {
             color: red;
         }
@@ -41,11 +48,21 @@
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
 $(document).ready(function() {
-    $.getJSON( "glossaries_of_tags_cosine_d.json", function( data ) {
+    $.getJSON( "test.json", function( data ) {
         var items = [];
 
         $.each( data, function( key, val ) {
             html = "<li><h2>" + val.title + " (" + val.type + ") </h2>";
+            html += "<p>"
+            for (x in val.tags) {
+                html+= "<span> " + val.tags[x]  + " </span>   "
+            }
+            html += "</p>"
+
+            if(val.type != 'Person') {
+                html += "<p>By " + val.author + "</p>"
+            }
+
             html += "<button class='view-content'> Content </button> <button class='view-links'>Links</button>";
             html += "<div class='content'>" + val.content + "</div>";
 
@@ -60,6 +77,12 @@ $(document).ready(function() {
                     html += "<h3>"
                 }
                 html += val.title + " (" + val.type + ")</h3>"
+                for (x in val.tags) {
+                    html+= "<span>" + val.tags[x]  + "</span>"
+                }
+                if(val.type != 'Person') {
+                    html += "<p>By " + val.author + "</p>"
+                }
                 html += "<button class='view-content'> Content </button>"
                 html += "<div class='content'>" + val.content + "</div>";
                 html += "</li>";

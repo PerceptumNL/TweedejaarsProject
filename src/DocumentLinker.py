@@ -51,47 +51,67 @@ class DocumentLinker(object):
         distances = [(v[0], dmeasure(new_vec, v[1])) for v in data_vec]
         return sorted(distances, key=lambda x:x[1])[0:k]
 
+    def __find_author_name(self, author_id):
+        if(author_id == self.document['id']):
+            author = self.document['name']
+        else:
+            try:
+                author = self.data.item(author_id)['name']
+            except KeyError:
+                author = 'unknown'
+        return author
+
+    def __format_item(self, item):
+        print item
+        title = self.data.value_for_keys(item, 'title', 'name')
+        content = self.data.value_for_keys(item, 'headline', 'about', 'title', 'text')
+        item_dict = self.data.item(item)
+        author_id = self.data.item(item).get('author') or -1
+        author = self.__find_author_name(author_id)
+
+        tags = item_dict['tags']
+        linktype = item_dict['type']
+
+        return {'type': linktype, 'title': title, 'content': content, 'tags': tags, 'author': author}
+
     def formatted_links(self, filename):
+        print self.document
         if(not self.links):
-            print('First create links')
+            print('First create links before formatting them')
             return False
         nlinks = {}
-
-        for link in self.links:
-            title = self.data.value_for_keys(link[0], 'title', 'name')
-            linktype = self.data.value_for_keys(link[0], 'type')
-            content = self.data.value_for_keys(link[0], 'headline', 'about', 'title', 'text')
-            correct = link[0] in self.document['links'] 
-            nlinks[link[0]] = ({'type': linktype, 'title': title, 'content': content, 'correct': correct})
-
         links = [i[0] for i in self.links]
+
+        for link in links:
+            nlink = self.__format_item(link)
+            nlink['correct'] = link in self.document['links']
+            nlinks[link] = nlink
 
         for link in self.document['links']:
             if not(link in links):
                 try:
-                    title = self.data.value_for_keys(link, 'title', 'name')
-                    linktype = self.data.value_for_keys(link, 'type')
-                    content = self.data.value_for_keys(link, 'headline', 'about', 'title', 'text')
-                    nlinks[link] = ({'type': linktype, 'title': title, 'not_recalled': True, 'content': content})
+                    nlink = self.__format_item(link)
+                    nlink['not_recalled'] = true
+                    nlinks[link] = nlink
                 except Exception:
-                    print('Error occured')
-                    print(str(link))
+                    print('Couldn\'t find link with id {0}'.format(link))
                     continue;
 
         # Bring current doc in proper format
         title = self.data.value_for_keys_with_item(self.document, 'title', 'name')
         content = self.data.value_for_keys_with_item(self.document, 'headline', 'about', 'title', 'text')
-        doc = {'type': self.document['type'], 'links': nlinks, 'title': title, 'content': content}
+        author = self.__find_author_name(self.document.get('author') or -1)
+        doc = {'type': self.document['type'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
 def run():
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    filename = "../data/first_results/weighted_text_cosine.json"
+    filename = "../data/first_results/test.json"
 
     c = 0
     docs = {}
     percentage = 0
-    for new_doc, datawrapper in data.test_data():
+    for new_doc, datawrapper in itertools.islice(data.test_data(), 0, 5):
         linker = DocumentLinker(datawrapper)
         linker.get_links(new_doc, vtype='weighted_text_vectorizer', dtype='cosine')
         links = linker.formatted_links(filename)
