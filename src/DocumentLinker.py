@@ -89,9 +89,9 @@ class DocumentLinker(object):
             if not(link in links):
                 try:
                     nlink = self.__format_item(link)
-                    nlink['not_recalled'] = true
+                    nlink['not_recalled'] = True
                     nlinks[link] = nlink
-                except Exception:
+                except Exception as e:
                     print('Couldn\'t find link with id {0}'.format(link))
                     continue;
 
