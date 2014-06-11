@@ -10,7 +10,7 @@ def vectorize(data, new_doc):
     vectorizer.fit(glossaries)
 
     # Get all glossaries for all tags
-    glossary_bows = vectorizer.transform(glossaries)
+    glossary_bows = vectorizer.transform(glossaries.values())
     glossary_bows = dict(zip(glossaries.keys(), glossary_bows))
 
     zero_vector = sparse.csc_matrix((1, len(vectorizer.get_feature_names())))

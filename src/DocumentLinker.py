@@ -62,7 +62,6 @@ class DocumentLinker(object):
         return author
 
     def __format_item(self, item):
-        print item
         title = self.data.value_for_keys(item, 'title', 'name')
         content = self.data.value_for_keys(item, 'headline', 'about', 'title', 'text')
         item_dict = self.data.item(item)
@@ -75,7 +74,6 @@ class DocumentLinker(object):
         return {'type': linktype, 'title': title, 'content': content, 'tags': tags, 'author': author}
 
     def formatted_links(self, filename):
-        print self.document
         if(not self.links):
             print('First create links before formatting them')
             return False
@@ -104,16 +102,16 @@ class DocumentLinker(object):
         doc = {'type': self.document['type'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
-def run():
+def run(vectorizer, distancetype):
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    filename = "../data/first_results/test.json"
+    filename = "../data/first_results/{0}_{1}.json".format(vectorizer, distancetype)
 
     c = 0
     docs = {}
     percentage = 0
-    for new_doc, datawrapper in itertools.islice(data.test_data(), 0, 5):
+    for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype='weighted_text_vectorizer', dtype='cosine')
+        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype)
         links = linker.formatted_links(filename)
         docs[c] = links
         c += 1
@@ -136,4 +134,19 @@ def run():
     file.close()
 
 if __name__ == '__main__':
-    run()
+    vectorizer = ''
+    metric = ''
+    invalid = False
+    for i in range(0, len(sys.argv)):
+        try:
+            if sys.argv[i] == "-vectorizer":
+                vectorizer = sys.argv[i + 1]
+            if sys.argv[i] == "-distance":
+                metric = sys.argv[i + 1]
+        except:
+            invalid = True
+    if(vectorizer == '' or metric == '' or invalid == True):
+        print('Usage: -vectorizer <algorithm> -distance <cosine/eucledian>')
+        exit(0)
+
+run(vectorizer, metric)
