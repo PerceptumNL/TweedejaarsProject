@@ -1,7 +1,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-
+TSWLatexianTemp_*
+*.aux
+*.nav
+*.out
+*.snm
+*.toc
 # C extensions
 *.so
 
