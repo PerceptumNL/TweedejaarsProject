@@ -21,6 +21,13 @@
              display: none;
         }
 
+        span {
+            display: inline-block;
+            border: 1px dotted grey;
+            margin: 3px;
+            padding: 2px;
+        }
+
         h3 {
             color: red;
         }
@@ -35,17 +42,57 @@
     </style>
 </head>
 <body>
+
+        <div>
+<input type="file" id="files" name="files[]" />
+        </div>
 <ul>
 </ul>
 
+
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
-$(document).ready(function() {
-    $.getJSON( "glossaries_of_tags_cosine_d.json", function( data ) {
+
+window.onload = function() {
+var JsonObj = null;
+
+function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+    f = files[0];
+    var reader = new FileReader();
+
+    // Closure to capture the file information.
+    reader.onload = (function (theFile) {
+        return function (e) { 
+            JsonObj = e.target.result
+            var parsedJSON = JSON.parse(JsonObj);
+            handleData(parsedJSON);
+
+        };
+    })(f);
+
+    // Read in JSON as a data URL.
+    reader.readAsText(f, 'UTF-8');
+}
+
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+    function handleData( data ) {
         var items = [];
+        $( ".my-new-list" ).empty();
 
         $.each( data, function( key, val ) {
-            html = "<li><h2>" + val.title + " (" + val.type + ") </h2>";
+            html = "<li><h2>" + key + ' - '+ val.title + " (" + val.type + ") </h2>";
+            html += "<p>"
+            for (x in val.tags) {
+                html+= "<span> " + val.tags[x]  + " </span>   "
+            }
+            html += "</p>"
+
+            if(val.type != 'Person') {
+                html += "<p>By " + val.author + "</p>"
+            }
+
             html += "<button class='view-content'> Content </button> <button class='view-links'>Links</button>";
             html += "<div class='content'>" + val.content + "</div>";
 
@@ -60,6 +107,12 @@ $(document).ready(function() {
                     html += "<h3>"
                 }
                 html += val.title + " (" + val.type + ")</h3>"
+                for (x in val.tags) {
+                    html+= "<span>" + val.tags[x]  + "</span>"
+                }
+                if(val.type != 'Person') {
+                    html += "<p>By " + val.author + "</p>"
+                }
                 html += "<button class='view-content'> Content </button>"
                 html += "<div class='content'>" + val.content + "</div>";
                 html += "</li>";
@@ -86,9 +139,9 @@ $(document).ready(function() {
             });
         });
 
-    });
+    }
+}
 
-});
 </script>
 
 </body>

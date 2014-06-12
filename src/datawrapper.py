@@ -110,4 +110,6 @@ class DataWrapper(object):
                     v['links'].remove(item)
                 except ValueError:
                     pass
-            yield (self.item(item), DataWrapper(data))
+            item_dict = self.item(item)
+            item_dict['id'] = item
+            yield (item_dict, DataWrapper(data))

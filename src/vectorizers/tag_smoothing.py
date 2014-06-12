@@ -80,7 +80,6 @@ Methods for decomposing the occurence frequency matrix
 def modified_cholesky(C):
     L = np.zeros(C.shape)
     n = C.shape[0]
-    print(n)
     for i in xrange(len(C)):
         for j in xrange(i+1):
             q = [L[i, k] * L[j, k] for k in xrange(j)]
