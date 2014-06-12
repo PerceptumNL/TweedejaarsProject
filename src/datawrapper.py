@@ -19,6 +19,7 @@ class DataWrapper(object):
         else:
             self.datefile = None
             self.data = data
+        self.remove_aliased_tags()
 
     def read_datafile(self):
         """
@@ -26,6 +27,18 @@ class DataWrapper(object):
         """
         with open(self.datafile) as f:
             self.data = pickle.load(f)
+
+    def remove_aliased_tags(self):
+        for tag, dic in self.data['tags'].items():
+            if dic['alias_of'] is not None:
+                alias = dic['alias_of']
+                if alias != tag:
+                    for item, itemdic in self.data['items'].items():
+                        try:
+                            itemdic['tags'].remove(tag)
+                        except ValueError:
+                            pass
+                        itemdic['tags'].append(alias)
 
     def tags(self):
         """
