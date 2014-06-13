@@ -60,3 +60,5 @@ docs/_build/
 # IPython Notebook checkpoints
 .ipynb_checkpoints
 .DS_Store
+
+data/seconds_results
