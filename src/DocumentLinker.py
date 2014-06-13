@@ -103,9 +103,9 @@ class DocumentLinker(object):
         return doc 
 
 def run(vectorizer, distancetype):
-    data = DataWrapper('../data/export_starfish_tjp.pickle')
+    data = DataWrapper('../data/export_starfish_tjp_12jun.pickle')
     data.remove_aliased_tags()
-    filename = "../data/second_results/{0}_{1}.json".format(vectorizer, distancetype)
+    filename = "../data/data_12jun/{0}_{1}.json".format(vectorizer, distancetype)
 
     c = 0
     docs = {}
