@@ -7,7 +7,7 @@ def vectorize(data, new_doc):
 
     vectorizer = TfidfVectorizer(use_idf=True)
     glossaries = dict(map(lambda x: (x, data.tag_glossary(x)), data.tags()))
-    vectorizer.fit(glossaries)
+    vectorizer.fit(glossaries.values())
 
     # Get all glossaries for all tags
     glossary_bows = vectorizer.transform(glossaries.values())

@@ -35,7 +35,7 @@ class DocumentLinker(object):
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
-        return self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
+        return self.links
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
