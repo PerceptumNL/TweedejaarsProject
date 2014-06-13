@@ -32,13 +32,15 @@ class DataWrapper(object):
         for tag, dic in self.data['tags'].items():
             if dic['alias_of'] is not None:
                 alias = dic['alias_of']
-                if alias != tag:
-                    for item, itemdic in self.data['items'].items():
+                del self.data['tags'][tag]
+                for item, itemdic in self.data['items'].items():
+                    if tag in itemdic['tags']:
                         try:
                             itemdic['tags'].remove(tag)
                         except ValueError:
                             pass
-                        itemdic['tags'].append(alias)
+                        if alias not in itemdic['tags']:
+                            itemdic['tags'].append(alias)
 
     def tags(self):
         """
