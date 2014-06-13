@@ -104,7 +104,7 @@ class DocumentLinker(object):
 
 def run(vectorizer, distancetype):
     data = DataWrapper('../data/export_starfish_tjp.pickle')
-    filename = "../data/first_results/{0}_{1}.json".format(vectorizer, distancetype)
+    filename = "../data/second_results/{0}_{1}.json".format(vectorizer, distancetype)
 
     c = 0
     docs = {}
