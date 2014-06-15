@@ -73,17 +73,20 @@ class DocumentLinker(object):
 
         return {'type': linktype, 'title': title, 'content': content, 'tags': tags, 'author': author}
 
-    def formatted_links(self, filename):
+    def formatted_links(self):
         if(not self.links):
             print('First create links before formatting them')
             return False
         nlinks = {}
         links = [i[0] for i in self.links]
 
+        i = 1
         for link in links:
             nlink = self.__format_item(link)
             nlink['correct'] = link in self.document['links']
+            nlink['rank'] = i
             nlinks[link] = nlink
+            i += 1
 
         for link in self.document['links']:
             if not(link in links):
@@ -113,7 +116,7 @@ def run(vectorizer, distancetype):
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
         linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype)
-        links = linker.formatted_links(filename)
+        links = linker.formatted_links()
         docs[c] = links
         c += 1
         correct = 0
@@ -150,4 +153,4 @@ if __name__ == '__main__':
         print('Usage: -vectorizer <algorithm> -distance <cosine/eucledian>')
         exit(0)
 
-run(vectorizer, metric)
+    run(vectorizer, metric)
