@@ -28,6 +28,10 @@ class DataWrapper(object):
             self.data = pickle.load(f)
 
     def remove_aliased_tags(self):
+        """
+        Remove tags that are an alias of another tag and replace with
+        alias.
+        """
         for k,v in self.data['items'].items():
             tags = set()
             for tag in v['tags']:
@@ -42,14 +46,16 @@ class DataWrapper(object):
         for tag in del_tags: del self.data['tags'][tag]
 
     def get_alias_of_tag(self, tag):
+        """
+        Return the alias of a tag. If the tag has no alias the tag itself
+        will be returned.
+        """
         tag_dict = self.tag(tag)
         alias = tag_dict['alias_of']
         if alias is None or alias == tag:
             return tag
         else:
             return self.get_alias_of_tag(alias)
-            
-
 
     def tags(self):
         """
@@ -125,15 +131,24 @@ class DataWrapper(object):
         in the dataset.
         """
         for item in self.data['items']:
-            data = deepcopy(self.data)
             if self.item(item)['type'] == 'Glossary':
                 continue
-            del data['items'][item]
-            for k,v in data['items'].items():
-                try:
-                    v['links'].remove(item)
-                except ValueError:
-                    pass
-            item_dict = self.item(item)
-            item_dict['id'] = item
-            yield (item_dict, DataWrapper(data))
+            yield self.remove_item(item)
+
+    def remove_item(self, item):
+        """
+        Remove a single item from the data set. Return this item and a
+        datawrapper where this item has been removed. Will not alter the
+        current datawrapper. This method does not protect against removing
+        glossaries.
+        """
+        data = deepcopy(self.data)
+        del data['items'][item]
+        for k,v in data['items'].items():
+            try:
+                v['links'].remove(item)
+            except ValueError:
+                pass
+        item_dict = self.item(item)
+        item_dict['id'] = item
+        return (item_dict, DataWrapper(data))

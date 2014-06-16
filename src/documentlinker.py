@@ -150,4 +150,4 @@ if __name__ == '__main__':
         print('Usage: -vectorizer <algorithm> -distance <cosine/eucledian>')
         exit(0)
 
-run(vectorizer, metric)
+    run(vectorizer, metric)
