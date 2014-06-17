@@ -135,20 +135,25 @@ class DataWrapper(object):
                 continue
             yield self.remove_item(item)
 
-    def remove_item(self, item):
+    def remove_item(self, *items):
         """
         Remove a single item from the data set. Return this item and a
         datawrapper where this item has been removed. Will not alter the
         current datawrapper. This method does not protect against removing
         glossaries.
         """
-        data = deepcopy(self.data)
-        del data['items'][item]
-        for k,v in data['items'].items():
-            try:
-                v['links'].remove(item)
-            except ValueError:
-                pass
-        item_dict = self.item(item)
-        item_dict['id'] = item
-        return (item_dict, DataWrapper(data))
+        item_dicts = [] 
+        for item in items:
+            data = deepcopy(self.data)
+            del data['items'][item]
+            for k,v in data['items'].items():
+                try:
+                    v['links'].remove(item)
+                except ValueError:
+                    pass
+            item_dict = self.item(item)
+            item_dict['id'] = item
+            item_dicts += [item_dict]
+        if len(items) == 1:
+            return (item_dicts[0], DataWrapper(data))
+        return (item_dicts, DataWrapper(data))
