@@ -16,7 +16,11 @@ def vectorize(data, new_doc):
 
         for key in data.items():
             # Take vectors of all links and add with averaged 0.5 weight
-            links = map(lambda x: descriptors[x], data.data['items'][key]['links'])
+            try:
+                links = map(lambda x: descriptors[x], data.data['items'][key]['links'])
+            except KeyError as e:
+                print('Unexpected error')
+                continue
             descriptor = descriptors[key] + zero_vector +  0.5*sum(links)/(len(links) + 1) 
             tmp_descriptors[key] = descriptor
         descriptors = tmp_descriptors
