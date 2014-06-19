@@ -156,4 +156,7 @@ class DataWrapper(object):
             item_dicts += [item_dict]
         if len(items) == 1:
             return (item_dicts[0], DataWrapper(data))
+        ids = map(lambda x: x['id'], item_dicts)
+        for item_dict in item_dicts:
+            item_dict['links'] = filter(lambda x: not x in ids, item_dict['links'])
         return (item_dicts, DataWrapper(data))
