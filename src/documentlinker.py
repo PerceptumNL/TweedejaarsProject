@@ -52,6 +52,10 @@ class DocumentLinker(object):
         return sorted(distances, key=lambda x:x[1])[0:k]
 
     def __find_author_name(self, author_id):
+        """
+        Retrieves the name of an author based on author id (should be in 
+        datawrapper maybe???)
+        """
         if(author_id == self.document['id']):
             author = self.document['name']
         else:
@@ -62,6 +66,9 @@ class DocumentLinker(object):
         return author
 
     def __format_item(self, item):
+        """
+        Formats one single item in a dictionary
+        """
         title = self.data.value_for_keys(item, 'title', 'name')
         content = self.data.value_for_keys(item, 'headline', 'about', 'title', 'text')
         item_dict = self.data.item(item)
@@ -74,6 +81,9 @@ class DocumentLinker(object):
         return {'type': linktype, 'title': title, 'content': content, 'tags': tags, 'author': author}
 
     def formatted_links(self):
+        """
+        Formats a set of proposed links into a dictionary format usable for the viewer
+        """
         if(not self.links):
             print('First create links before formatting them')
             return False

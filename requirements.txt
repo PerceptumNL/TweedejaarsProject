@@ -22,3 +22,4 @@ six==1.6.1
 sympy==0.7.5
 tornado==3.2.1
 wsgiref==0.1.2
+mpld3==0.2

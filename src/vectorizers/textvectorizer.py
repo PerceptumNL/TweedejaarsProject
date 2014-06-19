@@ -9,10 +9,10 @@ about, headline, title and text field on every item.
 """
 
 def vectorize(data, new_doc, local=False):
-    content = ('headline', 'about', 'title', 'text')    
+    content = ('headline', 'about', 'title', 'text')
     new_doc_pre = data.value_for_keys_with_item(new_doc, *content)
 
-    vectorizer = TfidfVectorizer(use_idf=True)
+    vectorizer = TfidfVectorizer(use_idf=True, stop_words='english')
     vectorizer.fit(data.value_for_keys(None, *content))
 
     data_bows = vectorizer.transform(data.value_for_keys(None, *content))
