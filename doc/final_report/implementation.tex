@@ -1,0 +1,29 @@
+\section{Implementation}
+
+Een ander vet iets dat je kan doen is svg in Inkscape openen en opslaan als pdf met latex output! Dan kan je dus latex tekst hebben binnen plaatjes zoals in figuur \ref{fig:humanear}.
+
+\begin{figure}
+\hhrule \vspace{0.5\baselineskip}
+\null\hfill\parbox[b]{0.45\linewidth}{%
+\centering
+\def\svgwidth{\linewidth}
+{\footnotesize
+\input{images/tunefork2.pdf_tex}}
+%\includegraphics[width=\linewidth]{tunefork}
+}\hfill
+\parbox[b]{0.45\linewidth}{%
+\centering
+\def\svgwidth{\linewidth}
+{\footnotesize
+\input{images/Anatomy_of_the_Human_Ear.pdf_tex}}
+%\includegraphics[width=\linewidth]{Human-Ear}
+}\hfill\null
+\vspace{0.5\baselineskip}\hrule
+\null\hfill\parbox[t]{0.45\linewidth}{%
+\caption[Propagating sound waves]{Sound waves propagate through a medium such as air molecules} \label{fig:waveform}
+}\hfill
+\parbox[t]{0.45\linewidth}{%
+\caption{Internals of the ear} \label{fig:humanear}
+}\hfill\null
+\hhrule
+\end{figure}

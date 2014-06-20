@@ -1,0 +1,28 @@
+\section{Product overview}
+
+ALGORITHMS!!!!
+\begin{algorithm}[t]
+\caption{SLIC Segmentation}
+\label{alg:slic}
+\begin{algorithmic}[1]
+\REQUIRE $K=\textmd{number of super pixels}$
+\STATE Initialize $K$ cluster centres $C_k = [l_k, a_k, b_k, x_k, y_k]^T$ by sampling pixels at regular grid
+\STATE Perturb cluster centres in an $n\times n$ neighbourhood, to the lowest gradient position
+\REPEAT 
+\FORALL{cluster centre $C_k$}
+\STATE {Assign the best matching pixels from a $2S\times 2S$ square neighbourhood around the cluster centre according to the distance measure in eq. \ref{eq:distanceSLIC}}
+\ENDFOR
+\STATE Compute new cluster centres and residual error $E(L1 $ distance between previous centres and recomputed centres $)$
+\UNTIL{ $E \leq threshold$}
+\STATE Enforce connectivity
+\end{algorithmic}
+\end{algorithm}
+
+
+MATHSSS!!!!
+\begin{align}\label{eq:distanceSLIC}
+\nonumber d_{lab} &=  \sqrt{(l_k-l_i)^2 + (a_k-a_i)^2 + (b_k-b_i)^2}\\
+\nonumber d_{xy}  &=  \sqrt{(x_k-x_i)^2 + (y_k-y_i)^2 }\\
+D_{s}   &= d_{lab} + \frac{m}{S} d_{xy}
+\end{align}
+

@@ -20,7 +20,7 @@ document. The descriptor is created using the following steps.
    for all tags associated with d.
 """
 
-def vectorize(data, new_doc):
+def vectorize(data, new_doc, local = False):
     """
     Vectorize the data as described in file docstring.
     """
@@ -49,6 +49,10 @@ def vectorize(data, new_doc):
     item_descriptors = [create_desc(tags) for tags in  item_tags]
     new_doc_descriptor = create_desc(new_doc['tags'])
     
+    # For analysis or use in other vectorizers, also return the vectorizer itself
+    if(local):
+        return (zip(data.items(), item_descriptors), new_doc_descriptor, vectorizer)
+
     # Asssociate document ids with descriptors and return.
     return(zip(data.items(), item_descriptors), new_doc_descriptor)
 

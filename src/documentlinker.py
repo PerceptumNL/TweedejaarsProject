@@ -112,7 +112,7 @@ class DocumentLinker(object):
         title = self.data.value_for_keys_with_item(self.document, 'title', 'name')
         content = self.data.value_for_keys_with_item(self.document, 'headline', 'about', 'title', 'text')
         author = self.__find_author_name(self.document.get('author') or -1)
-        doc = {'type': self.document['type'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
+        doc = {'type': self.document['type'], 'id': self.document['id'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
 def run(vectorizer, distancetype):
