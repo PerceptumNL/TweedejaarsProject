@@ -30,7 +30,11 @@ def vectorize(data, new_doc):
                 nvector.append(1)
             else:
                 nvector.append(0)
-        ndescriptors.append(np.asarray(nvector))
+        ndescriptors.append(np.matrix(nvector))
+
+    print ndescriptors[1]
+    #ndescriptors = np.matrix(ndescriptors)
+    print type(ndescriptors)
 
     nnew_doc_descriptor = []
 
@@ -39,7 +43,7 @@ def vectorize(data, new_doc):
             nnew_doc_descriptor.append(1)
         else:
             nnew_doc_descriptor.append(0)
-    nnew_doc_descriptor = np.asarray(nnew_doc_descriptor)
-    
+    nnew_doc_descriptor = np.matrix(nnew_doc_descriptor)
+    print type(nnew_doc_descriptor)
     # Asssociate document ids with descriptors and return.
     return(zip(data.items(), ndescriptors), nnew_doc_descriptor)

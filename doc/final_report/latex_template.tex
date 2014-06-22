@@ -6,6 +6,12 @@
 \usepackage[activate={true,nocompatibility},final,tracking=true,kerning=true,spacing=true,factor=1100,stretch=20,shrink=20]{microtype}
 \microtypecontext{spacing=nonfrench}
 \usepackage{setspace}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\fontsize{11}{13}\selectfont\ttfamily
+}
+
 \newcommand*{\hhrule}{\hrule height 0.8pt}% double thickness
 
 % Dutch style of paragraph formatting, i.e. no indents. 
@@ -82,17 +88,11 @@
 \def\thepage{\arabic{page}}
 \setcounter{page}{1}
 \include{introduction}
-
 \clearpage % can remove this or put this between all sections
-
 \include{productoverview}
-
 \clearpage
-
 \include{implementation}
-
 \clearpage
-
 \include{conclusion}
 
 \clearpage
