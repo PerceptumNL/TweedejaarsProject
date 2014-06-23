@@ -1,5 +1,3 @@
-
-
 from datawrapper import DataWrapper
 from collections import Counter
 import numpy as np
@@ -51,7 +49,14 @@ def compute_tag_probs(data, lp_k=1):
         tag_count.update(tag_list)
     d = len(list(data.items())) # doc count
 
-    return {k:(v*(v-1))/float(d*(d-1)) for k,v in tag_count.items()}
+    # tag count
+    tc = len(list(data.tags()))
+
+    probs = {}
+    for tag in data.tags():
+        c = tag_count[tag]
+        probs[tag] = (c*(c-1)+lp_k) / float(d*(d-1)+tc*lp_k)
+    return probs
 
 def compute_tag_link_prob(data, lp_k=1):
     """
