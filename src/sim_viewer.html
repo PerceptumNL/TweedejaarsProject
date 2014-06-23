@@ -82,7 +82,7 @@ function handleData( data ) {
     $( ".my-new-list" ).empty();
 
     $.each( data, function(pkey, pval ) {
-        html = "<li><h1>" + pval[1].title + "</h1></li><ul>"
+        html = "<li><h1>" + pval[1].title + " (" + pval[1].type + ") </h1></li><ul>"
         html += "<p>"
         for (x in pval[1].tags) {
             html+= "<span> " + pval[1].tags[x]  + " </span>   "

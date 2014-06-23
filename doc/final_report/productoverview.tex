@@ -1,0 +1,81 @@
+\section{Product overview}
+
+The product created in this project is a python program takes a set of documents and a new document and returns the subset of documents that should be linked with the new document. For this, a descriptor-based approach was used, which consists of three steps. First, each of the documents is transformed into a descriptor: a vector containing numerical values that in some way describes the document (hence the term 'descriptor'). Creating these discriptors is not trivial and during the project several techniques have been explored. Secondly, a ranking is made of all documents based on the similarity of the document descriptors and the descriptor of the new added document. To compare the descriptors the Nearest Neighbour algorithm was implemented, including five different distance metrics that determine how near two vectors are. Thirdly, an algorithm chooses the proper amount of proposed links that must be returned.
+
+\begin{lstlisting}
+python documentlinker.py -vectorizer <vectorizername> 
+-distance <distance metric> -threshold <'auto' or a fixed number>
+\end{lstlisting}
+
+We will now discuss each of these parameters, since these will give more insight into the approach that was chosen to solve the problem. For the performance of the different parameters we refer to the evaluation section. 
+
+\subsection{Vectorizer}
+The first step is to create document descriptors, which is done by algorithms that we call \emph{vectorizers}. Two main paths have been explored: transformation based on text and transformation based on tags.
+
+\subsubsection{Text-based transformation}
+\begin{description}
+\item [Textvectorizer] The text-based vectorizers use the textual content of the documents and are therefore generally applicable to other systems. The textual content is first transformed into a \emph{bag of words}. Then, based on all the documents in the knowledge base, the \emph{TF-IDF} value is calculated for each of the words in the bag of words. \emph{TF-IDF} stands for Term Frequency-Inverse Document Frequency and is a number that represents the importance of a word to a document in a bigger set of documents. Thus, the document descriptor consists of a vector with all TF-IDF values for that document of all words in the corpus. 
+
+\item[Weighted\_textvectorizer] The weighted textvectorizer is implemented as an extention of the textvectorizer. Besides the descriptor of a document itself, this method also adds the vectors of documents linked to it with some weight. This captures the idea that if a new document resembles some of the documents that are linked to one particular document, it is more likely to be linked to this particular document. 
+\end{description}
+
+\subsubsection{Tag-based transformations}
+\begin{description}
+\item[Simple\_tag\_similarity] The tag-based transformations are more StarFish specific, since they make use of the tags that are assigned to the documens. A tag is a keyword that describes a topic/term that is important for that document. For example, 'Online Support and Online Assessment for Teaching and Learning Chemistry' is tagged with 'chemistry', 'e-learning' and 'assessment'. The simple tag similarity vectorizer creates a vector where each value indicates whether or not one particular tag is assigned to the document. 
+
+\item [Tag\_smoothing] The tag smoothing vectorizer uses the co-occurence of tags in estimating document similarity. % PLEASE EXPLAIN
+
+\item [Glossaries\_of\_tags] Another way of capturing tag similarity is by using tag Glossaries. Most of the tags have a Glossary - a special type of Document which holds an explanation of a tag. Though glossaries are documents, they cannot be assigned as a link since this should be done by assigning a tag. The glossaries can still be used by applying a text-based transformation on the glossaries to indicate the similarity between tags. Thus, glossaries\_of\_tags can be seen as a hybrid form of the tag and text-based approaches, where the glossary of a tag is turned into a TF-IDF bag of words. The document descriptor consists of the sum of vectors of each of it's tags. 
+
+\item [Weighted\_tag\_vectorizer] This is an extension of glossaries of tags, where a weight is assigned to the tag vectors. % PLEASE EXPLAIN
+\end{description}
+
+\subsubsection{StarFish specific adaptations}
+\begin{description}
+\item[Bayesian Weigthed Vectorizer] Both the tag-based and text-based approaches uses some kind of 'semantic similarity' - the similarity of tags or text. However, except for the weighted text vectorizers, no information about possible links is used. For example, the text on a person's profile might be similar to other persons, but within StarFish a person is almost never linked to another person. In the Bayesian Weigthed Vectorizer this is captured by weighting the vectors with the probability that two documents are linked together:
+\begin{align}
+\nonumber P(D_a \rightarrow D_b | t)
+\end{align}
+Thus, the weight of a tag within a vector is equal to the chance that given this particular vector, a document of type a (the type of the newly added document) and a document of type b (equal to the type of proposed link) are linked together.
+\end{description}
+
+\subsection{Distance}
+The nearest neighbour algorithm loops through all available document descriptors and compares these with the descriptor of the new document. The closer related the descriptors are, the higher their ranking will be. The distance metrics define the closeness of the descriptors - a lower distance means a closer relation. The following were implemented:
+
+\begin{description}
+\item[Eucledian]
+\item[Cosine]
+\item[Bhattacharyya]
+\item[Correlation]
+\item[Intersection]
+\end{description}
+
+\subsection{Threshold value}
+In the end, an algorithm chooses the proper amount of proposed links that must be returned. If the threshold value is set to a fixed number, e.g. 10, than only the  proposed links of rank 1-10 are returned. If the threshold is set to \emph{'auto'}, the number of returned links is based on the gradient of the distances. For example, if the algorithm is only certain that the first two links are correct, it returns no more than two links. For user-friendliness a maximum of 15 links is returned. 
+
+ALGORITHMS!!!!
+\begin{algorithm}[t]
+\caption{SLIC Segmentation}
+\label{alg:slic}
+\begin{algorithmic}[1]
+\REQUIRE $K=\textmd{number of super pixels}$
+\STATE Initialize $K$ cluster centres $C_k = [l_k, a_k, b_k, x_k, y_k]^T$ by sampling pixels at regular grid
+\STATE Perturb cluster centres in an $n\times n$ neighbourhood, to the lowest gradient position
+\REPEAT 
+\FORALL{cluster centre $C_k$}
+\STATE {Assign the best matching pixels from a $2S\times 2S$ square neighbourhood around the cluster centre according to the distance measure in eq. \ref{eq:distanceSLIC}}
+\ENDFOR
+\STATE Compute new cluster centres and residual error $E(L1 $ distance between previous centres and recomputed centres $)$
+\UNTIL{ $E \leq threshold$}
+\STATE Enforce connectivity
+\end{algorithmic}
+\end{algorithm}
+
+
+MATHSSS!!!!
+\begin{align}\label{eq:distanceSLIC}
+\nonumber d_{lab} &=  \sqrt{(l_k-l_i)^2 + (a_k-a_i)^2 + (b_k-b_i)^2}\\
+\nonumber d_{xy}  &=  \sqrt{(x_k-x_i)^2 + (y_k-y_i)^2 }\\
+D_{s}   &= d_{lab} + \frac{m}{S} d_{xy}
+\end{align}
+

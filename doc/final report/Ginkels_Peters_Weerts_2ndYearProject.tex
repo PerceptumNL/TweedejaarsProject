@@ -1,0 +1,110 @@
+\documentclass[a4paper]{article}
+
+% Typesetting
+%\usepackage{mathpazo}
+\usepackage{geometry}
+\usepackage[activate={true,nocompatibility},final,tracking=true,kerning=true,spacing=true,factor=1100,stretch=20,shrink=20]{microtype}
+\microtypecontext{spacing=nonfrench}
+\hyphenpenalty=5000
+\tolerance=1000
+\usepackage{listings}
+\usepackage{pdfpages}
+
+% Graphics
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+% Tables
+\usepackage{booktabs}
+
+% Utility
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{subfig}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\renewcommand{\algorithmiccomment}[1]{\hfill// \textit{#1}}
+
+\usepackage{framed, color}
+\definecolor{shadecolor}{rgb}{0.8, 0.9, 1.0}
+
+% Science Units
+\usepackage{textcomp}
+\usepackage[]{siunitx}
+\sisetup{tophrase=--}
+\sisetup{repeatunits=false}
+\usepackage{latexsym}
+
+% Bibliography (Use \citep)
+\usepackage[]{natbib} %numbers
+\setlength{\bibsep}{3.5pt}
+
+\begin{document}
+
+% Title Page
+\newgeometry{margin=3cm}
+\thispagestyle{empty}
+\begin{center}
+% StarFish Logo
+\includegraphics[width=\linewidth]{logo_starfish_project}\\\vspace{1cm}
+
+% Subtitle
+{\large
+Finding implicitly related items based on semantic similarities and metadata in a non-hierarchical network of documents
+}\\\vspace{0.5cm}
+
+% Authors
+\begin{tabular*}{0.8\linewidth}{@{\extracolsep{\fill}}lcr}
+& \textbf{Authors} & \\
+\hline
+R. van Ginkels 	& J. Peters 	& L. Weerts \\
+\end{tabular*}
+\\\vspace{2cm}
+% Company
+Project commissioned by \emph{Perceptum B.V.}\\\vspace{1cm}
+
+% Supervisors
+\textbf{Supervisors}\\
+\begin{tabular}{r|l}
+Academic Supervisor & Raquel Fernandez \\
+Company Supervisor & Robrecht Jurriaans \\
+& Sander Latour \\
+& Wijnand Baretta
+\end{tabular}
+
+
+% UvA
+\vfill
+\today\\
+Universiteit van Amsterdam
+
+\end{center}
+\restoregeometry
+
+\clearpage
+
+% Front Matter
+\begin{abstract}
+
+\end{abstract}
+
+\tableofcontents
+\clearpage
+
+% Main Matter
+\input{chapters/0_introduction}
+\input{chapters/1_background}
+\input{chapters/2_theory}
+\input{chapters/3_method}
+\input{chapters/4_experiments}
+\input{chapters/5_conclusion}
+\input{chapters/6_future}
+
+
+% Marshall Matters
+
+
+\end{document}

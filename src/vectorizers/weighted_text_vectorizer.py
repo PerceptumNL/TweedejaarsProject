@@ -4,7 +4,7 @@ import preprocessing
 import textvectorizer
 from scipy import sparse
 
-def vectorize(data, new_doc):
+def vectorize(data, new_doc, local = False):
     data_bows, new_doc_bow, vectorizer = textvectorizer.vectorize(data, new_doc, True)
     descriptors = dict(data_bows)
 
@@ -25,4 +25,7 @@ def vectorize(data, new_doc):
             tmp_descriptors[key] = descriptor
         descriptors = tmp_descriptors
 
+    if (local):
+        return zip(descriptors.keys(), descriptors.values()), new_doc_bow, vectorizer
+        
     return(zip(descriptors.keys(), descriptors.values()), new_doc_bow)

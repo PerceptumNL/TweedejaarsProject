@@ -82,7 +82,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         $( ".my-new-list" ).empty();
 
         $.each( data, function( key, val ) {
-            html = "<li><h2>" + key + ' - '+ val.title + " (" + val.type + ") </h2>";
+            html = "<li><h2>" + val.id + ' - '+ val.title + " (" + val.type + ") </h2>";
             html += "<p>"
             for (x in val.tags) {
                 html+= "<span> " + val.tags[x]  + " </span>   "

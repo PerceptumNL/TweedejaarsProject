@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import preprocessing
 from scipy import sparse
 
-def vectorize(data, new_doc):
+def vectorize(data, new_doc, local=False):
 
     vectorizer = TfidfVectorizer(use_idf=True)
     glossaries = dict(map(lambda x: (x, data.tag_glossary(x)), data.tags()))
@@ -25,5 +25,8 @@ def vectorize(data, new_doc):
 
     # Get all tags for the new document
     new_doc_descriptor = sum(map(lambda x: glossary_bows[x], new_doc['tags'])) + zero_vector
+
+    if(local):
+        return(descriptors, new_doc_descriptor, vectorizer)
 
     return(descriptors, new_doc_descriptor)
