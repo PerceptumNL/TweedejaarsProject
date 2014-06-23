@@ -5,12 +5,14 @@ import distance
 import sys
 import itertools
 import json 
+import argparse
+import pkgutil
 from decimal import *
 import prob
 
 class DocumentLinker(object):
 
-    def __init__(self, datawrapper, k=10):
+    def __init__(self, datawrapper, k=100):
         """
         Initializes the document linker. Sets up a datafile and sets the
         value for k that is used by the nearest neighbor algorithm.
@@ -21,7 +23,7 @@ class DocumentLinker(object):
         self.document = None
 
     def get_links(self, document, vtype='textvectorizer', dtype='euclidean',
-                  p_deval=True):
+                  p_deval=True, threshold = 0.3):
         """
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
@@ -38,9 +40,28 @@ class DocumentLinker(object):
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
         if p_deval:
-            self.links = self.prob_devaluation(self.data,document, self.links)
-
+            self.links = self.prob_devaluation(self.data, document, self.links)
+        
+        (self.links, x) = self.apply_threshold(self.links, threshold)
+        
         return self.links
+        
+    def apply_threshold(self, links, threshold):
+        closest_distance = next((x[1] for x in links if x[1] > 0), None)
+        l1 = []
+        l2 = []
+        for i, (link, x) in enumerate(links):
+            max_diff = ((len(links) - i)/float(len(links)) * threshold * (1 - closest_distance))
+
+            try:
+                x = x[0,0]
+            except Exception, c:
+                x = x
+            if x <= closest_distance + max_diff and x < 1.0:
+                l1.append((link, x))
+            else:
+                l2.append((link, x))
+        return (l1, l2)
 
     def prob_devaluation(self, data, new_doc, deltas):
         # laplace_k = 1
@@ -138,7 +159,7 @@ class DocumentLinker(object):
         doc = {'type': self.document['type'], 'id': self.document['id'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
-def run(vectorizer, distancetype):
+def run(vectorizer, distancetype, thresh):
     data = DataWrapper('../data/export_starfish_tjp_12jun.pickle')
     data.remove_aliased_tags()
     filename = "../data/data_12jun/{0}_{1}.json".format(vectorizer, distancetype)
@@ -148,7 +169,7 @@ def run(vectorizer, distancetype):
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype)
+        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype, threshold=thresh)
         links = linker.formatted_links()
         docs[c] = links
         c += 1
@@ -171,19 +192,14 @@ def run(vectorizer, distancetype):
     file.close()
 
 if __name__ == '__main__':
-    vectorizer = ''
-    metric = ''
-    invalid = False
-    for i in range(0, len(sys.argv)):
-        try:
-            if sys.argv[i] == "-vectorizer":
-                vectorizer = sys.argv[i + 1]
-            if sys.argv[i] == "-distance":
-                metric = sys.argv[i + 1]
-        except:
-            invalid = True
-    if(vectorizer == '' or metric == '' or invalid == True):
-        print('Usage: -vectorizer <algorithm> -distance <cosine/eucledian>')
-        exit(0)
+    parser = argparse.ArgumentParser(description="Recommend links for starfish objects.")
+    vectorizer_names = [name for _, name, _ in pkgutil.iter_modules(['vectorizers'])]
+    parser.add_argument('-vectorizer', default=None, type=str, choices=vectorizer_names,
+            help="The vectorizer to perform neares neighbors with", required=True)
+    parser.add_argument('-metric', default='cosine', type=str,
+            help="Distance metric for nearest neighbor, default = 'cosine'", required=True)
+    parser.add_argument('-threshold', default=0.3, type=float,
+            help="Value [0...1]", required=True)
+    args = parser.parse_args()
 
-    run(vectorizer, metric)
+    run(args.vectorizer, args.metric, args.threshold)
