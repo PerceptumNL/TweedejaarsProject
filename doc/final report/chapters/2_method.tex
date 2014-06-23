@@ -1,0 +1,60 @@
+\section{Method}
+\subsection{Data}
+\begin{itemize}
+\item How big is the dataset
+\item Types of documents
+\item Properties of documents (title, author ect)
+\item Tags: meaning, aliases and glossaries
+\item Linking between documents: probabilities \& standard linking of authors
+\end{itemize}
+
+\subsection{Text vectorization}
+\subsubsection{Textvectorizer}
+\begin{itemize}
+\item Motivation: traightforward, standard approach
+\item Implementation: using bag of words and TF-IDF and adding stopwords
+\item Evaluation: is good with questions (since text has many keywords), bad in persons because person descriptions are similar. Bad at texts in different languages, cannot use images (which will become more prevalent in starfish). Quite slow. 
+\end{itemize}
+\subsubsection{Weighted textvectorizer}
+\begin{itemize}
+\item Motivation: use more of the links in starfish
+\item Implementation
+\item Evaluation: works better than textvectorizer (find out why!!!) but still has the same problems. Quite slow but not much slower than textvectorizer. 
+\end{itemize}
+
+\subsection{Tag vectorization}
+\subsubsection{Simple tag vectorizer}
+\begin{itemize}
+\item Motivation: use more starfish specific things
+\item Implementation: binary vectors
+\item Evaluation: works surprisingly well, only works bad on questions because no propper tagging, works extremely fast
+\end{itemize}
+
+\subsubsection{Tag smoothing}
+\begin{itemize}
+\item Motivation: use connection between tags
+\item Implementation: based on the paper
+\item Evaluation: very slow, similar results as the simple tag vectorizer, 'magic' so cannot really see why something happens
+\end{itemize}
+
+\subsubsection{Glossaries of tags}
+\begin{itemize}
+\item Motivation: find underlying network between tags by using their glossaries
+\item Implementation: hybrid form of text and tag vectorizer
+\item Evaluation: does not work well (find out why!) 
+\end{itemize}
+
+\subsection{Distance metrics}
+\begin{itemize}
+\item Eucledian
+\item Cosine
+\item Bhattacharyya
+\item Correlation
+\item Intersection
+\end{itemize}
+
+\subsection{Bayesian weighting}
+Explain motivation, implementation and short results
+
+\subsection{Thresholds}
+Explan motivation, implementation and short results
