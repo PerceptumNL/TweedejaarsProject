@@ -6,6 +6,7 @@ import sys
 import itertools
 import json 
 from decimal import *
+import prob
 
 class DocumentLinker(object):
 
@@ -19,7 +20,8 @@ class DocumentLinker(object):
         self.links = None
         self.document = None
 
-    def get_links(self, document, vtype='textvectorizer', dtype='euclidean'):
+    def get_links(self, document, vtype='textvectorizer', dtype='euclidean',
+                  p_deval=True):
         """
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
@@ -35,7 +37,28 @@ class DocumentLinker(object):
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
+        if p_deval:
+            self.links = self.prob_devaluation(self.data,document, self.links)
+
         return self.links
+
+    def prob_devaluation(self, data, new_doc, deltas):
+        # laplace_k = 1
+        # link_prob = prob.compute_link_probs(data, laplace_k)
+        # tag_prob = prob.compute_tag_probs(data, laplace_k)
+        # link_tag_prob = prob.compute_tag_link_prob(data, laplace_k)
+
+        # nd_type = new_doc['type'] # new doc type
+        # new_doc_tags = set(new_doc['tags'])
+        # dtype = lambda x: data.item(x)['type']
+        # dtags = lambda x: set(data.item(x)['tags']).intersection(new_doc_tags)
+
+        # lp = lambda x, y: link_prob[x][y]
+
+        # res = [(doc,d*lp(nd_type,dtype(doc))**-1) for doc, d in deltas]
+        # return sorted(res, key=lambda x: x[1])
+        return deltas
+
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
