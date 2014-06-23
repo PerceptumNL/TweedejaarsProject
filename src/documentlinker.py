@@ -10,7 +10,7 @@ import prob
 
 class DocumentLinker(object):
 
-    def __init__(self, datawrapper, k=10):
+    def __init__(self, datawrapper, k=100):
         """
         Initializes the document linker. Sets up a datafile and sets the
         value for k that is used by the nearest neighbor algorithm.
@@ -21,7 +21,7 @@ class DocumentLinker(object):
         self.document = None
 
     def get_links(self, document, vtype='textvectorizer', dtype='euclidean',
-                  p_deval=True):
+                  p_deval=True, threshold = 0.3):
         """
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
@@ -38,9 +38,29 @@ class DocumentLinker(object):
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
         if p_deval:
-            self.links = self.prob_devaluation(self.data,document, self.links)
-
+            self.links = self.prob_devaluation(self.data, document, self.links)
+        
+        (self.links, x) = self.apply_threshold(self.links, threshold)
+        
         return self.links
+        
+    def apply_threshold(self, links, threshold):
+        closest_distance = next((x[1] for x in links if x[1] > 0), None)
+        print(closest_distance)
+        l1 = []
+        l2 = []
+        for i, (link, x) in enumerate(links):
+            max_diff = ((len(links) - i)/float(len(links)) * threshold * (1 - closest_distance))
+
+            try:
+                x = x[0,0]
+            except Exception, c:
+                x = x
+            if x <= closest_distance + max_diff and x < 1.0:
+                l1.append((link, x))
+            else:
+                l2.append((link, x))
+        return (l1, l2)
 
     def prob_devaluation(self, data, new_doc, deltas):
         # laplace_k = 1
