@@ -5,6 +5,8 @@ import distance
 import sys
 import itertools
 import json 
+import argparse
+import pkgutil
 from decimal import *
 import prob
 
@@ -46,7 +48,6 @@ class DocumentLinker(object):
         
     def apply_threshold(self, links, threshold):
         closest_distance = next((x[1] for x in links if x[1] > 0), None)
-        print(closest_distance)
         l1 = []
         l2 = []
         for i, (link, x) in enumerate(links):
@@ -158,7 +159,7 @@ class DocumentLinker(object):
         doc = {'type': self.document['type'], 'id': self.document['id'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
-def run(vectorizer, distancetype):
+def run(vectorizer, distancetype, thresh):
     data = DataWrapper('../data/export_starfish_tjp_12jun.pickle')
     data.remove_aliased_tags()
     filename = "../data/data_12jun/{0}_{1}.json".format(vectorizer, distancetype)
@@ -168,7 +169,7 @@ def run(vectorizer, distancetype):
     percentage = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype)
+        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype, threshold=thresh)
         links = linker.formatted_links()
         docs[c] = links
         c += 1
@@ -191,19 +192,14 @@ def run(vectorizer, distancetype):
     file.close()
 
 if __name__ == '__main__':
-    vectorizer = ''
-    metric = ''
-    invalid = False
-    for i in range(0, len(sys.argv)):
-        try:
-            if sys.argv[i] == "-vectorizer":
-                vectorizer = sys.argv[i + 1]
-            if sys.argv[i] == "-distance":
-                metric = sys.argv[i + 1]
-        except:
-            invalid = True
-    if(vectorizer == '' or metric == '' or invalid == True):
-        print('Usage: -vectorizer <algorithm> -distance <cosine/eucledian>')
-        exit(0)
+    parser = argparse.ArgumentParser(description="Recommend links for starfish objects.")
+    vectorizer_names = [name for _, name, _ in pkgutil.iter_modules(['vectorizers'])]
+    parser.add_argument('-vectorizer', default=None, type=str, choices=vectorizer_names,
+            help="The vectorizer to perform neares neighbors with", required=True)
+    parser.add_argument('-metric', default='cosine', type=str,
+            help="Distance metric for nearest neighbor, default = 'cosine'", required=True)
+    parser.add_argument('-threshold', default=0.3, type=float,
+            help="Value [0...1]", required=True)
+    args = parser.parse_args()
 
-    run(vectorizer, metric)
+    run(args.vectorizer, args.metric, args.threshold)
