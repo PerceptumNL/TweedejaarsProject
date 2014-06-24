@@ -9,6 +9,7 @@ import argparse
 import pkgutil
 from decimal import *
 import prob
+from collections import Counter
 
 class DocumentLinker(object):
 
@@ -23,7 +24,7 @@ class DocumentLinker(object):
         self.document = None
 
     def get_links(self, document, vtype='textvectorizer', dtype='euclidean',
-                  p_deval=True, threshold = 0.3):
+                  l_deval=True, t_deval=True, threshold = 0.3):
         """
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
@@ -39,8 +40,10 @@ class DocumentLinker(object):
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
 
-        if p_deval:
-            self.links = self.prob_devaluation(self.data, document, self.links)
+        if l_deval:
+            self.links = self.link_devaluation(self.data, document, self.links)
+        if t_deval:
+            self.links = self.tag_devaluation(self.data, document, self.links)
         
         (self.links, x) = self.apply_threshold(self.links, threshold)
         
@@ -63,22 +66,43 @@ class DocumentLinker(object):
                 l2.append((link, x))
         return (l1, l2)
 
-    def prob_devaluation(self, data, new_doc, deltas):
-        # laplace_k = 1
-        # link_prob = prob.compute_link_probs(data, laplace_k)
-        # tag_prob = prob.compute_tag_probs(data, laplace_k)
-        # link_tag_prob = prob.compute_tag_link_prob(data, laplace_k)
+    def link_devaluation(self, data, new_doc, deltas):
+        laplace_k = 1
+        link_prob = prob.compute_link_probs(data, laplace_k)
 
-        # nd_type = new_doc['type'] # new doc type
-        # new_doc_tags = set(new_doc['tags'])
-        # dtype = lambda x: data.item(x)['type']
-        # dtags = lambda x: set(data.item(x)['tags']).intersection(new_doc_tags)
+        nd_type = new_doc['type'] # new doc type
+        new_doc_tags = set(new_doc['tags'])
+        dtype = lambda x: data.item(x)['type']
+        dtags = lambda x: set(data.item(x)['tags']).intersection(new_doc_tags)
 
-        # lp = lambda x, y: link_prob[x][y]
+        lp = lambda x, y: 1-link_prob[x][y]
 
-        # res = [(doc,d*lp(nd_type,dtype(doc))**-1) for doc, d in deltas]
-        # return sorted(res, key=lambda x: x[1])
+        res = [(doc,d*lp(nd_type,dtype(doc))) for doc, d in deltas]
+        return sorted(res, key=lambda x: x[1])
         return deltas
+
+    def tag_devaluation(self, data, new_doc, deltas):
+        tags = lambda x: data.item(x)['tags']
+        tag_int = lambda x, y: set(tags(x)).intersection(set(tags(y)))
+        tl = lambda x: len(set(tags(x)).intersection(set(new_doc['tags'])))
+
+        item_card = len(list(data.items()))
+        l_counter = Counter()
+        for item_a in data.items():
+            for item_b in data.items():
+                if item_a == item_b: continue
+                l_counter.update([len(tag_int(item_a, item_b))])
+
+        links = lambda: ((item, l) for item in data.items() for l in data.item(item)['links']) 
+        link_card = Counter([len(tag_int(*l)) for l in links()])
+        total_link = sum(link_card.values())
+
+        p_sigma = map(lambda x: x/float(item_card*(item_card-1)), l_counter.values())
+        p_sigma_doc = map(lambda x: x/float(total_link), link_card.values())
+        p_x = sum(link_card.values())/float(item_card*(item_card-1))
+        p = lambda x: 1 - (p_sigma[tl(x)] * p_sigma_doc[tl(x)] * p_x)
+
+        return [(doc, p(doc)*delta) for doc,delta in deltas]
 
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
