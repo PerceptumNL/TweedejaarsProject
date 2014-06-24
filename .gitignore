@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 TSWLatexianTemp_*
 *.synctex.gz
+"doc/final report/Ginkels_Peters_Weerts_2ndYearProject.synctex.gz"
 *.aux
 *.nav
 *.out
