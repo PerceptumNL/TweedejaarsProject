@@ -10,25 +10,14 @@
 
 \subsection{Text vectorization}
 \subsubsection{Textvectorizer}
-\begin{itemize}
-\item Motivation: traightforward, standard approach
-\item Implementation: using bag of words and TF-IDF and adding stopwords
-\item Evaluation: is good with questions (since text has many keywords), bad in persons because person descriptions are similar. Bad at texts in different languages, cannot use images (which will become more prevalent in starfish). Quite slow. 
-\end{itemize}
+\input{chapters/2A_textvectorizer}
+
 \subsubsection{Weighted textvectorizer}
-\begin{itemize}
-\item Motivation: use more of the links in starfish
-\item Implementation
-\item Evaluation: works better than textvectorizer (find out why!!!) but still has the same problems. Quite slow but not much slower than textvectorizer. 
-\end{itemize}
+\input{chapters/2B_weightedtextvectorizer}
 
 \subsection{Tag vectorization}
 \subsubsection{Simple tag vectorizer}
-\begin{itemize}
-\item Motivation: use more starfish specific things
-\item Implementation: binary vectors
-\item Evaluation: works surprisingly well, only works bad on questions because no propper tagging, works extremely fast
-\end{itemize}
+\input{chapters/2C_simpletagvectorizer}
 
 \subsubsection{Tag smoothing}
 \begin{itemize}

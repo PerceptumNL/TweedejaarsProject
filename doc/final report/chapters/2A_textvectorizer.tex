@@ -1,0 +1,13 @@
+The first set of vectorizers focuses on the texts of the documents. The \emph{textvectorizer} is a very generic approach that can be used on any corpus of textual documents. In the StarFish context, we define 'content' as the title and text-fields of a document. The only exception on this are Persons, of which we wil use the xx and xx. 
+
+The textvectorizer makes use of a bag of words representation. If two documents cover the same subject(s), they are likely to contain similar keywords. To capture this similarity, the documents can be transformed into a list of all words that are present within that text. Instead of counting the frequency of each word within a document, the more suffisticated Term Frequency-Inversed Document Frequency value was used. TF-IDF is a statistic that reflects the importance of a word in a document within a corpus by inducing a trade off between the term frequency, the number of times a word appears in a document, and the inversed document frequency, the inverse of how often a word is used in the entire corpus, see formula xx. 
+
+\begin{align}
+\nonumber {tf}(t,d) = 0.5 + \frac{0.5 \times {f}(t, d)}{\max\{{f}(w, d):w \in d\}}\\
+\nonumber {idf}(t, D) =  \log \frac{N}{|\{d \in D: t \in d\}|}\\
+\nonumber {tfidf}(t,d,D) = {tf}(t,d) \times {idf}(t, D)
+\end{align}
+
+Thus, words that are generally common, get a lower value. The TF-IDF was calculated using an implementation of the Scikit distribution of python.  Though the TF-IDF values of words that are used very often should be low, common words such as 'and', 'or' and 'of' are still present in the vectors. This could be caused by the different types of documents. For example, a Question often structured in a less complex way than a Project description. Adding a standard English stopword list to the vectorizer improved it's performance %tell how much it was improved
+
+Table x shows the performance of the textvectorizer on the data set. It shows that of all (valid) documents, about 20\% of the links that were returned were correct. If the results are split into types of documents, it can be seen that the textvectorizer performs best in questions. This can be explained by the nature of questions: they often contain important keywords that indicate the subjects the question is about. If a document is a Person, on the other hand, only xx percent of the proposed links is correct. Table x shows a possible explanation of this phenomenon. The textvectorizer often proposes other Persons if a new document is a Person. However, within StarFish a Person is seldomly linked to another Person. This implies that a more StarFish specific approach that does make use of links is more reasonable. 
