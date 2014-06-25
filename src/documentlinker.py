@@ -44,6 +44,7 @@ class DocumentLinker(object):
             self.links = self.link_devaluation(self.data, document, self.links)
         if t_deval:
             self.links = self.tag_devaluation(self.data, document, self.links)
+        self.links = sorted(self.links, key=lambda x: x[1])
         if threshold != False:
             (self.links, x) = self.apply_threshold(self.links, threshold)
 
@@ -77,9 +78,7 @@ class DocumentLinker(object):
 
         lp = lambda x, y: link_prob[x][y]**-1
 
-        res = [(doc,d*lp(nd_type,dtype(doc))) for doc, d in deltas]
-        return sorted(res, key=lambda x: x[1])
-        return deltas
+        return  [(doc,d*lp(nd_type,dtype(doc))) for doc, d in deltas]
 
     def tag_devaluation(self, data, new_doc, deltas):
         tags = lambda x: data.item(x)['tags']
@@ -102,17 +101,21 @@ class DocumentLinker(object):
         p_sigma = map(lambda x: x/float(item_card*(item_card-1)), l_counts)
         p_sigma_doc = map(lambda x: x/float(total_link), l_cards)
         p_x = sum(link_card.values())/float(item_card*(item_card-1))
-        p = lambda x: (p_sigma[tl(x)] * p_sigma_doc[tl(x)] * p_x)**-1
+        p = lambda x: ((p_sigma[tl(x)] * p_sigma_doc[tl(x)] * p_x))**-1
 
         r = []
-
-        print(len(p_sigma_doc), len(p_sigma))
         for doc, delta in deltas:
-            print(tl(doc))
-            r.append((doc, p(doc)*delta))
-        # return [(doc, p(doc)*delta) for doc,delta in deltas]
+            if doc == new_doc['id']:
+                print("NOT DELETED")
+            try:
+                r.append((doc, p(doc)*delta))
+            except IndexError:
+                print(new_doc['id'], doc)
+                print(tags(doc))
+                print(new_doc['tags'])
+                print('-----------')
         return r
-
+        # return [(doc, p(doc)*delta) for doc,delta in deltas]
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
@@ -241,8 +244,10 @@ if __name__ == '__main__':
             help="The vectorizer to perform neares neighbors with", required=True)
     parser.add_argument('-metric', default='cosine', type=str,
             help="Distance metric for nearest neighbor, default = 'cosine'", required=True)
-    parser.add_argument('-threshold', default=0.3, type=float,
-            help="Value [0...1]", required=True)
+    parser.add_argument('-threshold', default=-1, type=float,
+            help="Value [0...1]", required=False)
     args = parser.parse_args()
 
-    run(args.vectorizer, args.metric, args.threshold)
+    threshold = False if args.threshold == -1 else args.threshold
+
+    run(args.vectorizer, args.metric, threshold)

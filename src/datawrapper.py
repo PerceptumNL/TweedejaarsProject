@@ -143,8 +143,8 @@ class DataWrapper(object):
         glossaries.
         """
         item_dicts = [] 
+        data = deepcopy(self.data)
         for item in items:
-            data = deepcopy(self.data)
             del data['items'][item]
             for k,v in data['items'].items():
                 try:
