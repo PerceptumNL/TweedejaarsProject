@@ -219,13 +219,11 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     data = DataWrapper('../data/expert_maybe_false.pickle')
     data.remove_aliased_tags()
     data.remove_invalid_links()
-    data.remove_glossaries()
 
     nlinks = [len(data.item(x)['links']) \
         for x in data.items() if len(data.item(x)['links']) > 0]
     print('\nAverage links: {0}\nNumber of documents with links: {1}'
         .format(np.mean(nlinks), len(nlinks)))
-    print('Total number of documents: {0}\n'.format(len(data.data['items'])))
 
     filename = "{0}/{1}_{2}_{3}_{4}_{5}_{6}.json".format(directory, vectorizer, \
         distancetype, thresh, l_deval, t_deval, k_link)
@@ -235,6 +233,8 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     total_recall = 0
     total_precision = 0
     for new_doc, datawrapper in data.test_data():
+        if new_doc['type'] == 'Glossary':
+            continue
 
         # First retrieve proposed links
         linker = DocumentLinker(datawrapper)
@@ -271,6 +271,7 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
 
     print('Average recall: {0}'.format(Decimal(total_recall)/c))
     print('Average precision: {0}'.format(Decimal(total_precision)/c))
+    print('Total number of documents: {0}\n'.format(c))
 
     file = open(filename, "w")
     file.write(json.dumps(docs))
