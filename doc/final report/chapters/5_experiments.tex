@@ -21,18 +21,33 @@ The k-links metric is used to evaluate the algorithms, without being influenced 
 
 The disadvantage of the k-links metric is of course that it does not take into account the certainty the algorithm has due to the distances. For example, it could be that the distance of the first two ranked documents is very small, but the distance of the third is very large. If the original document has 10 links, the system is forced to additionally return the nine documents, even though these are likely to be wrong because they have a relatively big distance. 
 
-\subsubsection{Qualitative descriptor analysis}
-Based on the precision and recall (both with threshold as with k-links) a general analysis can be performed. To get more insight into the exact reasons why one particular algorithms performs in the way it does, a qualitative analysis was performed in which the proposed document descriptors and distances for several documents were compared with the descriptors of known correct links. 
+\begin{table}
+\begin{tabular}{| l | l | l | l | l | l | l | l |}
+\hline
+ & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\bf Average} \\
+\hline
+Textvectorizer & 20.22 & 37.99 & 21.53 & 20.16 & 6.15 & 16.07 & {\bf 18.32}\\
+Weighted text vectorizer & 23.38 & 38.78 & 21.53 & 16.23 & 7.44 & 16.07 & {\bf 19.58} \\ 
+Simple tag similarity & 28.97 & 24.85 & 53.47 & 32.62 & 17.44 & 36.61 & {\bf 26.26} \\
+Tag smoothing & 25.79 & 28.36 & 53.47 & 23.97 & 13.59 & 36.61 & {\bf 23.76}\\
+Glossaries of tags & 20.68 & 23.80 & 30.56 & 27.06 & 10.51 & 55.36 & {\bf 20.03}\\
+\hline
+\end{tabular}
+\caption{Percentage of links from one type (row) to another (column) for the real links in the document base}
+\label{klink}
+\end{table}
 
 \subsection{Text-based descriptors}
-Table x shows the k-link values of the text-based descriptions: the textvectorizer and the weighted-text vectorizer. 
+Table \ref{klink} shows the k-link values of the text-based descriptions: the textvectorizer and the weighted-text vectorizer. On average, 18.32\% and 19.58\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information, questions and persons. SOME QUALITATIVE EXAMPLES ARE STILL NEEDED HERE. Though performance on Persons has improved by adding the weights, both textvectorizers have a low precision with regards to proposing links for Persons. This could by explained by the fact that about 76.36\% (not weighted) and 63.64\% (weighted) of the links for Persons are towards other Persons. However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish).
 
 Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. Figure x shows the differences of vectors of three texts when an English document is combined with an English proposed document and a Dutch proposed document. In the case of two different languages, there are less words that the two documents have in common. If important keywords entail word such as 'clickers' versus 'stemsysteem', there is no way of relating the two documents. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
 
 \subsection{Tag-based descriptors}
 
-Due to it's simplicity, the simple tag vectorizer is very fast. It's performance, as shown in table xx, is about 24\% precision. Both Question documents and Person documents perform quite bad. This can be explained by the fact that half of both Questions and Persons have zero tags. Obviously, the simple tag vectorizer cannot deal with such documents. In fact, almost all other Questions have only one tag. Since the simple tag vectorizer compares vectors, it wil prefer documents that also have only that particular tag, which makes it sensitive to attaching Questions to Questions. Something similar seems to happen with Persons, of which 45\% of the connections are with other Persons. Apparently, persons with similar expertices are tagged similarly. However, as mentioned with the tag vectorizer, in StarFish persons almost never refer to other persons. Moreover, if a document is badly labeled this can also induce problems. For example, take the question 'Is there an English version in Tentamenlade', tagged with 'ToetsenEnToetsgestuurdleren'. The proposed links are visible in table xx, which shows that  the three proposed questions all have the tag 'ToetsEnToetsGestuudLeren'. However, if the question was tagged with the tag 'Tentamenlade', which seems very reasonable given the proposed question, the false negatives would likely be returned correctly by the system. Good practices, events and projects perform significantly better with 75,6\%, 73,0\% and 35,8\%. These are often thoroughly tagged, as shown by document xx, which has a rich set of tags. However, these document types only entail 3.2\%, 2.7\% and 5.4\% of the total amount of documents respectively, which explains why the total performance is still stuck at 24.8\%. 
+\subsubsection{Simple tag similarity vectorizer}
+The performance of the simple tag similarity vectorizer, as shown in table \ref{klink} together with the other tag vectorizers, is about 26\% precision when measuring k-link. The unraveling per document type shows that Question documents and Person documents perform the least. This can be explained by the fact that half of both Questions and Persons have zero tags. Obviously, the simple tag vectorizer cannot deal with such documents. In fact, almost all other Questions have only one tag. Since the simple tag vectorizer compares vectors, it wil prefer documents that also have only that particular tag, which makes it sensitive to attaching Questions to Questions. Something similar seems to happen with Persons, of which 50.91\% of the connections are with other Persons. Apparently, persons with similar expertices are tagged similarly. However, as mentioned with the text vectorizer, in Starfish persons almost never refer to other persons. Moreover, if a document is badly labeled this can also induce problems. For example, take the question 'Is there an English version in Tentamenlade', tagged with 'ToetsenEnToetsgestuurdleren'. The proposed links are visible in table \ref{proposed}, which shows that  the three proposed questions all have the tag 'ToetsEnToetsGestuudLeren'. However, if the question was tagged with the tag 'Tentamenlade', which seems very reasonable given the proposed question, the false negatives would likely be returned correctly by the system. Good practices, events and projects perform better, but these document types only entail 3.2\%, 2.7\% and 5.4\% of the total amount of documents respectively so have less influence on the average precision.
 
+\begin{table}
 \begin{lstlisting}
 False Positives:
 - Wat is het verschil tussen Learning Analytics en TTL (Question)
@@ -47,13 +62,36 @@ False Negatives:
 - Hoe kan ik inloggen in Tentamenlade? (Question)
 - Hoe kan ik inloggen in Tentamenlade? (Question)
 \end{lstlisting}
+\caption{Proposed links for the question 'Is there an English version in Tentamenlade?'}
+\label{proposed}
+\end{table}
 
-Evaluation in cijfers hier
+\subsubsection{Tag smoothing}
+The performance of the simple tag vectorizer, as shown in table \ref{klink}, is quite similar with the results of the tag similarity. It performs worse on the information, but better on questions. EXAMPLE THAT EXPLAINS WHY. It also performs worse on Persons. EXAMPLE THAT EXPLAINS WHY. 
 
 In the current implementation this vectorizer is relatively slow. In practice the similarity matrix can be pre calculated and updated in batches. Due to the transform on the tag similartity matrix, it is very hard to determine which tag occurrences contributed to the document similarity and why some recommendations are made. It does not seem to perform much better than the regular bag of words tag descriptor, in \citeauthor{zhou2011web} the algorithm only starts performing significantly better when it is presented with more tags.
 
+\subsubsection{Glossaries of tags}
+To be continued.
+
 \subsection{Bayesean weighting}
-Table xx shows the performance of each of the vectorizers (all with cosine distance) while applying the tag and link devaluation using the k-link metric. It shows that the performance of all algorithms drastically decreases when the probabilities are used to re-rank the documents. Table \ref{bayes_table1}  shows the distribution of links in the vectorizer that performed best, the simple tag similarity vectorizer, with and without the probabilities (all based on k-link measuring). It is clear that the links with probabilties have a sharper distribution: the sparseness of the table shows that many types of links do not even exist. This effect could be caused by overfitting - the data set could be too small to calculate reliable probabilities. The distributions with and without probabilities can be compared with the original distribution of links in the current Starfish knowledge base, as shown in table \ref{bayes_table2}. 
+\begin{table}
+\begin{tabular}{| l | l | l | l | l | l | l | l |}
+\hline
+ & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\bf Average} \\
+\hline
+Textvectorizer & 3.68 & 11.23 & 0.00 & 0.00 & 0.51 & 0.00 & {\bf 3.21}\\
+Weighted text vectorizer & 3.60 & 11.23 & 0.00 & 0.00 & 0.51 & 0.00 & {\bf 3.19} \\ 
+Simple tag similarity & 4.56 & 20.24 & 15.55 & 0 & 0.51 & 25.00 & {\bf 6.70}\\
+Tag smoothing & 4.69 & 18.48 & 33.33 & 0.00 & 0.51 & 0.00 & {\bf 6.46}\\
+Glossaries of tags & 5.35 & 20.24 & 0.00 & 3.93 & 8.21 & 25.00 & {\bf 9.02}\\
+\hline
+\end{tabular}
+\caption{Percentage correct links per vectorizer per document type after a k-link measurement}
+\label{bayes_table1}
+\end{table}
+
+Table \ref{bayes_table1} shows the performance of each of the vectorizers (all with cosine distance) while applying the tag and link devaluation using the k-link metric. It shows that the performance of all algorithms drastically decreases when the probabilities are used to re-rank the documents. Table \ref{bayes_table1}  shows the distribution of links in the simple tag similarity vectorizer, with and without the probabilities (all based on k-link measuring). It is clear that the links with probabilties have a sharper distribution: the sparseness of the table shows that many types of links do not even exist. This effect could be caused by overfitting - the data set could be too small to calculate reliable probabilities. The distributions with and without probabilities can be compared with the original distribution of links in the current Starfish knowledge base, as shown in table \ref{bayes_table2}. 
 
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | }
@@ -85,7 +123,7 @@ Table xx shows the performance of each of the vectorizers (all with cosine dista
 \end{tabular}
 
 \caption{Percentage of links from one type (row) to another (column) for simple\_tag\_vectorizer with tag and link devaluation (above) and without (below), measured using k-link. The rows sum up to 100\%.}
-\label{bayes_table1}
+\label{bayes_table2}
 \end{table}
 
 \begin{table}
@@ -102,7 +140,7 @@ Table xx shows the performance of each of the vectorizers (all with cosine dista
 \hline
 \end{tabular}
 \caption{Percentage of links from one type (row) to another (column) for the real links in the document base}
-\label{bayes_table2}
+\label{bayes_table3}
 \end{table}
 
 Figure \ref{distribution} gives insight into the reason why the probabilities do not improve the performance. The figure shows a histogram of the percentage of documents that have a certain probability. The left side shows the distribution for the tag probabilities, where the red bars represent incorrect links and the green bars show the correct ones. One would expect that a higher percentage of correct links would be on the righthand side of the histogram, since these should have a higher probability. However, this is clearly not the case. On the contrary, about 75\% of the incorrect links have a chance of 0.0014, the highest probability. The link probability, shown on the right hand side of the figure, is a bit more promising since the incorrect links are a bit higher on the left hand side of the histogram. However, there is still no clear difference in distribution. 
