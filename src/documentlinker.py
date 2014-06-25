@@ -216,7 +216,7 @@ class DocumentLinker(object):
         return doc 
 
 def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
-    data = DataWrapper('../data/expert_maybe_true.pickle')
+    data = DataWrapper('../data/expert_maybe_false.pickle')
     data.remove_aliased_tags()
     data.remove_invalid_links()
     data.remove_glossaries()

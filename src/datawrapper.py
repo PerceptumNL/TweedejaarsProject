@@ -196,7 +196,7 @@ class DataWrapper(object):
             del data['items'][item]
             for k,v in data['items'].items():
                 try:
-                    v['links'].remove(item)
+                    v['links'] = [x for x in v['links'] if x != item]
                 except ValueError:
                     pass
             item_dict = self.item(item)
