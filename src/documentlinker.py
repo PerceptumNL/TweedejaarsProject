@@ -9,6 +9,7 @@ import argparse
 import pkgutil
 from decimal import *
 import prob
+import os
 from collections import Counter
 
 class DocumentLinker(object):
@@ -213,11 +214,13 @@ class DocumentLinker(object):
         doc = {'type': self.document['type'], 'id': self.document['id'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
-def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link):
+def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     data = DataWrapper('../data/export_starfish_tjp_12jun.pickle')
     data.remove_aliased_tags()
     data.remove_invalid_links()
-    filename = "../data/{0}_{1}_{2}_{3}_{4}.json".format(vectorizer, distancetype, thresh, l_deval, t_deval)
+
+    filename = "..{0}/{1}_{2}_{3}_{4}_{5}_{6}.json".format(directory, vectorizer, \
+        distancetype, thresh, l_deval, t_deval, k_link)
 
     c = 0
     docs = {}
@@ -265,11 +268,24 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link):
     file.write(json.dumps(docs))
     file.close()
 
+class valid_dir(argparse.Action):
+    def __call__(self,parser, namespace, values, option_string=None):
+        prospective_dir = values
+        if not os.path.isdir(prospective_dir):
+            raise argparse.ArgumentTypeError("Invalid directory: {0} is not a valid path".format(prospective_dir))
+        if os.access(prospective_dir, os.R_OK):
+            setattr(namespace,self.dest,prospective_dir)
+        else:
+            raise argparse.ArgumentTypeError("Invalid directory: {0} is not a readable dir".format(prospective_dir))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Recommend links for starfish objects.")
     vectorizer_names = [name for _, name, _ in pkgutil.iter_modules(['vectorizers'])]
     parser.add_argument('-vectorizer', default=None, type=str, choices=vectorizer_names,
             help="The vectorizer to perform neares neighbors with", required=True)
+    parser.add_argument('-directory', default='../data', action=valid_dir,
+            help="Give the name of the directory the files should be saved to, default is '../data'",\
+            required=False)
     parser.add_argument('-metric', default='cosine', type=str,
             help="Distance metric for nearest neighbor, default = 'cosine'", required=True)
     parser.add_argument('-link_devaluation', action='store_true', 
@@ -288,4 +304,5 @@ if __name__ == '__main__':
 
     threshold = False if args.threshold == -1 else args.threshold
 
-    run(args.vectorizer, args.metric, threshold, args.link_devaluation, args.tag_devaluation, args.k_link)
+    run(args.vectorizer, args.metric, threshold, args.link_devaluation, \
+        args.tag_devaluation, args.k_link, args.directory)
