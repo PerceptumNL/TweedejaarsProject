@@ -4,25 +4,24 @@
 
 \section{Introduction}
 
-This report describes the results of the Second Year's project of the Perceptum team. The project focused on creating a \emph{document link recommender system} to the StarFish website. 
+This report describes the results of the Second Year's project for the Perceptum team. The project focused on creating a \emph{document link recommender system} to the Starfish website. 
 
-StarFish, one of the projects of Perceptum, is a website that aims to share knowledge about the education domain by means of a connected graph. People from all around the world should get access to this knowledge graph in a simple, personalized manner. The nodes in this graph are documents and they are connected with links. These documents can be of all sorts of types - e.g. a good pratice, information, a question. Each document has a set of tags assoicated with it, which describe the different aspects of educational innovation. StarFish is community-driven: both the content of the documents as the links between documents are determined by the users of StarFish. 
+Starfish, one of the products of Perceptum, is a website that aims to share knowledge about the education domain by means of a connected graph. People from all around the world should get access to this knowledge graph in a simple, personalized manner. The nodes in this graph are documents and they are connected with links. These documents can be of all sorts of types - e.g. a good practice, information, a question. Each document has a set of tags associated with it, which describe the different aspects of educational innovation. Starfish is community-driven: both the content of the documents as the links between documents are determined by the users of Starfish. The drawback of a community-driven knowledge graph is that not all the users have complete knowledge the entire document base. Therefore, many links will not be made because the users are unaware of the documents that they could link to. A possible solution could be to make use of administrators, which can devote more time in getting to know all the documents. However, that approach has two main drawbacks. First of all, this would mean that some central authority determines whether or not two documents should be linked. This is not in line with the idea of a community-driven knowledge base. Secondly, if the knowledge base grows even further, it becomes impossible for an administrator to keep track of all documents. Imagine one person having to link all pages on Wikipedia - an impossible job. 
 
-The drawback of a community driven knowledge graph is that not all the users know the entire document base. Especially when the knowledge base grows it becomes impossible for a user, since one does not know the existence of one or more linkable documents. A possible solution could be to make use of administrators, which can devote more time in getting to know all the documents, but that approach has two main drawbacks. First of all, this would mean that some central authority determines whether or not two documents should be linked. This is not in line with the idea of a community-driven knowledge base. Secondly, if the knowledge base grows even further, it becomes impossible also for an administrator to keep track of all documents. Imagine one person having to link all pages on Wikipedia - an impossible job. 
-
-In order to overcome the problem of linking documents in a large knowledge base, this process should be automated. This project therefore focuses on automating making the connections between documents. Though ideally these connections should be made completely automatic, a first step would be to create a recommendation system. When a user adds a new document, he or she can choose from a list of proposed documents the documents he or she deems relevant. This means that the recommendor system does not have to work perfect, but should work reasonably well enough. Defining 'well enough', however, is also a part of this project. Thus, the product vision of the system can be described in the following concise way:
+In order to overcome the problem of linking documents in a large knowledge base, this process should be automated. This project focuses on the automatization of connecting documents within Starfish. Though ideally these connections should be made completely automatic, a first step would be to create a recommendation system. When a user adds a new document, he or she can choose from a list of proposed documents the documents he or she deems relevant. This means that the recommender system does not have to work perfect, but should work reasonably well enough. Defining 'well enough', however, is also a part of this project. Thus, the product vision of the system can be described by the following:
 
 \begin{shaded}
-\textbf{{\large Product vision:}} \vspace{0.5\baselineskip} \hrule
-	\begin{description}
- 		\item[For] StarFish users
- 		\item[who] search for and edit knowledge in starfish
- 		\item[the] starfish document linker 
- 		\item[is] a starfish core system addition
- 		\item[that] finds related documents
- 		\item[unlike] moderated or individual linking
- 		\item[our] product uses algorithms and data to suggest document links 
-	\end{description}
+\textbf{{\large Product vision:}} \vspace{0.4\baselineskip} \hrule
+ 	\begin{tabular}{ll}
+ 		& \\
+ 		{\bf For} & Starfish users \\
+ 		{\bf who} & search for and edit knowledge in starfish\\
+ 		{\bf the} & starfish document linker \\
+ 		{\bf is} & a starfish core system addition\\
+ 		{\bf that} & finds related documents\\
+ 		{\bf unlike} & moderated or individual linking\\
+ 		{\bf our} & product uses algorithms and data to suggest document links 
+	\end{tabular}
 \end{shaded}
 
 

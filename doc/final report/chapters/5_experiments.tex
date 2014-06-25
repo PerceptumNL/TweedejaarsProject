@@ -1,0 +1,26 @@
+\section{Experiments}
+\subsubsection{Text-based approach limitations}
+Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. Figure x shows the vectors of three texts when an English text is used, combined with an English proposed document and a Dutch proposed document. The English and Dutch vectors have only little words in common - luckily the keywords are in this case English, but if they are not this is a problem that cannot be overcome by simply looking at texts. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
+
+\subsection{Tag vectorizers}
+
+Due to it's simplicity, the simple tag vectorizer is very fast. It's performance, as shown in table xx, is about 24\% precision. Both Question documents and Person documents perform quite bad. This can be explained by the fact that half of both Questions and Persons have zero tags. Obviously, the simple tag vectorizer cannot deal with such documents. In fact, almost all other Questions have only one tag. Since the simple tag vectorizer compares vectors, it wil prefer documents that also have only that particular tag, which makes it sensitive to attaching Questions to Questions. Something similar seems to happen with Persons, of which 45\% of the connections are with other Persons. Apparently, persons with similar expertices are tagged similarly. However, as mentioned with the tag vectorizer, in StarFish persons almost never refer to other persons. Moreover, if a document is badly labeled this can also induce problems. For example, take the question 'Is there an English version in Tentamenlade', tagged with 'ToetsenEnToetsgestuurdleren'. The proposed links are visible in table xx, which shows that  the three proposed questions all have the tag 'ToetsEnToetsGestuudLeren'. However, if the question was tagged with the tag 'Tentamenlade', which seems very reasonable given the proposed question, the false negatives would likely be returned correctly by the system. Good practices, events and projects perform significantly better with 75,6\%, 73,0\% and 35,8\%. These are often thoroughly tagged, as shown by document xx, which has a rich set of tags. However, these document types only entail 3.2\%, 2.7\% and 5.4\% of the total amount of documents respectively, which explains why the total performance is still stuck at 24.8\%. 
+
+\begin{lstlisting}
+False Positives:
+- Wat is het verschil tussen Learning Analytics en TTL (Question)
+- Formatieve meerkeuze toetsen om begin kennisniveau te toetsen (Good Practice)
+- De toetscyclus (Information)
+
+True Positives:
+- Tentamenlade2.5 (Project)
+
+False Negatives:
+- Tentamenlade Natuurkunde (Information)
+- Hoe kan ik inloggen in Tentamenlade? (Question)
+- Hoe kan ik inloggen in Tentamenlade? (Question)
+\end{lstlisting}
+
+Evaluation in cijfers hier
+
+In the current implementation this vectorizer is relatively slow. In practice the similarity matrix can be pre calculated and updated in batches. Due to the transform on the tag similartity matrix, it is very hard to determine which tag occurrences contributed to the document similarity and why some recommendations are made. It does not seem to perform much better than the regular bag of words tag descriptor, in \citeauthor{zhou2011web} the algorithm only starts performing significantly better when it is presented with more tags.
