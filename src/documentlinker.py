@@ -75,7 +75,7 @@ class DocumentLinker(object):
         dtype = lambda x: data.item(x)['type']
         dtags = lambda x: set(data.item(x)['tags']).intersection(new_doc_tags)
 
-        lp = lambda x, y: 1-link_prob[x][y]
+        lp = lambda x, y: link_prob[x][y]**-1
 
         res = [(doc,d*lp(nd_type,dtype(doc))) for doc, d in deltas]
         return sorted(res, key=lambda x: x[1])
@@ -97,12 +97,21 @@ class DocumentLinker(object):
         link_card = Counter([len(tag_int(*l)) for l in links()])
         total_link = sum(link_card.values())
 
-        p_sigma = map(lambda x: x/float(item_card*(item_card-1)), l_counter.values())
-        p_sigma_doc = map(lambda x: x/float(total_link), link_card.values())
+        l_counts = [l_counter[x] + 1 for x in range(0,11)]
+        l_cards = [link_card[x] + 1 for x in range(0,11)]
+        p_sigma = map(lambda x: x/float(item_card*(item_card-1)), l_counts)
+        p_sigma_doc = map(lambda x: x/float(total_link), l_cards)
         p_x = sum(link_card.values())/float(item_card*(item_card-1))
-        p = lambda x: 1 - (p_sigma[tl(x)] * p_sigma_doc[tl(x)] * p_x)
+        p = lambda x: (p_sigma[tl(x)] * p_sigma_doc[tl(x)] * p_x)**-1
 
-        return [(doc, p(doc)*delta) for doc,delta in deltas]
+        r = []
+
+        print(len(p_sigma_doc), len(p_sigma))
+        for doc, delta in deltas:
+            print(tl(doc))
+            r.append((doc, p(doc)*delta))
+        # return [(doc, p(doc)*delta) for doc,delta in deltas]
+        return r
 
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
