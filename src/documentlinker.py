@@ -10,6 +10,7 @@ import pkgutil
 from decimal import *
 import prob
 import os
+import numpy as np
 from collections import Counter
 
 class DocumentLinker(object):
@@ -218,8 +219,15 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     data = DataWrapper('../data/export_starfish_tjp_12jun.pickle')
     data.remove_aliased_tags()
     data.remove_invalid_links()
+    data.remove_glossaries()
 
-    filename = "..{0}/{1}_{2}_{3}_{4}_{5}_{6}.json".format(directory, vectorizer, \
+    nlinks = [len(data.item(x)['links']) \
+        for x in data.items() if len(data.item(x)['links']) > 0]
+    print('\nAverage links: {0}\nNumber of documents with links: {1}'
+        .format(np.mean(nlinks), len(nlinks)))
+    print('Total number of documents: {0}\n'.format(len(data.data['items'])))
+
+    filename = "{0}/{1}_{2}_{3}_{4}_{5}_{6}.json".format(directory, vectorizer, \
         distancetype, thresh, l_deval, t_deval, k_link)
 
     c = 0

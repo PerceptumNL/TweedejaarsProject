@@ -44,6 +44,12 @@ class DataWrapper(object):
             if tag_dic['alias_of'] is not None and tag != tag_dic['alias_of']:
                 del_tags.append(tag)
         for tag in del_tags: del self.data['tags'][tag]
+    def remove_glossaries(self):
+        data = deepcopy(self.data)
+        for k,v in self.data['items'].items():
+            if v['type'] == 'Glossary':
+                del data['items'][k]
+        self.data = data
 
     def ignore(self, item, item_id, link_id):
         """ 
