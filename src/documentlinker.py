@@ -28,7 +28,7 @@ class DocumentLinker(object):
         """
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
-        a distance measure can be given.
+        a distance measure can be given. If threshold = false, auto threshold
         """
         try:
             vectorizer = getattr(__import__('vectorizers.' + vtype), vtype)
@@ -44,9 +44,9 @@ class DocumentLinker(object):
             self.links = self.link_devaluation(self.data, document, self.links)
         if t_deval:
             self.links = self.tag_devaluation(self.data, document, self.links)
-        
-        (self.links, x) = self.apply_threshold(self.links, threshold)
-        
+        if threshold != False:
+            (self.links, x) = self.apply_threshold(self.links, threshold)
+
         return self.links
         
     def apply_threshold(self, links, threshold):
@@ -190,7 +190,8 @@ def run(vectorizer, distancetype, thresh):
 
     c = 0
     docs = {}
-    percentage = 0
+    total_recall = 0
+    total_precision = 0
     for new_doc, datawrapper in data.test_data():
         linker = DocumentLinker(datawrapper)
         linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype, threshold=thresh)
@@ -201,16 +202,25 @@ def run(vectorizer, distancetype, thresh):
         for link in linker.links:
             if(link[0] in new_doc['links']):
                 correct += 1
-        if(len(new_doc['links']) > 0):
-            percentage_correct = Decimal(correct)/len(new_doc['links'])
+        if(len(linker.links) > 0):
+            precision = Decimal(correct)/len(linker.links)
         else:
-            percentage_correct = 0
+            precision = 0
+        if(len(new_doc['links']) > 0):
+            recall = Decimal(correct)/len(new_doc['links'])
+        else:
+            recall = 0
             print('No links')
             c -= 1
-        percentage += percentage_correct
-        print('Percentage correct: {0}'.format(percentage_correct))
+        total_recall += recall
+        total_precision += precision
+        print('Document {0}'.format(new_doc['id']))
+        print('Recall: {0}'.format(recall))
+        print('Precision: {0}'.format(precision))
 
-    print('Average percentage correct: {0}'.format(Decimal(percentage)/c))
+    print('Average recall: {0}'.format(Decimal(total_recall)/c))
+    print('Average precision: {0}'.format(Decimal(total_precision)/c))
+
     file = open(filename, "w")
     file.write(json.dumps(docs))
     file.close()
