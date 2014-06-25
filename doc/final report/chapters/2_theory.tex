@@ -1,8 +1,6 @@
 \section{Theory}
 
-In solving the linking problem, one must find a way to compare different documents based on their linkability with a newly added documents. Computationally, this can be done by creating document descriptors - vectors that the describe the features of a document in some way. This opens the path for three major research directions. The first two are a text-based and tag-based approach towards creating document descriptors. Thirdly, the known distribution of links between document types within the current Starfish knowledge base can be used to determine the prior probability of proposed documents. These three directions will be discussed in the following sections. 
-
-\subsection{Graphs}
+In solving the linking problem, one must find a way to compare different documents based on their linkability with a newly added documents. Computationally, this can be done by creating document descriptors - vectors that the describe the features of a document in some way. Given the Starfish domain, this can be done in a tag-based and text-based approach towards creating document descriptors. This section wil elaborate the background of the descriptor-based approach. 
 
 \subsection{Text-based descriptors: bag of words and TF-IDF}
 One way of capturing the semantic similarity of two text document is by comparing the TF-IDF values of their contents. If two documents cover the same subject(s), they are likely to contain similar keywords. To capture this similarity, the documents can be transformed into a list of all words that are present within that text. This is called a bag-of-words representation. Instead of counting the frequency of each word within a document, the more sophisticated Term Frequency-Inversed Document Frequency value can be used. TF-IDF is a statistic that reflects the importance of a word in a document within a corpus and can be calculated as follows:
@@ -17,8 +15,3 @@ The TF-IDF induces a trade off between the term frequency, the number of times a
 
 \subsection{Nearest Neighbor and distance metrics}
 The 
-
-
-
-\subsection{Document descriptors and Nearest Neighbor}
-Once the document descriptors have been created
