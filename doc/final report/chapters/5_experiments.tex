@@ -74,7 +74,7 @@ In the current implementation this vectorizer is relatively slow. In practice th
 \subsubsection{Glossaries of tags}
 To be continued.
 
-\subsection{Bayesean weighting}
+\subsection{Bayesian weighting}
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | l |}
 \hline
@@ -91,7 +91,7 @@ Glossaries of tags & 5.35 & 20.24 & 0.00 & 3.93 & 8.21 & 25.00 & {\bf 9.02}\\
 \label{bayes_table1}
 \end{table}
 
-Table \ref{bayes_table1} shows the performance of each of the vectorizers (all with cosine distance) while applying the tag and link devaluation using the k-link metric. It shows that the performance of all algorithms drastically decreases when the probabilities are used to re-rank the documents. Table \ref{bayes_table1}  shows the distribution of links in the simple tag similarity vectorizer, with and without the probabilities (all based on k-link measuring). It is clear that the links with probabilties have a sharper distribution: the sparseness of the table shows that many types of links do not even exist. This effect could be caused by overfitting - the data set could be too small to calculate reliable probabilities. The distributions with and without probabilities can be compared with the original distribution of links in the current Starfish knowledge base, as shown in table \ref{bayes_table2}. 
+Table \ref{bayes_table1} shows the performance of each of the vectorizers (all with cosine distance) while applying the tag and link devaluation using the k-link metric. It shows that the performance of all algorithms drastically decreases when the probabilities are used to re-rank the documents. Table \ref{bayes_table1}  shows the distribution of links in the simple tag similarity vectorizer, with and without the probabilities (all based on k-link measuring). It is clear that the links with probabilties have a sharper distribution: the sparseness of the table shows that many types of links do not even exist. This effect could be caused by overfitting - the data set could be too small to calculate reliable probabilities. The prefered effect of having no Persons link to other Persons was done correctly. However, Good Pratices, for example, are now only assigned to be a person. The vectorizer without probabilities has a distribution that seems to be more reliable for these types of documents. The distributions with and without probabilities can be compared with the original distribution of links in the current Starfish knowledge base, as shown in table \ref{bayes_table2}.  
 
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | }
@@ -113,12 +113,12 @@ Table \ref{bayes_table1} shows the performance of each of the vectorizers (all w
 \hline
  & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{\bf Person }& {\bf Event} \\
 \hline
-{\bf Information} &  39.86 & 8.39 &4.20 &5.59 &37.76 &4.20\\
-{\bf Question} & 19.72 &25.35 &12.68 &12.68 &23.94 &5.63\\
-{\bf Good Practice} & 25.00 & 17.86 & 7.14 & 10.71 & 25.00 & 14.29 \\
-{\bf Project } & 23.91 & 10.87 & 4.35 & 19.57 & 30.43 & 10.87 \\
-{\bf Person} & 69.64 & 8.93 & 1.79 & 8.93 & 1.79 & 8.93 \\
-{\bf Event }& 28.57 & 0.00 & 14.29 & 9.52 & 33.33 & 14.29\\
+{\bf Information} &  34.35 &6.87 &4.58 &6.11 &41.98 &6.11 \\
+{\bf Question} & 12.07 & 27.59 & 13.79 & 3.45 & 43.10 & 0.00\\
+{\bf Good Practice} & 34.78 &8.70 &17.39 &8.70 &17.39 &13.04\\
+{\bf Project } & 25.00 &12.50 &5.00 &12.50 &32.50 &12.50 \\
+{\bf Person} & 30.91 &7.27 &3.64 &1.82 &50.91 &5.45 \\
+{\bf Event }& 35.29 & 0.00 & 11.76 & 23.53 & 17.64 & 11.76\\
 \hline
 \end{tabular}
 
@@ -131,12 +131,12 @@ Table \ref{bayes_table1} shows the performance of each of the vectorizers (all w
 \hline
  & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{\bf Person }& {\bf Event} \\
 \hline
-{\bf Information} &  18.99 & 5.04 & 1.94 & 3.10 & 68.60 & 2.33 \\
-{\bf Question} & 14.00 & 23.00 & 6.00 & 7.00 & 50.00 & 0.00 \\
-{\bf Good Practice} & 11.11 & 8.89 & 4.44 & 4.44 & 64.44 & 6.67 \\
-{\bf Project }& 12.50 & 7.50 & 2.50 & 7.50 & 65.00 & 5.00 \\
-{\bf Person} & 85.19 & 3.70 & 0.93 & 4.63 & 0.93 & 4.63 \\
-{\bf Event }& 28.12 & 0.00 & 9.38 & 3.13 & 59.38 & 0.00 \\
+{\bf Information} &  39.86 & 8.39 &4.20 &5.59 &37.76 &4.20\\
+{\bf Question} & 19.72 &25.35 &12.68 &12.68 &23.94 &5.63\\
+{\bf Good Practice} & 25.00 & 17.86 & 7.14 & 10.71 & 25.00 & 14.29 \\
+{\bf Project } & 23.91 & 10.87 & 4.35 & 19.57 & 30.43 & 10.87 \\
+{\bf Person} & 69.64 & 8.93 & 1.79 & 8.93 & 1.79 & 8.93 \\
+{\bf Event }& 28.57 & 0.00 & 14.29 & 9.52 & 33.33 & 14.29\\
 \hline
 \end{tabular}
 \caption{Percentage of links from one type (row) to another (column) for the real links in the document base}
