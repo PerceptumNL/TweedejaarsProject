@@ -44,4 +44,16 @@ Short description of how these were implemented
 Explain motivation, theory and implementation 
 
 \subsection{Thresholds}
+In figure~\ref{fig:thresholds} the distances for nearby documents we recommend can be viewed. It is clear that different vecotrizers return different curves of increase of distance. The lines for documents with zero links do not seem to follow a specific pattern, the lines for documents with more links are better clustered. 
+
+
+\begin{figure}[h]
+\subfigure[Weighted tags]{	\includegraphics[width =0.45\textwidth]{images/threshold_weighted_tag} }
+\subfigure[text]{	\includegraphics[width =0.45\textwidth]{images/threshold_text} }
+\subfigure[tag smoothing]{	\includegraphics[width =0.45\textwidth]{images/threshold_smoothing} }
+\subfigure[glossaries]{	\includegraphics[width =0.45\textwidth]{images/threshold_glossary} }
+\caption{The blue purple gradient represents documents with 0 links (blue) to >10 links (purple)}
+\label{fig:thresholds}
+\end{figure}
+
 Explan motivation, theory and implementation
