@@ -1,19 +1,14 @@
 \section{Method}
 
+\subsection{Data preprocessing}
+Bla.
+
 \subsection{Text vectorization}
 \subsubsection{Textvectorizer}
 
-The first set of vectorizers focuses on the texts of the documents. The \emph{textvectorizer} is a very generic approach that can be used on any corpus of textual documents. In the StarFish context, we define 'content' as the title and text-fields of a document. The only exception on this are Persons, of which we wil use the xx and xx. 
+The first set of vectorizers focuses on the texts of the documents. The \emph{textvectorizer} is a very generic approach that can be used on any corpus of textual documents. In the StarFish context, we define 'content' as the title and text-fields of a document. The only exception on this are Persons, of which we wil use the name and about-fields. 
 
-The textvectorizer makes use of a bag of words representation. If two documents cover the same subject(s), they are likely to contain similar keywords. To capture this similarity, the documents can be transformed into a list of all words that are present within that text. Instead of counting the frequency of each word within a document, the more sophisticated Term Frequency-Inversed Document Frequency value was used. TF-IDF is a statistic that reflects the importance of a word in a document within a corpus by inducing a trade off between the term frequency, the number of times a word appears in a document, and the inverse document frequency, the inverse of how often a word is used in the entire corpus, see formula xx. 
-
-\begin{align}
-\nonumber {tf}(t,d) = 0.5 + \frac{0.5 \times {f}(t, d)}{\max\{{f}(w, d):w \in d\}}\\
-\nonumber {idf}(t, D) =  \log \frac{N}{|\{d \in D: t \in d\}|}\\
-\nonumber {tfidf}(t,d,D) = {tf}(t,d) \times {idf}(t, D)
-\end{align}
-
-Thus, words that are generally common, get a lower value. The TF-IDF was calculated using scikit-learn \citep{scikit-learn}.  Though the TF-IDF values of words that are used very often should be low, common words such as 'and', 'or' and 'of' are still present in the vectors. This could be caused by the different types of documents. For example, a Question often structured in a less complex way than a Project description. Adding a standard English stopword list to the vectorizer improved it's performance %tell how much it was improved
+The textvectorizer first transforms the set of documents into a bag of words and calculates the TF-IDF values for all words. This was done using the TFIDFVectorizer of scikitlearn \citep{scikit-learn}.  Though the TF-IDF values of words that are used very often should be low, common words such as 'and', 'or' and 'of' are still present in the vectors. This could be caused by the different types of documents. For example, a Question often structured in a less complex way than a Project description. To prevent this from happening, the English stopword list that comes standard with scikit learn was used to remove these words from the document descriptors.
 
 \subsubsection{Weighted textvectorizer}
 The weighted text vectorizer is an extension of the textvectorizer that takes into account the links of the proposed documents. The vectors of the links of a document are added with some weight to the vectors of the documents themselves. Intuitively, this would add semantic information about a document based on it's links. For example, a Person is likely to write other documents about his or her subjects of expertise. Knowing not only the biography of a Person, but also the content he or she has added to StarFish, gives a more complete image of what documents could be related to that Person.
@@ -22,9 +17,7 @@ The vectors of links of a document are added in a recursive way, where documents
 
 \subsection{Tag vectorization}
 \subsubsection{Simple tag vectorizer}
-The tag-based approach is more StarFish specific than the text-based approach, since it depends on the tags that are available in StarFish. The tags on StarFish are added by the users themselves, so offer a human-based vision on what a document is really about. 
-
-The simple tag vectorizer is a very straight forward implementation of the idea of using tags. The vectors of this transformation consist of a binary list that tells whether or not a tag is attached to the document. 
+The tag-based approach is more StarFish specific than the text-based approach, since it depends on the tags that are available in StarFish. The tags on StarFish are added by the users themselves, so offer a human-based vision on what a document is really about. The simple tag vectorizer is a very straight forward implementation of the idea of using tags. The vectors of this transformation consist of a binary list that tells whether or not a tag is attached to the document. 
 
 \subsubsection{Tag smoothing}
 The tag smoothing vectorizers creates descriptors based on the tag set of a document. A tag co-occurs with other tags in a document, we assume documents with similar tags should be linked in Starfish. Let the frequency of occurrence with other tags across the dataset will form a vector for each tag. The descriptor for a document is then created by combining the occurrence vectors for all the document's tags. Now documents with tags that occur together will be seen as similar.
@@ -42,20 +35,13 @@ s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 \begin{itemize}
 \item Motivation: find underlying network between tags by using their glossaries
 \item Implementation: hybrid form of text and tag vectorizer
-\item Evaluation: does not work well (find out why!) 
 \end{itemize}
 
 \subsection{Distance metrics}
-\begin{itemize}
-\item Eucledian
-\item Cosine
-\item Bhattacharyya
-\item Correlation
-\item Intersection
-\end{itemize}
+Short description of how these were implemented
 
 \subsection{Bayesian weighting}
-Explain motivation, implementation and short results
+Explain motivation, theory and implementation 
 
 \subsection{Thresholds}
-Explan motivation, implementation and short results
+Explan motivation, theory and implementation
