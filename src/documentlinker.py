@@ -13,7 +13,7 @@ from collections import Counter
 
 class DocumentLinker(object):
 
-    def __init__(self, datawrapper, k=100):
+    def __init__(self, datawrapper, k=10):
         """
         Initializes the document linker. Sets up a datafile and sets the
         value for k that is used by the nearest neighbor algorithm.
@@ -24,7 +24,7 @@ class DocumentLinker(object):
         self.document = None
 
     def get_links(self, document, vtype='textvectorizer', dtype='euclidean',
-                  l_deval=True, t_deval=True, threshold = 0.3):
+                  l_deval=True, t_deval=True, threshold = 0.3, k_link = False):
         """
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
@@ -36,17 +36,36 @@ class DocumentLinker(object):
             print('Unable to load vectorizers.{0}'.format(vtype))
             sys.exit(1)
 
+        if(k_link):
+            self.k = len(self.data.data['items'])
+
         self.document = document
         data_bows, new_doc_bow = vectorizer.vectorize(self.data, document)
         self.links = self.nearest_neighbor(data_bows, new_doc_bow, self.k, dtype)
+
+        # Remove invalid links
+        self.links = self.data.remove_invalid_links_for_item(document, self.links)
+
+        maxo = max(self.links,key=lambda item:item[1])[1]
 
         if l_deval:
             self.links = self.link_devaluation(self.data, document, self.links)
         if t_deval:
             self.links = self.tag_devaluation(self.data, document, self.links)
         self.links = sorted(self.links, key=lambda x: x[1])
+
+        # Set the distances into the same range as before applying probabilities
+        maxn = max(self.links,key=lambda item:item[1])[1]
+        factor = float(maxo)/maxn
+
+        self.links = [(x[0], factor*x[1]) for x in self.links] 
+
         if threshold != False:
             (self.links, x) = self.apply_threshold(self.links, threshold)
+
+        if (k_link):
+            k = len(document['links'])
+            self.links = self.links[0:k]
 
         return self.links
         
@@ -133,8 +152,7 @@ class DocumentLinker(object):
 
     def __find_author_name(self, author_id):
         """
-        Retrieves the name of an author based on author id (should be in 
-        datawrapper maybe???)
+        Retrieves the name of an author based on author id 
         """
         if(author_id == self.document['id']):
             author = self.document['name']
@@ -165,7 +183,7 @@ class DocumentLinker(object):
         Formats a set of proposed links into a dictionary format usable for the viewer
         """
         if(not self.links):
-            print('First create links before formatting them')
+            # First create links before formatting them
             return False
         nlinks = {}
         links = [i[0] for i in self.links]
@@ -195,18 +213,22 @@ class DocumentLinker(object):
         doc = {'type': self.document['type'], 'id': self.document['id'], 'links': nlinks, 'title': title, 'content': content, 'author': author, 'tags': self.document['tags']}
         return doc 
 
-def run(vectorizer, distancetype, thresh):
+def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link):
     data = DataWrapper('../data/export_starfish_tjp_12jun.pickle')
     data.remove_aliased_tags()
-    filename = "../data/data_12jun/{0}_{1}.json".format(vectorizer, distancetype)
+    data.remove_invalid_links()
+    filename = "../data/{0}_{1}_{2}_{3}_{4}.json".format(vectorizer, distancetype, thresh, l_deval, t_deval)
 
     c = 0
     docs = {}
     total_recall = 0
     total_precision = 0
     for new_doc, datawrapper in data.test_data():
+
+        # First retrieve proposed links
         linker = DocumentLinker(datawrapper)
-        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype, threshold=thresh)
+        linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype, threshold=thresh, \
+            l_deval = l_deval, t_deval = t_deval, k_link = k_link)
         links = linker.formatted_links()
         docs[c] = links
         c += 1
@@ -214,21 +236,27 @@ def run(vectorizer, distancetype, thresh):
         for link in linker.links:
             if(link[0] in new_doc['links']):
                 correct += 1
+
         if(len(linker.links) > 0):
             precision = Decimal(correct)/len(linker.links)
         else:
             precision = 0
+
         if(len(new_doc['links']) > 0):
             recall = Decimal(correct)/len(new_doc['links'])
         else:
             recall = 0
-            print('No links')
+            print('Document {0}\nThere are no valid links for this document \n'\
+                .format(new_doc['id']))
             c -= 1
+            continue
+
         total_recall += recall
         total_precision += precision
-        print('Document {0}'.format(new_doc['id']))
+        print('Document {0}, proposed links: {1}, real links: {2}'.format(new_doc['id'], \
+            len(linker.links), len(new_doc['links'])))
         print('Recall: {0}'.format(recall))
-        print('Precision: {0}'.format(precision))
+        print('Precision: {0} \n'.format(precision))
 
     print('Average recall: {0}'.format(Decimal(total_recall)/c))
     print('Average precision: {0}'.format(Decimal(total_precision)/c))
@@ -244,10 +272,20 @@ if __name__ == '__main__':
             help="The vectorizer to perform neares neighbors with", required=True)
     parser.add_argument('-metric', default='cosine', type=str,
             help="Distance metric for nearest neighbor, default = 'cosine'", required=True)
-    parser.add_argument('-threshold', default=-1, type=float,
+    parser.add_argument('-link_devaluation', action='store_true', 
+            help="Give argument to activate link devaluation", required=False)
+    parser.add_argument('-tag_devaluation', action='store_true',
+            help="Give argument to activate tag devaluation", required=False)
+
+    group_ex = parser.add_mutually_exclusive_group()
+
+    group_ex.add_argument('-k_link', action='store_true',
+            help="Give argument to return number of links as in original document", required=False)
+    group_ex.add_argument('-threshold', default=-1, type=float,
             help="Value [0...1]", required=False)
+
     args = parser.parse_args()
 
     threshold = False if args.threshold == -1 else args.threshold
 
-    run(args.vectorizer, args.metric, threshold)
+    run(args.vectorizer, args.metric, threshold, args.link_devaluation, args.tag_devaluation, args.k_link)

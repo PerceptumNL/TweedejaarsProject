@@ -45,6 +45,48 @@ class DataWrapper(object):
                 del_tags.append(tag)
         for tag in del_tags: del self.data['tags'][tag]
 
+    def ignore(self, item, item_id, link_id):
+        """ 
+        Indicates whether or not a particular link is valid within the dataset.
+        Returns true if the link is invalid and should be ignored
+        """
+        link = self.item(link_id)
+
+        # Ignore if link simply is the author of the doucment
+        if (item.get('author') == link):
+            return True
+        
+        # Ignore if link is glossary 
+        if (link['type'] == 'Glossary'):
+            return True
+        
+        # Ignore if link is simply a document written by person described by document
+        if (item['type'] == 'Person' and link.get('author') == item_id):
+            return True
+        return False
+
+    def remove_invalid_links(self):
+        """
+        Removes all links within the data that are invalid due to type or authorship
+        """
+        for k,v in self.data['items'].items():
+            tempLinks = v['links'][:]
+            for link in v['links']:
+                if(self.ignore(v, k, link)):
+                    tempLinks.remove(link)
+            v['links'] = tempLinks[:]
+
+    def remove_invalid_links_for_item(self, item_dict, links):
+        """
+        Remove links from list of tuples (link, weight) that are invalid due type
+        or authorship. The document must be a dict with at least an id field. 
+        """
+        tlinks = links[:]
+        for link in links:
+            if(self.ignore(item_dict, item_dict['id'], link[0])):
+                tlinks.remove(link)
+        return tlinks 
+
     def get_alias_of_tag(self, tag):
         """
         Return the alias of a tag. If the tag has no alias the tag itself
