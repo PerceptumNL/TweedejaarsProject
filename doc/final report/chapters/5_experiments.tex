@@ -1,6 +1,31 @@
 \section{Experiments}
+\subsection{Evaluation metrics}
+In order to evalute the performance of the different algorithms, three different metrics were used. For each of these methods we hold on to the closed world assumption that if a link is not present within the given data set, it should not be a link. 
+
+\subsubsection{Precision and recall}
+Precision and recall can be calculated when the complete system pipeline is used. Precision reflects the fraction of relevant documents from all proposed documents and can thus be calculated as follows:
+
+\begin{align}
+\nonumber precision = \frac{|\;relevant\;documents \cap retrieved\;documents\;|}{|retrieved\;documents\;|}
+\end{align}
+
+Recall represents the fraction of relevant documents of all originally linked documents and can be calculated as follows:
+
+\begin{align}
+\nonumber recall = \frac{|\;relevant\;documents \cap retrieved\;documents\;|}{|\;relevant\;documents\;|}
+\end{align}
+The precision and recall can be unraveled into precesion and recall per document type to give more insight into the performance of the algorithms with regards to different document types. 
+
+\subsubsection{K-links}
+The k-links metric is used to evaluate the algorithms, without being influenced by the threshold for the number of proposed links. For a document with a given number of correct links, it proposes the same amount of links that the document is known to have. This evaluation metric thus makes the assumption that the algorithm knows in advance how many links should be returned. It is optimistic with regards to recall, since if a document is known to have many links the algorithm also returns many links. However, it could give a pessimistic view of the precision since it does not take the certainty of the algorithm into account. If only the distance of the first ranked document is very small, but the original document has 10 links, the system is forced to additionally return the nine documents that have a relatively big distance. 
+
+\subsubsection{Qualitative descriptor analysis}
+Based on the precision and recall (both with threshold as with k-links) a general analysis can be performed. To get more insight into the exact reasons why one particular algorithms performs in the way it does, a qualitative analysis was performed in which the proposed document descriptors and distances for several documents were compared with the descriptors of known correct links. 
+
 \subsection{Text-based descriptors}
 Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. Figure x shows the vectors of three texts when an English text is used, combined with an English proposed document and a Dutch proposed document. The English and Dutch vectors have only little words in common - luckily the keywords are in this case English, but if they are not this is a problem that cannot be overcome by simply looking at texts. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
+
+
 
 \subsection{Tag-based descriptors}
 
