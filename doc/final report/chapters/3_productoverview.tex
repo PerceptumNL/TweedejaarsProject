@@ -54,3 +54,6 @@ Thus, the weight of a tag within a vector is equal to the chance that given this
 
 \subsection{Threshold value}
 The next step in the pipeline is to determine how many of the nearest neighbours should be returned. Depending on the application of the Starfish document linker, the desired number might vary. If one wants to immediately link the results, the certainty for relatedness should be high. If the links are presented to a user which can approve or reject them, the relatedness may be lower. Currently, this is configurable by setting the threshold parameter between 0 and 1. Zero will only return the closest document, 1 will return almost all. After exploration of the dataset the default value is 0.3, which roughly returns the same amount of links which is currently average for Starfish.
+
+\subsection{Results}
+The document linker saves the results for a given knowledge base to a file called $<vectorizer>_<distance metric>.json$. The proposed links can be viewed by opening \emph{view.html} from a browser and selecting the preferred json file.  % Uitleg van wat het betekent

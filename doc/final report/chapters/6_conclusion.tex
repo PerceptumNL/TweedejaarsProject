@@ -1,7 +1,8 @@
 \section{Conclusion}
 \begin{itemize}
-\item Which vectorizers do not work
-\item Which vectorizers do work
-\item How well does the bayesian layer perform
-\item How well does the thresholds perform
+\item The textvectorizers are significantly better on questions, but do not perform well on persons. Additionally, there are issues with future applicability (videos, images ect.)
+\item The tagvectorizers perform much better on persons. Of all, the simple tag vectorizer surprisingly performs the best and is the fastest, so we recommend using that one, except for events where the glossaries of tags is better. 
+\item The threshold value performs ??
+\item The bayesian layer seems to make a too sharp distribution and has no promising results. There seems to be no correlation between the correct links and their probabilities. Maybe a bigger data set is needed, maybe there is really no correlation. 
+\item Main conclusion: use text vectorizer for questions and the tagvectorizers for others. The bayesian approach does not seem to have the preferred effect. The threshold value works acceptable. 
 \end{itemize}

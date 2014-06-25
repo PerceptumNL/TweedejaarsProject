@@ -106,7 +106,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
                 } else {
                     html += "<h3>"
                 }
-                html += val.title + " (" + val.type + ")</h3>"
+                html += key + " " + val.title + " (" + val.type + ")</h3>"
                 for (x in val.tags) {
                     html+= "<span>" + val.tags[x]  + "</span>"
                 }
