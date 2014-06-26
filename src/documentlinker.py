@@ -58,7 +58,10 @@ class DocumentLinker(object):
 
         # Set the distances into the same range as before applying probabilities
         maxn = max(self.links,key=lambda item:item[1])[1]
-        factor = float(maxo)/maxn
+        if maxn != 0:
+            factor = float(maxo)/maxn
+        else:
+            factor = 1
 
         self.links = [(x[0], factor*x[1]) for x in self.links] 
 
