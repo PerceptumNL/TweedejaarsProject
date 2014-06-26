@@ -66,13 +66,12 @@ def chi_square(a, b):
     return sum([((a_norm[i] - b_norm[i])**2) / a_norm[i] for i in range(0,len(a_norm))])
 
 def correlation(a,b):
-    norm_a = __norm(a)
-    norm_b = __norm(b)
-    if norm_a * norm_b == 0:
-        return 0
-    a_norm = a / __norm(a)
-    b_norm = b / __norm(b)
-    return -__dotproduct(a,b)
+    if issparse(a):
+        a = a.toarray()
+    if issparse(b):
+        b = b.toarray()
+    return np.abs(np.corrcoef(a,b)[0][1]-1)
+
 
 def intersection(a,b):
     if issparse(a):
