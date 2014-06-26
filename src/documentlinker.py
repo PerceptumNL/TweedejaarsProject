@@ -65,7 +65,7 @@ class DocumentLinker(object):
 
         self.links = [(x[0], factor*x[1]) for x in self.links] 
 
-        if threshold != False:
+        if threshold != False:            
             (self.links, x) = self.apply_threshold(self.links, threshold)
 
         if (k_link):
@@ -76,6 +76,11 @@ class DocumentLinker(object):
         
     def apply_threshold(self, links, threshold):
         closest_distance = next((x[1] for x in links if x[1] > 0), None)
+
+        if(closest_distance == None):
+            print('Ignoring this distance')
+            return([],[])
+
         l1 = []
         l2 = []
         for i, (link, x) in enumerate(links):
@@ -277,6 +282,11 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
                 .format(new_doc['id']))
             c -= 1
             continue
+
+        print('Returned links: {0}'.format(len(linker.links)))
+        print('Correct links: {0}'.format(correct))
+        print('False links: {0}'.format(len(linker.links) - correct))
+        print('Number of known links: {0}'.format(len(new_doc['links'])))
 
         # Save precision and recall
         total_recall += recall

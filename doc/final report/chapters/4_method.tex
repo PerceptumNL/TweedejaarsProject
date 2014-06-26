@@ -5,7 +5,7 @@ Starfish text content is serialized as HTML, a format which is not suitable for 
 
 Maybe something about creating the folds by removing some of the documents?
 
-\subsection{Text vectorization}
+\subsection{Text descriptors}
 \subsubsection{Textvectorizer}
 
 The first set of vectorizers focuses on the texts of the documents. The \emph{textvectorizer} is a very generic approach that can be used on any corpus of textual documents. In the Starfish context, we define 'content' as the title and text-fields of a document. The only exception on this are Persons, of which we wil use the name and about-fields. 
@@ -17,7 +17,7 @@ The weighted text vectorizer is an extension of the textvectorizer that takes in
 
 The vectors of links of a document are added in a recursive way, where documents that are linked directly have a higher weight than documents that are linked transitively. The algorithm is displayed in figure xx.
 
-\subsection{Tag vectorization}
+\subsection{Tag descriptors}
 \subsubsection{Simple tag vectorizer}
 The tag-based approach is more Starfish specific than the text-based approach, since it depends on the tags that are available in Starfish. The tags on Starfish are added by the users themselves, so offer a human-based vision on what a document is really about. The simple tag vectorizer is a very straight forward implementation of the idea of using tags. The vectors of this transformation consist of a binary list that tells whether or not a tag is attached to the document. 
 
@@ -50,6 +50,7 @@ Explain motivation, theory and implementation
 After creating the descriptors for a document and finding a new document's nearest neighbors, a subpart of those links needs to be returned by the linker application. An average document in Starfish has x links. To create a dynamic threshold which returns similar a similar amount of documents, a document from the Starfish data is extracted and then to re-inserted to test the number of links the system returns to the number of links the document had in the original system. Figure~\ref{fig:link_histogram} shows the distribution of outgoing links in the current network.
 
 \begin{figure}[h]
+\centering
 \includegraphics[width =0.45\textwidth]{images/link_histogram}
 \caption{The frequency of outgoing links in Starfish documents}
 \label{fig:link_histogram}
@@ -58,10 +59,10 @@ After creating the descriptors for a document and finding a new document's neare
 In figure~\ref{fig:thresholds}, the distances for nearby documents the system recommends can be viewed. On the horizontal axis, the documents are shown in sorted order. The vertical axis displays the cosine distance for that document has from the new document. The patterns for all vectorizers seem very noisy, especially for documents that had very little links in the original document. The documents which had more links in the original dataset seem to be less scattered and more plausible to fit to a line.
 
 \begin{figure}[h]
-\subfigure[Weighted tags]{	\includegraphics[width =0.45\textwidth]{images/threshold_weighted_tag}	}
-\subfigure[text]{				\includegraphics[width =0.45\textwidth]{images/threshold_text} 			}
-\subfigure[tag smoothing]{	\includegraphics[width =0.45\textwidth]{images/threshold_smoothing} 		}
-\subfigure[glossaries]{		\includegraphics[width =0.45\textwidth]{images/threshold_glossary} 		}
+\subfigure[Weighted tags]{	\includegraphics[width =0.24\textwidth]{images/threshold_weighted_tag}	}
+\subfigure[text]{				\includegraphics[width =0.24\textwidth]{images/threshold_text} 			}
+\subfigure[tag smoothing]{	\includegraphics[width =0.24\textwidth]{images/threshold_smoothing} 		}
+\subfigure[glossaries]{		\includegraphics[width =0.24\textwidth]{images/threshold_glossary} 		}
 \caption{The blue purple gradient represents documents with 0 links (blue) to >10 links (purple)}
 \label{fig:thresholds}
 \end{figure}
@@ -73,6 +74,18 @@ The the threshold should depend on multiple factors which mostly depend on the s
 \end{enumerate}
 If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users. To ensure the flexibility for choice of algorithm and integration of the application, the threshold algorithm will contain a configurable parameter.
 
+\begin{figure}[h]
+\subfigure[Weighted tags]{	\includegraphics[width =0.24\textwidth]{images/threshold_weighted_tag_difference}		}
+\subfigure[text]{				\includegraphics[width =0.24\textwidth]{images/threshold_text_difference} 			}
+\subfigure[tag smoothing]{	\includegraphics[width =0.24\textwidth]{images/threshold_smoothing_difference} 		}
+\subfigure[glossaries]{		\includegraphics[width =0.24\textwidth]{images/threshold_glossary_difference} 		}
+\caption{Distance betweeen two nearest neighbors}
+\label{fig:thresholds_differences}
+\end{figure}
 
+When adding a document to Starfish, it is assumed that there is always at least one related document. Based on the distance of the nearest neighbor for the new document, the index of a and the configurable parameter, the threshold is defined as in equation~\ref{eq:thresh}. In this equation, $\alpha$ is the configurable parameter, $m$ is the number of documents returned by the nearest neighbor algorithm, $d_0$ is the distance to the closest document, $\frac{m - n}{m}$ is a factor that ensures the maximum allowed distance decreases for documents ranked further away. This is based on the differences between two nearest neighbors which are visualized in figure~\ref{fig:thresholds_differences}. The distances have a long tail form: the distances between the nearest neighbors is relatively large for the closest documents and smaller between the documents further away. 
 
-Explan motivation, theory and implementation
+\begin{equation}
+t_n = \alpha (1 - d_0) \frac{m - n}{m}
+\label{eq:thresh}
+\end{equation}
