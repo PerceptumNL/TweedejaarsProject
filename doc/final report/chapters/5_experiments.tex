@@ -102,7 +102,7 @@ The cosine distance metric gives the best results for the text vectorizers. On a
 
 Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons (see appendix X). However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance on persons. 
 
-Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. Figure x shows the differences of vectors of three texts when an English document is combined with an English proposed document and a Dutch proposed document. In the case of two different languages, there are less words that the two documents have in common. If important keywords entail word such as 'clickers' versus 'stemsysteem', there is no way of relating the two documents. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
+Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. Figure x shows the differences of vectors of three texts when an English document is combined with an English proposed document and a Dutch proposed document. In the case of two different languages, there are less words that the two documents have in common. If important keywords entail word such as `clickers' versus `stemsysteem', there is no way of relating the two documents. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
 =======
 Table~\ref{klink} shows the k-link values of all vectorizers, including those
 of the textvectorizer and the weighted-text vectorizer. The best performance of
@@ -134,7 +134,7 @@ used. Figure x shows the differences of vectors of three texts when an English
 document is combined with an English proposed document and a Dutch proposed
 document. In the case of two different languages, there are less words that the
 two documents have in common. If important keywords include words such as
-'clickers' versus 'stemsysteem', there is no way of relating the two documents.
+`clickers' versus `stemsysteem', there is no way of relating the two documents.
 Secondly, the current StarFish network consists of mainly textual content.
 However, in the future this is likely to be extended with images, videos and
 other non-textual content. These sources should then somehow be converted to
@@ -155,13 +155,13 @@ tag, which makes it sensitive to attaching Questions to Questions. Something
 similar seems to happen with Persons, of which 50.91\% of the connections are
 with other Persons.  Apparently, persons with similar expertise are tagged
 similarly.  However, as mentioned with the text vectorizer, in Starfish persons
-almost never refer to other persons.\todo{Didn't you say above persons are are often linked to other persons?}
+almost never refer to other persons. \todo{Didn't you say above persons are are often linked to other persons?}
 Moreover, if a document is badly labeled
-this can also induce problems. For example, take the question 'Is there an
-English version in Tentamenlade', tagged with 'ToetsenEnToetsgestuurdleren'.
+this can also induce problems. For example, take the question `Is there an
+English version in Tentamenlade', tagged with `ToetsenEnToetsgestuurdleren'.
 The proposed links are visible in table~\ref{proposed}, which shows that  the
-three proposed questions all have the tag 'ToetsEnToetsGestuudLeren'. However,
-if the question was tagged with the tag 'Tentamenlade', which seems very
+three proposed questions all have the tag `ToetsEnToetsGestuudLeren'. However,
+if the question was tagged with the tag `Tentamenlade', which seems very
 reasonable given the proposed question, the false negatives would likely be
 returned correctly by the system. Good practices, events and projects perform
 better, but these document types only make up to 3.2\%, 2.7\% and 5.4\% of the
@@ -183,7 +183,7 @@ False Negatives:
 - Hoe kan ik inloggen in Tentamenlade? (Question)
 - Hoe kan ik inloggen in Tentamenlade? (Question)
 \end{lstlisting}
-\caption{Proposed links for the question 'Is there an English version in Tentamenlade?'}
+\caption{Proposed links for the question `Is there an English version in Tentamenlade?'}
 \label{proposed}
 \end{table}
 
@@ -207,7 +207,7 @@ To be continued.
 \subsubsection{Hybrid}
 Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document is a Question, it will be handled by the cosine textvectorizer, otherwise the simple tag similarity with correlation will do this. The results are shown in table \ref{hybrid}. 
 
-\begin{table}
+\begin{table}[h!]
 \begin{tabular}{| l | l | l | l | l | l | l | l |}
 \hline
  & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\bf Average} \\
@@ -402,7 +402,7 @@ of the proposed threshold formula is tested on the dataset. The performance of t
 automated threshold was measured for all vectorizers with the metric that gave the best 
 results without threshold - cosine for the text-based descriptors and correlation for the
 tag-based descriptors. Now, precision and recall are different because the threshold can 
-return a different number of links than the links that are known to be correct. Table~\ref{tab:thresh_eval} 
+return a different number of links than the links that are known to be correct. \todo{Lotte, ik snap niet helemaal welke tabellen je nu wilt aanhalen}Table~\ref{tab:thresh_eval} 
 shows the precision and recall for each of the vectorizers, including an unraveling for
 each type of document. A comparison between this table and table xx, which is
 measured with the k-link metric, shows that for the text-vectorizers
