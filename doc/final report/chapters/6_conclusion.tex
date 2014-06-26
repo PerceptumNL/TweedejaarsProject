@@ -15,12 +15,20 @@ best performance and is the fastest except for events. For documents of type
 `events' it is recommended to use the glossaries of tags vectorizer.  Secondly
 the probabilistic model of the network that is proposed is either to simplistic
 or the data available is too little. In either case it might be off interest to
-further investigate a similar model on a bigger data set.
+further investigate a similar model on a bigger data set. Lastly the method
+of selecting the number of documents shows that the precision increases and
+performs better than selecting a static number of documents.
 
-% nog iets over threshold
+The findings in this report are subject to at least three limitations. First,
+the proposed solution only works for textual document and not on audio, video
+which may be part of the Startfish knowledge graph. Secondly, the data set
+that was used during investigation is rather small and may not be representation
+of a real life data set. Lastly due to the small training network no cross-validation
+was performed which may result in an overfit to the data.
 
-Whilst this study is based on only a small network of document taken together
-these findings do show that the chosen path ca
+Whilst this study is based on only a small network of documents taken together
+these findings do show that the chosen solution is capable of recommending
+links between documents with a certainty far above the guessing level. It is
+now up to the client to choose if a precision of 45.09\% is good enough to
+let the user select a document to link.
 
-
-% goed product vision recommender system
