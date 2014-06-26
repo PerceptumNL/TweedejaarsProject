@@ -6,7 +6,7 @@ Bla.
 \subsection{Text vectorization}
 \subsubsection{Textvectorizer}
 
-The first set of vectorizers focuses on the texts of the documents. The \emph{textvectorizer} is a very generic approach that can be used on any corpus of textual documents. In the StarFish context, we define 'content' as the title and text-fields of a document. The only exception on this are Persons, of which we wil use the name and about-fields. 
+The first set of vectorizers focuses on the texts of the documents. The \emph{textvectorizer} is a very generic approach that can be used on any corpus of textual documents. In the Starfish context, we define 'content' as the title and text-fields of a document. The only exception on this are Persons, of which we wil use the name and about-fields. 
 
 The textvectorizer first transforms the set of documents into a bag of words and calculates the TF-IDF values for all words. This was done using the TFIDFVectorizer of scikitlearn \citep{scikit-learn}.  Though the TF-IDF values of words that are used very often should be low, common words such as 'and', 'or' and 'of' are still present in the vectors. This could be caused by the different types of documents. For example, a Question often structured in a less complex way than a Project description. To prevent this from happening, the English stopword list that comes standard with scikit learn was used to remove these words from the document descriptors.
 
@@ -17,7 +17,7 @@ The vectors of links of a document are added in a recursive way, where documents
 
 \subsection{Tag vectorization}
 \subsubsection{Simple tag vectorizer}
-The tag-based approach is more StarFish specific than the text-based approach, since it depends on the tags that are available in StarFish. The tags on StarFish are added by the users themselves, so offer a human-based vision on what a document is really about. The simple tag vectorizer is a very straight forward implementation of the idea of using tags. The vectors of this transformation consist of a binary list that tells whether or not a tag is attached to the document. 
+The tag-based approach is more Starfish specific than the text-based approach, since it depends on the tags that are available in Starfish. The tags on Starfish are added by the users themselves, so offer a human-based vision on what a document is really about. The simple tag vectorizer is a very straight forward implementation of the idea of using tags. The vectors of this transformation consist of a binary list that tells whether or not a tag is attached to the document. 
 
 \subsubsection{Tag smoothing}
 The tag smoothing vectorizers creates descriptors based on the tag set of a document. A tag co-occurs with other tags in a document, we assume documents with similar tags should be linked in Starfish. Let the frequency of occurrence with other tags across the dataset will form a vector for each tag. The descriptor for a document is then created by combining the occurrence vectors for all the document's tags. Now documents with tags that occur together will be seen as similar.
@@ -32,6 +32,9 @@ s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 
 
 \subsubsection{Glossaries of tags}
+The glossaries of tags approach is also based on the intuition certain tags cover overlapping concepts, something which is not always directly reflected by tag frequencies. In the Starfish system, a tag is expected to have a glossary; a short English description of the concept a tag. If tags are related then the glossaries of those will contain terms and words more similar to each other than to other tags' glossaries. The glossaries of tags approach aims to use the network between, visible through glossary similarity, to calculate document similarity.
+The vectorizer creates a document descriptor based on the bag of words model for all glossaries. Each tag with a glossary is transformed into a vector using TF-IDF, these vectors are then summed (and normalized?) to create the descriptor for a document.
+
 \begin{itemize}
 \item Motivation: find underlying network between tags by using their glossaries
 \item Implementation: hybrid form of text and tag vectorizer
@@ -44,7 +47,9 @@ Short description of how these were implemented
 Explain motivation, theory and implementation 
 
 \subsection{Thresholds}
-In figure~\ref{fig:thresholds} the distances for nearby documents we recommend can be viewed. It is clear that different vecotrizers return different curves of increase of distance. The lines for documents with zero links do not seem to follow a specific pattern, the lines for documents with more links are better clustered. 
+In figure~\ref{fig:thresholds} the distances for nearby documents we recommend can be viewed. On the horizontal axis, the documents are shown in sorted order.  The vertical axis displays the cosine distance for that document has from the new document. Different d
+
+It is clear that different vecotrizers return different curves for  increase of distance. The lines for documents with zero links do not seem to follow a specific pattern, the lines for documents with more links are better clustered. 
 
 
 \begin{figure}[h]
