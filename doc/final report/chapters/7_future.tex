@@ -1,5 +1,6 @@
 \section{Future Work \& Recommendations}
-Latent dirichlet allocation because tags in dataset are not so good.
+Current work focusses in creating outgoing links from a new document when it is inserted into the network. However, due to the directed structure of the network graph, this means a new document will only receive links of documents inserted after itself. The Starfish system could benefit even more from link recommendation if it also proposes incoming links. This will ensure a graph in which all related documents are even better connected then they are now. Most methods proposed in this research are based on symmetrical similarities, future work investigating Starfish specific properties to distinguish between incoming and outgoing links would therefore be very interesting.
 
-Also create incoming links
+The current system is implemented on a graph with relatively small size, but this research provides a foundation to further investigate linking in Starfish. It is recommended to verify the results of this project as Starfish grows, to ensure the current solution is not prone to overfitting. 
 
+Meanwhile, the sparsity of tags for the tag based recommendations could be addressed by applying topic modeling. Automatically generated topics from algorithms such as Latent Dirichelet Allocation or Explicit Semantic Analysis could regular tags in the current system.

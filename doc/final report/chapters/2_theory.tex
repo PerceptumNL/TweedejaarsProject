@@ -27,8 +27,8 @@ within a corpus and can be calculated as follows:
 
 The TF-IDF induces a trade off between the term frequency, the number of times
 a word appears in a document, and the inverse document frequency, the inverse
-of how often a word is used in the entire corpus. Words such as 'and', 'or',
-and 'of' will have a high term frequency within a document. However, their
+of how often a word is used in the entire corpus. Words such as `and', `or',
+and `of' will have a high term frequency within a document. However, their
 inverse document frequency will be very low, since they occur very often within
 the entire corpus. Infrequent used words such as Starfish are less likely to
 occur within a corpus, so if they do occur often within one particular document
@@ -41,7 +41,7 @@ can compute a distance using a specific distance measure. The $K$-Nearest
 Neighbor algorithms selects the $K$ document descriptors that have the lowest
 distance. In other words the $K$ vectors that are most similar in the given
 vector space. See algorithm~\ref{algo:knn} for pseudocode of the $K$-Nearest
-Neighbir algorithm.
+Neighbor algorithm.
 
 \begin{algorithm}                      
   \caption{$K$-Nearest Neighbor}      
@@ -65,7 +65,7 @@ Neighbir algorithm.
 
 \subsubsection{Distance Metric}
 \label{sec:metrics}
-As discussed before the $K$-Nearest Neighbor algorithm uses a distance metric
+As discussed before, the $K$-Nearest Neighbor algorithm uses a distance metric
 to compute the distance between two document descriptors in a given vector
 space. A distance metric or simply called the distance is a function $d$ that 
 maps two documents descriptors $X$ and $Y$ to the real numbers (\ref{distmap}).
@@ -127,7 +127,7 @@ angle $\varphi$ between two document descriptors. The intuition of this metric
 is that a document `word$_1$ word$_2$' and `word$_1$ word$_1$ word$_2$
 word$_2$' probably are very similar as only the word frequencies differ.
 However, the euclidean distance does compute a distance $> 0$. The cosine
-distance computes the angle between two documents. This is shown visualy in
+distance computes the angle between two documents. This is shown visually in
 figure~\ref{fig:cosine}. In this example the descriptors would point in the
 exact same direction only the second descriptor is longer.  This results in a
 cosine of zero, which means an exact match. The values in the vectors will
@@ -145,7 +145,7 @@ very efficient to compute the cosine distance on sparse vectors as only the
 non-zero values are important for the computation. Another advantage of the
 cosine similarity is that it is independent of document length. The cosine
 similarity does not strictly satisfy the conditions for a metric, but in 
-practise unless the vectors are normalized.
+practice unless the vectors are normalized.
 
 \begin{align}
   d_\textrm{cos}(q,p) = \left| \frac{q \cdot p}{||q||\,||p||} - 1\right| \label{eq:cos}
@@ -176,7 +176,7 @@ practise unless the vectors are normalized.
 \end{figure}
 
 \paragraph{Bhattacharyya distance} The feature vectors used to represent documents can
-also be seen as unordered histrograms. A way to compare histrograms is the
+also be seen as unordered histograms. A way to compare histograms is the
 Bhattacharyya distance metric. The Bhattacharyya metric is used to compute
 the similarity of two discrete or continuous probability distributions. The 
 metric ranges from 0 tot 1 where 0 is a perfect match. The Bhattacharyya 
@@ -187,8 +187,8 @@ distance metric is defined as:
 where $\overline{q} = \frac{1}{n}\sum_{j=1}^n q_j$ and $n$ the number of
 elements in each of the vectors.
 
-\paragraph{Intersection} Another histrogram similarity metric is the histogram
-intersection. The histogram intersection \citep{swain1991color} was originaly
+\paragraph{Intersection} Another histogram similarity metric is the histogram
+intersection. The histogram intersection \citep{swain1991color} was originally
 introduced in the computer vision field and is defined in as shown in
 equation~\ref{eq:intersection}
 \begin{align}
@@ -203,7 +203,7 @@ measure does not satisfy the four conditions for a distance metric, however
 it may still be useful in the document similarity domain.
 
 \paragraph{Sample Correlation Coefficient} Finally a method often used to compute the
-similarity between histograms is the correlation. Correlletation measures
+similarity between histograms is the correlation. Correlation measures
 the dependence between two sample sets. Pearson's correlation when applied to
 a sample is defined as:
 \begin{align}
@@ -211,10 +211,10 @@ a sample is defined as:
     &= \frac{(q - \overline{q}) \cdot (p - \overline{p})}{||q - \overline{q}||\,||p - \overline{p}||} \\
     &= d_\textrm{cos}(q - \overline{q}, p - \overline{p})
 \end{align}
-As shown above the pearson correlation is the cosine distance when the 
+As shown above the Pearson correlation is the cosine distance when the 
 documents descriptors are first converted to have mean zero. This means that
-the pearson correlation is, like the cosine distance, scale invariant. However,
-unlike the cosine distance the pearson correlation is also shift invariant. This
+the Pearson correlation is, like the cosine distance, scale invariant. However,
+unlike the cosine distance the Pearson correlation is also shift invariant. This
 means that when a scalar is added to all elements of the documents descriptor
 the correlation is still the same.
 
