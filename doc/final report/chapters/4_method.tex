@@ -6,8 +6,15 @@ calculating semantical similarity. Before processing, the data is sanitized by
 removing HTML tags and entities and convert unicode characters to their closest
 ASCII representation.
 
+The raw starfish data contains tags which are aliases of other tags. During 
+preprocessing all tags are replaced by their alias which have a glossary. Also, 
+the current graph also contains some links which should not be returned by a 
+link recommender system. Links from article to an author should be ignored as 
+an author is automatically linked from the document. Links to glossaries should 
+never occur, as they are linked through tags if appropriate.
 
-Maybe something about creating the folds by removing some of the documents?
+After the data is sanitized, the tags are unique and the inappropriate links are 
+removed, the data is ready for processing.
 
 \subsection{Text descriptors}
 \subsubsection{Textvectorizer}
@@ -16,7 +23,7 @@ The first set of vectorizers focuses on the texts of the documents. The
 \emph{textvectorizer} is a very generic approach that can be used on any corpus
 of textual documents. In the Starfish context, we define 'content' as the title
 and text-fields of a document. The only exception on this are Persons, of which
-we wil use the name and about-fields. 
+we will use the name and about-fields. 
 
 The textvectorizer first transforms the set of documents into a bag of words
 and calculates the TF-IDF values for all words. This was done using the
@@ -25,7 +32,7 @@ of words that are used very often should be low, common words such as 'and',
 'or' and 'of' are still present in the vectors. This could be caused by the
 different types of documents. For example, a Question often structured in a
 less complex way than a Project description. To prevent this from happening,
-the English stopword list that comes standard with scikit learn was used to
+the English stopwords list that comes standard with scikit learn was used to
 remove these words from the document descriptors.
 
 \subsubsection{Weighted textvectorizer}
