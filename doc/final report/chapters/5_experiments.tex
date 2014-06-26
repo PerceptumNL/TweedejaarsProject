@@ -92,13 +92,13 @@ Weighted tag & 0 & 0 & 0 & 0 & 0 & 0 & {\bf 0} \\
 \subsection{Text-based descriptors}
 Table \ref{klink} shows the k-link values of all vectorizers, including those of the textvectorizer and the weighted-text vectorizer. The best performance of the textvectorizers is obtained by the cosine distance. This can be attributed
  to the fact that the cosine distance is independent to document length and only
- computes a simmilarity in document structure. In other words when a document
+ computes a similarity in document structure. In other words when a document
  has the exact same words as a seconds document but only twice as much the
  cosine similarity classifies these documents as exactly equal. As the textvectorizer
- encodes the number of word occurences in a vector the cosine distance can 
+ encodes the number of word occurrences in a vector the cosine distance can 
  easily find document that use the same words frequently.
 
-The cosine distance metric gives the best results for the text vectorisers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions. % ROBBERT, FIND SOME QUALTITATIVE EXAMPLES FOR THIS. 
+The cosine distance metric gives the best results for the text vectorizers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions. % ROBBERT, FIND SOME QUALTITATIVE EXAMPLES FOR THIS. 
 
 Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons (see appendix X). However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance on persons. 
 
@@ -108,13 +108,13 @@ Table~\ref{klink} shows the k-link values of all vectorizers, including those
 of the textvectorizer and the weighted-text vectorizer. The best performance of
 the textvectorizers is obtained by the cosine distance. This can be
 attributed to the fact that the cosine distance is independent to document
-length and only computes a simmilarity in document structure. In other words
+length and only computes a similarity in document structure. In other words
 when a document has the exact same words as a seconds document but only twice
 as much the cosine similarity classifies these documents as exactly equal. As
-the textvectorizer encodes the number of word occurences in a vector the
+the textvectorizer encodes the number of word occurrences in a vector the
 cosine distance can  easily find document that use the same words frequently.
 
-The cosine distance metric gives the best results for the text vectorisers. On
+The cosine distance metric gives the best results for the text vectorizers. On
 average, 19.49\% and 19.59\% percent of the number of proposed links
 respectively are correct. The weighted text vectorizer performs a bit better,
 which is mainly due to an improvement in performance on information and
@@ -150,7 +150,7 @@ Question documents and Person documents perform the worst. This can be
 explained by the fact that half of both Questions and Persons have zero tags.
 Obviously, the simple tag vectorizer cannot deal with such documents. In fact,
 almost all other Questions have only one tag. Since the simple tag vectorizer
-compares vectors, it wil prefer documents that also have only that particular
+compares vectors, it will prefer documents that also have only that particular
 tag, which makes it sensitive to attaching Questions to Questions. Something
 similar seems to happen with Persons, of which 50.91\% of the connections are
 with other Persons.  Apparently, persons with similar expertise are tagged
@@ -205,7 +205,7 @@ performing significantly better when it is presented with more tags.
 To be continued.
 
 \subsubsection{Hybrid}
-Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document is a Question, it will be handeled by the cosine textvectorizer, otherwise the simple tag similarity with correlation will do this. The results are shown in table \ref{hybrid}. 
+Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document is a Question, it will be handled by the cosine textvectorizer, otherwise the simple tag similarity with correlation will do this. The results are shown in table \ref{hybrid}. 
 
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | l |}
@@ -394,20 +394,21 @@ Hybrid & 64.19 & 50.00 & 37.50 & 62.50 & 39.32 & 33.33 & {\bf 50.93}\\
 \end{tabular}
 
 \caption{Percentage correct links per vectorizer per document type after a k-link measurement}
-\label{bayes_table1}
+\label{tab:thresh_eval}
 \end{table}
 
 Knowing that the pipeline until thresholding returns sane results, the actual performance
-of the proposed threshold formula is tested on the dataset. The performance of the automated threshold was measured for all vectorizers
-with the metric that gave the best results without threshold - cosine for the
-text-based descriptors and correlation for the tag-based descriptors. Now,
-precision and recall are different because the threshold can return a different
-number of links than the links that are known to be correct. Table~\ref{bayes_table1} shows the
-precision and recall for each of the vectorizers, including an unraveling for
+of the proposed threshold formula is tested on the dataset. The performance of the 
+automated threshold was measured for all vectorizers with the metric that gave the best 
+results without threshold - cosine for the text-based descriptors and correlation for the
+tag-based descriptors. Now, precision and recall are different because the threshold can 
+return a different number of links than the links that are known to be correct. Table~\ref{tab:thresh_eval} 
+shows the precision and recall for each of the vectorizers, including an unraveling for
 each type of document. A comparison between this table and table xx, which is
 measured with the k-link metric, shows that for the text-vectorizers
 performance decreases slightly when the threshold value is used. 
 % Tell something about average number of differences in links & draw conclusions from unraveling 
+
 For the tag-based vectorizers, both precision and recall drastically
 improve. Note that precision and recall, with our way of measuring, the average
 precision and recall per document. Thus, the precision and recall can in fact
@@ -415,11 +416,3 @@ improve because for some documents recall improves drastically and for some
 documents precision improves. This explains why the final performance of 46.3\%
 precision and 43.5\% recall for the simple text vectorizer can be reached. 
 % Tell something about average number of differences in links & and draw conclusions from unraveling
-
-In figure~\ref{fig:thresholds}, the distances for nearby documents the system
-recommends can be viewed. On the horizontal axis, the documents are shown in
-sorted order. The vertical axis displays the cosine distance for that document
-has from the new document. The patterns for all vectorizers seem very noisy,
-especially for documents that had very little links in the original document.
-The documents which had more links in the original dataset seem to be less
-scattered and more plausible to fit to a line.
