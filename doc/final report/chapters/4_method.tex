@@ -1,7 +1,9 @@
 \section{Method}
 
 \subsection{Data preprocessing}
-Starfish text content is serialized as HTML, a format which is not suitable for calculating semantical similarity. Before processing, we sanitize the data by removing HTML tags and entities, convert unicode characters to their closest ASCII representation.
+Starfish text content is serialized as HTML, a format which is not suitable for calculating semantical similarity. Before processing, the data is sanitized by removing HTML tags and entities and convert unicode characters to their closest ASCII representation.
+
+Maybe something about creating the folds by removing some of the documents?
 
 \subsection{Text vectorization}
 \subsubsection{Textvectorizer}
@@ -60,6 +62,8 @@ The the threshold should depend on multiple factors which mostly depend on the s
 	\item The degree of certainty we expect from the returned documents.
 	\item The maximum number of documents that should be returned for a specific application.
 \end{enumerate}
-If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users.
+If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users. To ensure the flexibility for choice of algorithm and integration of the application, the threshold algorithm will contain a configurable parameter.
+
+
 
 Explan motivation, theory and implementation
