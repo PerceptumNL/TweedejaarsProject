@@ -7,21 +7,20 @@ determine the number of documents to retrieve were proposed. These combined
 form a complete `pipeline' to compute and propose links to known documents for
 a new document that is about to be added to the Starfish network.
 
-\begin{itemize}
-\item The textvectorizers are significantly better on questions, but do not
-  perform well on persons. Additionally, there are issues with future
-  applicability (videos, images ect.)
-\item The tagvectorizers perform much better on persons. Of all, the simple tag
-  vectorizer surprisingly performs the best and is the fastest, so we recommend
-  using that one, except for events where the glossaries of tags is better. 
-\item The threshold value performs ??
-\item The bayesian layer seems to make a too sharp distribution and has no
-  promising results. There seems to be no correlation between the correct links
-  and their probabilities. Maybe a bigger data set is needed, maybe there is
-  really no correlation. 
-\item Main conclusion: use text vectorizer for questions and the tagvectorizers
-  for others. The bayesian approach does not seem to have the preferred effect.
-  The threshold value works acceptable. 
-\end{itemize}
+The following conclusions can be drawn from the present study: firstly, the
+text vectorizers perform significantly better for questions, however these do
+perform badly on documents of type `person'. On documents of type `person' the
+tag vectorizers do perform well. Suprisingly the simple tag vectorizer has the
+best performance and is the fastest except for events. For documents of type
+`events' it is recommended to use the glossaries of tags vectorizer.  Secondly
+the probabilistic model of the network that is proposed is either to simplistic
+or the data available is too little. In either case it might be off interest to
+further investigate a similar model on a bigger data set.
+
+% nog iets over threshold
+
+Whilst this study is based on only a small network of document taken together
+these findings do show that the chosen path ca
+
 
 % goed product vision recommender system
