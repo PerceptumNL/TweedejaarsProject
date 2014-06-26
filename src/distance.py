@@ -49,7 +49,7 @@ def cosine(a, b):
     
     # prevent ZeroDivisionErrors
     if norm_a * norm_b == 0:
-        return 2
+        return 1
     else:
         return np.abs((dot / float((norm_a*norm_b)))-1)
 
