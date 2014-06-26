@@ -51,9 +51,10 @@ Both the tag-based and text-based approaches uses some kind of 'semantic similar
 \nonumber P(D_a \rightarrow D_b | t)
 \end{align}
 Thus, the weight of a tag within a vector is equal to the chance that given this particular vector, a document of type a (the type of the newly added document) and a document of type b (equal to the type of proposed link) are linked. The inverse of this probability is multiplied with the distances that come from Nearest Neigbor in order to enlarge the distance of proposed links that are unlikely given the Starfish knowledge base. 
+\todo[inline]{Rewrite section to show steps and computations}
 
 \subsection{Threshold value}
 The next step in the pipeline is to determine how many of the nearest neighbours should be returned. Depending on the application of the Starfish document linker, the desired number might vary. If one wants to immediately link the results, the certainty for relatedness should be high. If the links are presented to a user which can approve or reject them, the relatedness may be lower. Currently, this is configurable by setting the threshold parameter between 0 and 1. Zero will only return the closest document, 1 will return almost all. After exploration of the dataset the default value is 0.3, which roughly returns the same amount of links which is currently average for Starfish.
 
 \subsection{Results}
-The document linker saves the results for a given knowledge base to a file called $<vectorizer>_<distance metric>.json$. The proposed links can be viewed by opening \emph{view.html} from a browser and selecting the preferred json file.  % Uitleg van wat het betekent
+The document linker saves the results for a given knowledge base to a file called `[vectorizer]\_[distance metric].json'. The proposed links can be viewed by opening \emph{view.html} from a browser and selecting the preferred json file.  % Uitleg van wat het betekent
