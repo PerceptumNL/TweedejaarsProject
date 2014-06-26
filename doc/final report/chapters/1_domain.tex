@@ -9,4 +9,15 @@ The knowledge base itself consists of one big set of entities. These entities ar
 
 Each document in the knowledge base has a set of tags assigned to it, based on the different aspects of educational innovation the document covers. On average a document has x tags. Glossaries are special types of documents, as they are description for tags. This means that it is unnecessary for the link recommendation system to return Glossaries, since a glossary could better be 'linked' via assigning a tag. Because different groups use alternative names to describe concepts, tags can be aliases of each other. For this project, aliased tags are regarded as one single tag. Of the 210 tags the current system contains, 146 unique tag concepts can be distinguished of which 24,6\% have a glossary. 
 
-These numbers and properties of the system give some insight into the current state of the dataset and possible solutions. The major part of Starfish data is text-based, so semantical document analysis could be performed with standard text processing techniques. The tags of documents could also give insight into the semantics of the documents. Additionally, the links that are currently in Starfish can be used as guidelines on when documents should be linked and when not. Though Starfish aims to be user-driven, it is unfeasible to make the linking user driven with the current dataset. Such an approach could focus on a reinforcement learning system, that learns of the the opinion of users by means of a voting procedure. However, the data needed for this is simply not available. 
+These numbers and properties of the system give some insight into the current
+state of the dataset and possible solutions. The major part of Starfish data is
+text-based, so semantical document analysis could be performed with standard
+text processing techniques. The tags of documents could also give insight into
+the semantics of the documents. Additionally, the links that are currently in
+Starfish can be used as guidelines on when documents should be linked and when
+not. 
+
+Although Starfish aims to be user-driven, and therefore user voting seems like
+a viable options, in the present research such options will not be explored. 
+First because the data for this is not at hand and secondly because this is
+not part of the client's initial request.

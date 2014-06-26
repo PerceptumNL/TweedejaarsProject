@@ -39,7 +39,7 @@ remove these words from the document descriptors.
 The weighted text vectorizer is an extension of the textvectorizer that takes
 into account the links of the proposed documents. The vectors of the links of a
 document are added with some weight to the vectors of the documents themselves.
-Intuitively, this would add semantic information about a document based on it's
+Intuitively, this would add semantic information about a document based on its
 links. For example, a Person is likely to write other documents about his or
 her subjects of expertise. Knowing not only the biography of a Person, but also
 the content he or she has added to Starfish, gives a more complete image of
@@ -54,8 +54,8 @@ linked transitively. The algorithm is displayed in figure xx.
 The tag-based approach is more Starfish specific than the text-based approach,
 since it depends on the tags that are available in Starfish. The tags on
 Starfish are added by the users themselves, so offer a human-based vision on
-what a document is really about. The simple tag vectorizer is a very straight
-forward implementation of the idea of using tags. The vectors of this
+what a document is really about. The simple tag vectorizer is a very
+straightforward implementation of the idea of using tags. The vectors of this
 transformation consist of a binary list that tells whether or not a tag is
 attached to the document. 
 
@@ -63,7 +63,7 @@ attached to the document.
 The tag smoothing vectorizers creates descriptors based on the tag set of a
 document. A tag co-occurs with other tags in a document, we assume documents
 with similar tags should be linked in Starfish. Let the frequency of occurrence
-with other tags across the dataset will form a vector for each tag. The
+with other tags across the dataset form a vector for each tag. The
 descriptor for a document is then created by combining the occurrence vectors
 for all the document's tags. Now documents with tags that occur together will
 be seen as similar.

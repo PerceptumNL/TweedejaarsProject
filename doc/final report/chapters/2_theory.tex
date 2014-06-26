@@ -1,9 +1,9 @@
 \section{Theory}
 
 In solving the linking problem, one must find a way to compare different
-documents based on their linkability with a newly added documents.
+documents based on their linkability with newly added documents.
 Computationally, this can be done by creating document descriptors -- vectors
-that the describe the features of a document in some way. Given the Starfish
+that describe the features of a document in some way. Given the Starfish
 domain, this can be done in a tag-based and text-based approach towards
 creating document descriptors. This section will elaborate the background of
 the descriptor-based approach. 
@@ -36,7 +36,7 @@ the TF-IDF value will be high.
 
 \subsection{K-Nearest Neighbor}
 After creating the document descriptors as described in the previous section
-all document lay in a specific vector space. For each of this vectors we
+all document lay in a specific vector space. For each of these vectors we
 can compute a distance using a specific distance measure. The $K$-Nearest
 Neighbor algorithms selects the $K$ document descriptors that have the lowest
 distance. In other words the $K$ vectors that are most similar in the given
@@ -64,6 +64,7 @@ Neighbir algorithm.
 \end{algorithm}
 
 \subsubsection{Distance Metric}
+\label{sec:metrics}
 As discussed before the $K$-Nearest Neighbor algorithm uses a distance metric
 to compute the distance between two document descriptors in a given vector
 space. A distance metric or simply called the distance is a function $d$ that 
@@ -79,11 +80,7 @@ $X$, $Y$ and $Z$.
   3.\ \ \ & d(X,Y) = d(Y,X) \\
   4.\ \ \ & d(X,Z) \leq d(X,Y) + d(Y,Z)
 \end{align*}
-
-A set of distance metrics is discussed in the following paragraphs. Each are
-discussed for a documents with documents descriptor  $q = [q_1, q_2, \ldots,
-q_n]^T$ and $p = [p_1, p_2, \ldots p_n]^T$.
-
+A set of distance metrics is discussed in the following paragraphs. 
 
 \paragraph{Euclidean distance}
 The euclidean distance metric is a generalization of the pythagorean metric to
