@@ -36,7 +36,10 @@ def euclidean(a, b):
     """
     Returns the euclidean distance between vector a and vector b.
     """
-    return np.sqrt(sum((a - b).data ** 2))
+    if issparse(a) or issparse(b):
+        return np.sqrt(sum((a - b).data ** 2))
+    else:
+        return np.sqrt(np.linalg.norm(a-b))
 
 def cosine(a, b):
     """
@@ -102,7 +105,7 @@ def bhattacharyya(a, b):
     if a_bar * b_bar == 0:
         return 1
 
-    return np.sqrt(1- (1/np.sqrt(a_bar*b_bar*N**2))*np.sum(np.sqrt(a*b)))
+    return np.sqrt(1-(1/np.sqrt(a_bar*b_bar*N**2))*np.sum(np.sqrt(a*b)))
 
     
 
