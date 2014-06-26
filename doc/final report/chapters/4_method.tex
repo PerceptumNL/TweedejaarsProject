@@ -6,6 +6,7 @@ calculating semantical similarity. Before processing, the data is sanitized by
 removing HTML tags and entities and convert unicode characters to their closest
 ASCII representation.
 
+
 Maybe something about creating the folds by removing some of the documents?
 
 \subsection{Text descriptors}
@@ -167,32 +168,12 @@ outgoing links in the current network.
 \label{fig:link_histogram}
 \end{figure}
 
-In figure~\ref{fig:thresholds}, the distances for nearby documents the system recommends can be viewed. On the horizontal axis, the documents are shown in sorted order. The vertical axis displays the cosine distance for that document has from the new document. The patterns for all vectorizers seem very noisy, especially for documents that had very little links in the original document. The documents which had more links in the original dataset seem to be less scattered and more plausible to fit to a line.
-
-\begin{figure}[h]
-\subfigure[Weighted tags]{	\includegraphics[width =0.24\textwidth]{images/threshold_weighted_tag}	}
-\subfigure[text]{				\includegraphics[width =0.24\textwidth]{images/threshold_text} 			}
-\subfigure[tag smoothing]{	\includegraphics[width =0.24\textwidth]{images/threshold_smoothing} 		}
-\subfigure[glossaries]{		\includegraphics[width =0.24\textwidth]{images/threshold_glossary} 		}
-\caption{The blue purple gradient represents documents with 0 links (blue) to >10 links (purple)}
-\label{fig:thresholds}
-\end{figure}
-
 The the threshold should depend on multiple factors which mostly depend on the setting in which the document linker will be used. Two major factors determine how the threshold should work.
 \begin{enumerate}[1.]
 	\item The degree of certainty we expect from the returned documents.
 	\item The maximum number of documents that should be returned for a specific application.
 \end{enumerate}
 If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users. To ensure the flexibility for choice of algorithm and integration of the application, the threshold algorithm will contain a configurable parameter.
-
-\begin{figure}[h]
-\subfigure[Weighted tags]{	\includegraphics[width =0.24\textwidth]{images/threshold_weighted_tag_difference}		}
-\subfigure[text]{				\includegraphics[width =0.24\textwidth]{images/threshold_text_difference} 			}
-\subfigure[tag smoothing]{	\includegraphics[width =0.24\textwidth]{images/threshold_smoothing_difference} 		}
-\subfigure[glossaries]{		\includegraphics[width =0.24\textwidth]{images/threshold_glossary_difference} 		}
-\caption{Distance betweeen two nearest neighbors}
-\label{fig:thresholds_differences}
-\end{figure}
 
 When adding a document to Starfish, it is assumed that there is always at least one related document. Based on the distance of the nearest neighbor for the new document, the index of a and the configurable parameter, the threshold is defined as in equation~\ref{eq:thresh}. In this equation, $\alpha$ is the configurable parameter, $m$ is the number of documents returned by the nearest neighbor algorithm, $d_0$ is the distance to the closest document, $\frac{m - n}{m}$ is a factor that ensures the maximum allowed distance decreases for documents ranked further away. This is based on the differences between two nearest neighbors which are visualized in figure~\ref{fig:thresholds_differences}. The distances have a long tail form: the distances between the nearest neighbors is relatively large for the closest documents and smaller between the documents further away. 
 

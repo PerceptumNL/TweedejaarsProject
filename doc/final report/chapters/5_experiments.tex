@@ -237,3 +237,27 @@ Weighted tag & 25.00 & 14.47 & 37.50 & 33.18 & 17.26 & 46.67 & {\bf 22.00}\\
 The performance of the automated threshold was measured for all vectorizers with the metric that gave the best results without threshold - cosine for the text-based descriptors and correlation for the tag-based descriptors. Now, precision and recall are different because the threshold can return a different number of links than the links that are known to be correct. Table xx shows the precision and recall for each of the vectorizers, including an unraveling for each type of document. A comparison between this table and table xx, which is measured with the k-link metric, shows that for the text-vectorizers performance decreases slightly when the threshold value is used. % Tell something about average number of differences in links & draw conclusions from unraveling
 For the tag-based vectorizers, both precision and recall drastically improve. Note that precision and recall, with our way of measuring, the average precision and recall per document. Thus, the precision and recall can in fact improve because for some documents recall improves drastically and for some documents precision improves. This explains why the final performance of 46.3\% precision and 43.5\% recall for the simple text vectorizer can be reached. % Tell something about average number of differences in links & and draw conclusions from unraveling
 
+In figure~\ref{fig:thresholds}, the distances for nearby documents the system recommends can be viewed. On the horizontal axis, the documents are shown in sorted order. The vertical axis displays the cosine distance for that document has from the new document. The patterns for all vectorizers seem very noisy, especially for documents that had very little links in the original document. The documents which had more links in the original dataset seem to be less scattered and more plausible to fit to a line.
+
+\begin{figure}[h!]
+\begin{tabular}{cc}
+\includegraphics[width =0.5\textwidth]{images/thresh_cosine_glossaries_of_tags} 		& \includegraphics[width =0.5\textwidth]{images/thresh_cosine_textvectorizer} \\ \relax
+\includegraphics[width =0.5\textwidth]{images/thresh_cosine_weighted_tagvectorizer}	& \includegraphics[width =0.5\textwidth]{images/thresh_cosine_weighted_text_vectorizer} \\ \relax
+\includegraphics[width =0.5\textwidth]{images/thresh_cosine_simple_tag_similarity} 	& \includegraphics[width =0.5\textwidth]{images/thresh_cosine_tag_smoothing}
+\end{tabular}
+\caption{The sorted distances of nearest neighbors and their distance for differend vectorizers. The blue purple gradient represents documents with 0 links (blue) to $\>10$ links (purple)}
+\label{fig:thresholds}
+\end{figure}
+
+
+\begin{figure}[h!]
+\begin{tabular}{cc}
+\includegraphics[width =0.5\textwidth]{images/thresh_cosine_glossaries_of_tags_distances} 		& \includegraphics[width =0.5\textwidth]{images/thresh_cosine_textvectorizer_distances} \\ \relax
+\includegraphics[width =0.5\textwidth]{images/thresh_cosine_weighted_tagvectorizer_distances}	& \includegraphics[width =0.5\textwidth]{images/thresh_cosine_weighted_text_vectorizer_distances} \\ \relax
+\includegraphics[width =0.5\textwidth]{images/thresh_cosine_simple_tag_similarity_distances} 	& \includegraphics[width =0.5\textwidth]{images/thresh_cosine_tag_smoothing_distances}
+\end{tabular}
+\caption{Distance betweeen two nearest neighbors sorted by rank. The blue purple gradient represents documents with 0 links (blue) to $\>10$ links (purple)}
+\label{fig:thresholds_differences}
+\end{figure}
+
+
