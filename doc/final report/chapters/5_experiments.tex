@@ -85,7 +85,13 @@ Weighted tag & 0 & 0 & 0 & 0 & 0 & 0 & {\bf 0} \\
 \end{table}
 
 \subsection{Text-based descriptors}
-Table \ref{klink} shows the k-link values of all vectorizers, including those of the textvectorizer and the weighted-text vectorizer. The best performance of the textvectorizers is obtained by the cosine distance. This can be attributed to the fact that the cosine distance is independent to document length and only computes a simmilarity in document structure. In other words when a document has the exact same words as a seconds document but only twice as much the cosine similarity classifies these documents as exactly equal. As the textvectorizer encodes the number of word occurences in a vector the cosine distance can  easily find document that use the same words frequently.
+Table \ref{klink} shows the k-link values of all vectorizers, including those of the textvectorizer and the weighted-text vectorizer. The best performance of the textvectorizers is obtained by the cosine distance. This can be attributed
+ to the fact that the cosine distance is independent to document length and only
+ computes a simmilarity in document structure. In other words when a document
+ has the exact same words as a seconds document but only twice as much the
+ cosine similarity classifies these documents as exactly equal. As the textvectorizer
+ encodes the number of word occurences in a vector the cosine distance can 
+ easily find document that use the same words frequently.
 
 The cosine distance metric gives the best results for the text vectorisers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions. % ROBBERT, FIND SOME QUALTITATIVE EXAMPLES FOR THIS. 
 
@@ -125,6 +131,21 @@ In the current implementation this vectorizer is relatively slow. In practice th
 \subsubsection{Glossaries of tags}
 To be continued.
 
+\subsubsection{Hybrid}
+Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document is a Question, it will be handeled by the cosine textvectorizer, otherwise the simple tag similarity with correlation will do this. The results are shown in table \ref{hybrid}. 
+
+\begin{table}
+\begin{tabular}{| l | l | l | l | l | l | l | l |}
+\hline
+ & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\bf Average} \\
+\hline
+Accuracy hybrid & 53.02 & 40.70 & 46.43 & 43.96 & 26.15 & 33.73 & {\bf 39.58}\\
+\hline
+\end{tabular}
+\caption{Accuracy of a hybrid form that uses the cosine textvectorizer for questions and the correlation simple tag similarity vectorizer otherwise}
+\label{hybrid}
+\end{table}
+
 \subsection{Bayesian weighting}
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | l |}
@@ -139,7 +160,7 @@ Glossaries of tags & 5.35 & 20.24 & 0.00 & 3.93 & 8.21 & 25.00 & {\bf 9.02}\\
 Weighted tag & 5.35 & 20.24 & 0.00 & 3.93 & 8.21 & 25.00 & {\bf 9.02}\\
 \hline
 \end{tabular}
-\caption{Percentage correct links per vectorizer per document type after a k-link measurement}
+\caption{Percentage correct links per vectorizer per document type after a k-link measurement whilst using tag and link devaluation NOT YET CORRECT VALUES!!!!}
 \label{bayes_table1}
 \end{table}
 
@@ -148,29 +169,25 @@ Table \ref{bayes_table1} shows the performance of each of the vectorizers (all w
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | }
 \hline
- & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{\bf Person }& {\bf Event}  \\
+DEVALUATION & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{\bf Person }& {\bf Event}  \\
 \hline
-{\bf Information} & 1.53 &  0.76  &  0.00  &  0.00  & 97.71 & 0.00  \\
-{\bf Question} & 1.72 &  27.59  &  0.00  &  1.72  & 68.97 & 0.00 \\
-{\bf Good Practice} & 0.00 &  0.00  &  0.00  &  0.00  & 100.00 & 0.00 \\
-{\bf Project }&2.50 &  2.50  &  0.00  &  0.00  & 95.00 & 0.00 \\
-{\bf Person} & 100.00 &  0.00  &  0.00  &  0.00  & 0.00 & 0.00 \\
-{\bf Event }& 23.53 &  0.00  &  0.00  &  0.00  & 76.47 & 0.00 \\
+{\bf Information} & 82.79 &  01.08  &  0.00  &  0.00  & 16.12 & 0.00  \\
+{\bf Question} & 12.22&  60.0  &  4.44 &  2.22  & 31.11 & 0.00 \\
+{\bf Good Practice} & 41.18 &  41.18  &  0.00  &  5.88  & 11.76 & 0.00 \\
+{\bf Project }& 56.67 &  20.0  &  0.00  &  10.00  & 13.33 & 0.00 \\
+{\bf Person} & 81.82 &  3.64  &  1.82  &  0.00  & 12.73 & 0.00 \\
+{\bf Event }& 35.71 &  0.00  &  14.29  &  0.00  & 50.00 & 0.00 \\
 \hline
-\end{tabular}
-
-\hspace{10em}
-
-\begin{tabular}{| l | l | l | l | l | l | l | }
+\\
 \hline
- & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{\bf Person }& {\bf Event} \\
+NO DEVALUATION & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{\bf Person }& {\bf Event} \\
 \hline
-{\bf Information} &  34.35 &6.87 &4.58 &6.11 &41.98 &6.11 \\
-{\bf Question} & 12.07 & 27.59 & 13.79 & 3.45 & 43.10 & 0.00\\
-{\bf Good Practice} & 34.78 &8.70 &17.39 &8.70 &17.39 &13.04\\
-{\bf Project } & 25.00 &12.50 &5.00 &12.50 &32.50 &12.50 \\
-{\bf Person} & 30.91 &7.27 &3.64 &1.82 &50.91 &5.45 \\
-{\bf Event }& 35.29 & 0.00 & 11.76 & 23.53 & 17.64 & 11.76\\
+{\bf Information} &  27.95 & 15.05 & 10.75 & 11.83 & 26.86 & 7.53 \\
+{\bf Question} & 4.44 & 37.78 & 17.77 & 2.22 & 35.56 & 2.22\\
+{\bf Good Practice} & 11.76 & 0 & 41.17 & 17.65 &17.65 & 5.88\\
+{\bf Project } & 10.00 & 26.67 & 10.00 &16.67 & 26.67 &10.00 \\
+{\bf Person} & 27.27 & 9.09 & 5.45 & 3.63 & 52.73 & 1.81 \\
+{\bf Event }& 14.29 & 7.14 & 14.28 & 35.71 & 14.29 & 14.29 \\
 \hline
 \end{tabular}
 
@@ -216,6 +233,7 @@ Simple tag & 54.97 & 20.61 & 32.14 & 30.73 & 58.21 & 17.86 & {\bf 46.34}\\
 Tag smoothing & 55.56 & 20.61 & 42.86 & 34.90 & 63.33 & 33.73 & {\bf 49.56}\\
 Glossaries of tags & 36.51 & 23.25 & 21.43 & 36.35 & 50.20 & 44.05 & {\bf 38.80}\\
 Weighted tag & 36.52 & 23.25 & 21.43 & 36.35 & 50.20 & 44.05 & {\bf 38.80}\\
+Hybrid & 54.97 & 39.65 & 32.14 & 30.73 & 58.21 & 17.86 & {\bf 49.72}\\
 \hline
 
 \hline
@@ -227,6 +245,7 @@ Simple Tag & 64.19 & 17.11 & 37.50 & 62.50 & 39.32 & 33.33 & {\bf 45.09}\\
 Tag smoothing & 46.12 & 18.60 & 43.75 & 56.25 & 36.32 & 44.44 & {\bf 38.29}\\
 Glossaries of tags & 25.00 & 14.47 & 37.50 & 33.18 & 17.26 & 46.67 & {\bf 22.00}\\
 Weighted tag & 25.00 & 14.47 & 37.50 & 33.18 & 17.26 & 46.67 & {\bf 22.00}\\
+Hybrid & 64.19 & 50.00 & 37.50 & 62.50 & 39.32 & 33.33 & {\bf 50.93}\\
 \hline
 \end{tabular}
 
