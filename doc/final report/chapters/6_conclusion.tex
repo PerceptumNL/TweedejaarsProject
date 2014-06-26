@@ -1,8 +1,27 @@
 \section{Conclusion}
+This report has compared six different ways (vectorizers) of converting a text
+document into a vector representation and five ways of computing the distance
+between these vectors. All this is done in the context of the Starfish network.
+Also a method to take the knowledge from the network into account and a way to
+determine the number of documents to retrieve were proposed. These combined
+form a complete `pipeline' to compute and propose links to known documents for
+a new document that is about to be added to the Starfish network.
+
 \begin{itemize}
-\item The textvectorizers are significantly better on questions, but do not perform well on persons. Additionally, there are issues with future applicability (videos, images ect.)
-\item The tagvectorizers perform much better on persons. Of all, the simple tag vectorizer surprisingly performs the best and is the fastest, so we recommend using that one, except for events where the glossaries of tags is better. 
+\item The textvectorizers are significantly better on questions, but do not
+  perform well on persons. Additionally, there are issues with future
+  applicability (videos, images ect.)
+\item The tagvectorizers perform much better on persons. Of all, the simple tag
+  vectorizer surprisingly performs the best and is the fastest, so we recommend
+  using that one, except for events where the glossaries of tags is better. 
 \item The threshold value performs ??
-\item The bayesian layer seems to make a too sharp distribution and has no promising results. There seems to be no correlation between the correct links and their probabilities. Maybe a bigger data set is needed, maybe there is really no correlation. 
-\item Main conclusion: use text vectorizer for questions and the tagvectorizers for others. The bayesian approach does not seem to have the preferred effect. The threshold value works acceptable. 
+\item The bayesian layer seems to make a too sharp distribution and has no
+  promising results. There seems to be no correlation between the correct links
+  and their probabilities. Maybe a bigger data set is needed, maybe there is
+  really no correlation. 
+\item Main conclusion: use text vectorizer for questions and the tagvectorizers
+  for others. The bayesian approach does not seem to have the preferred effect.
+  The threshold value works acceptable. 
 \end{itemize}
+
+% goed product vision recommender system

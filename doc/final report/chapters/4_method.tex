@@ -6,7 +6,15 @@ calculating semantical similarity. Before processing, the data is sanitized by
 removing HTML tags and entities and convert unicode characters to their closest
 ASCII representation.
 
-Maybe something about creating the folds by removing some of the documents?
+The raw starfish data contains tags which are aliases of other tags. During 
+preprocessing all tags are replaced by their alias which have a glossary. Also, 
+the current graph also contains some links which should not be returned by a 
+link recommender system. Links from article to an author should be ignored as 
+an author is automatically linked from the document. Links to glossaries should 
+never occur, as they are linked through tags if appropriate.
+
+After the data is sanitized, the tags are unique and the inappropriate links are 
+removed, the data is ready for processing.
 
 \subsection{Text descriptors}
 \subsubsection{Textvectorizer}
@@ -15,7 +23,7 @@ The first set of vectorizers focuses on the texts of the documents. The
 \emph{textvectorizer} is a very generic approach that can be used on any corpus
 of textual documents. In the Starfish context, we define 'content' as the title
 and text-fields of a document. The only exception on this are Persons, of which
-we wil use the name and about-fields. 
+we will use the name and about-fields. 
 
 The textvectorizer first transforms the set of documents into a bag of words
 and calculates the TF-IDF values for all words. This was done using the
@@ -24,7 +32,7 @@ of words that are used very often should be low, common words such as 'and',
 'or' and 'of' are still present in the vectors. This could be caused by the
 different types of documents. For example, a Question often structured in a
 less complex way than a Project description. To prevent this from happening,
-the English stopword list that comes standard with scikit learn was used to
+the English stopwords list that comes standard with scikit learn was used to
 remove these words from the document descriptors.
 
 \subsubsection{Weighted textvectorizer}
@@ -91,18 +99,6 @@ s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 
 
 \subsubsection{Glossaries of tags}
-% The glossaries of tags approach is also based on the intuition certain tags
-% cover overlapping concepts, something which is not always directly reflected
-% by tag frequencies. In the Starfish system, a tag is expected to have a
-% glossary; a short English description of the concept a tag. If tags are
-% related then the glossaries of those will contain terms and words more
-% similar to each other than to other tags' glossaries. The glossaries of tags
-% approach aims to use the network between, visible through glossary
-% similarity, to calculate document similarity.  The vectorizer creates a
-% document descriptor based on the bag of words model for all glossaries. Each
-% tag with a glossary is transformed into a vector using TF-IDF, these vectors
-% are then summed to create the descriptor for a document.
-
 The glossaries of tags approach is also based on the intuition that certain
 tags cover overlapping concepts. Just like the simple tag vectorizer the
 glossaries of tags approach exploits this intuition. In the Starfish system a
@@ -147,8 +143,43 @@ results in a document descriptor that has high weights for words that are
 descriptive for tags that are descriptive for the document.
 
 \subsection{Bayesian weighting}
-Up to this point only the semantic similarity of documents has been taken
-into account.
+Up to this point only the semantic similarity of documents has been taken into
+account. This does however, not take the information in the current network
+into account. For example the probability of a document of type information
+linking to a document of type information is higher than that of the same
+document linking to a document of type project. For this $P(d_i \to d_j \mid
+\Sigma_{ij})$ and $P(d_i \to d_j)$ are interessting. Or in other words the
+probability that two documents are linked given the number of tags they have in
+common and the probability that two document of a given type are linked. These
+probabilies can be estimated from the data. First it is shown how to compute
+$P(d_i \to d_j \mid \Sigma_{ij})$.
+
+\begin{align}
+  P(d_i \to d_j \mid \Sigma_{ij}) &= \frac{P(\Sigma_{ij} \mid d_i \to d_j)P(d_i \to d_j)}{P(\Sigma_{ij})} \\
+  P(\Sigma) &= \frac{{D_\Sigma \choose 2}}{{|D| \choose 2}} \\ 
+  P(\Sigma \mid d_i \to d_j) &= \frac{\textrm{Number of links that have $\Sigma$ tags in common}}{|L|} \\
+  P(d_i \to d_j) &= \frac{|L|}{{|D| \choose 2}}
+\end{align}
+Where $L$ is the set of all links and $D$ is the set of all documents.
+$\Sigma_{ij}$ is the number of tags that document $d_i$ and $d_j$ have in
+common. As is shown above $P(d_i \to d_j)$ is computed as a uniform probability
+for all documents. However this can also be computer while taking the document
+types into account. This is computed next:
+\begin{align}
+  P(d_i \to d_j) &= \frac{|L|}{{|D| \choose 2}}
+\end{align}
+These probabilities will be used to scale the distances that are
+computed by the nearest neighbor algorithm. Because the distances for documents
+that have a high probability should be low therefore the final distances are
+computed in the following way:
+\begin{align}
+  d_i = (1 - P(d_i\to d_j \mid \Sigma_{ij})) \times (1-P(d_i \to d_j)) \times \delta_i
+\end{align}
+where $\delta_i$ is the distance as computed by the nearest neighbor algorithm
+and $d_i$ the final distance that is used to select the proposed documents to
+be linked. This may seem a rather simple statistical model, however due to the
+limited set of items in the dataset it is very hard to learn a more complicated
+model.
 
 \subsection{Thresholds}
 After creating the descriptors for a document and finding a new document's
@@ -167,32 +198,12 @@ outgoing links in the current network.
 \label{fig:link_histogram}
 \end{figure}
 
-In figure~\ref{fig:thresholds}, the distances for nearby documents the system recommends can be viewed. On the horizontal axis, the documents are shown in sorted order. The vertical axis displays the cosine distance for that document has from the new document. The patterns for all vectorizers seem very noisy, especially for documents that had very little links in the original document. The documents which had more links in the original dataset seem to be less scattered and more plausible to fit to a line.
-
-\begin{figure}[h]
-\subfigure[Weighted tags]{	\includegraphics[width =0.24\textwidth]{images/threshold_weighted_tag}	}
-\subfigure[text]{				\includegraphics[width =0.24\textwidth]{images/threshold_text} 			}
-\subfigure[tag smoothing]{	\includegraphics[width =0.24\textwidth]{images/threshold_smoothing} 		}
-\subfigure[glossaries]{		\includegraphics[width =0.24\textwidth]{images/threshold_glossary} 		}
-\caption{The blue purple gradient represents documents with 0 links (blue) to >10 links (purple)}
-\label{fig:thresholds}
-\end{figure}
-
 The the threshold should depend on multiple factors which mostly depend on the setting in which the document linker will be used. Two major factors determine how the threshold should work.
 \begin{enumerate}[1.]
 	\item The degree of certainty we expect from the returned documents.
 	\item The maximum number of documents that should be returned for a specific application.
 \end{enumerate}
 If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users. To ensure the flexibility for choice of algorithm and integration of the application, the threshold algorithm will contain a configurable parameter.
-
-\begin{figure}[h]
-\subfigure[Weighted tags]{	\includegraphics[width =0.24\textwidth]{images/threshold_weighted_tag_difference}		}
-\subfigure[text]{				\includegraphics[width =0.24\textwidth]{images/threshold_text_difference} 			}
-\subfigure[tag smoothing]{	\includegraphics[width =0.24\textwidth]{images/threshold_smoothing_difference} 		}
-\subfigure[glossaries]{		\includegraphics[width =0.24\textwidth]{images/threshold_glossary_difference} 		}
-\caption{Distance betweeen two nearest neighbors}
-\label{fig:thresholds_differences}
-\end{figure}
 
 When adding a document to Starfish, it is assumed that there is always at least one related document. Based on the distance of the nearest neighbor for the new document, the index of a and the configurable parameter, the threshold is defined as in equation~\ref{eq:thresh}. In this equation, $\alpha$ is the configurable parameter, $m$ is the number of documents returned by the nearest neighbor algorithm, $d_0$ is the distance to the closest document, $\frac{m - n}{m}$ is a factor that ensures the maximum allowed distance decreases for documents ranked further away. This is based on the differences between two nearest neighbors which are visualized in figure~\ref{fig:thresholds_differences}. The distances have a long tail form: the distances between the nearest neighbors is relatively large for the closest documents and smaller between the documents further away. 
 
