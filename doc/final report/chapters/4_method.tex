@@ -1,7 +1,7 @@
 \section{Method}
 
 \subsection{Data preprocessing}
-Bla.
+Starfish text content is serialized as HTML, a format which is not suitable for calculating semantical similarity. Before processing, we sanitize the data by removing HTML tags and entities, convert unicode characters to their closest ASCII representation.
 
 \subsection{Text vectorization}
 \subsubsection{Textvectorizer}
@@ -35,11 +35,6 @@ s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 The glossaries of tags approach is also based on the intuition certain tags cover overlapping concepts, something which is not always directly reflected by tag frequencies. In the Starfish system, a tag is expected to have a glossary; a short English description of the concept a tag. If tags are related then the glossaries of those will contain terms and words more similar to each other than to other tags' glossaries. The glossaries of tags approach aims to use the network between, visible through glossary similarity, to calculate document similarity.
 The vectorizer creates a document descriptor based on the bag of words model for all glossaries. Each tag with a glossary is transformed into a vector using TF-IDF, these vectors are then summed (and normalized?) to create the descriptor for a document.
 
-\begin{itemize}
-\item Motivation: find underlying network between tags by using their glossaries
-\item Implementation: hybrid form of text and tag vectorizer
-\end{itemize}
-
 \subsection{Distance metrics}
 Short description of how these were implemented
 
@@ -47,18 +42,24 @@ Short description of how these were implemented
 Explain motivation, theory and implementation 
 
 \subsection{Thresholds}
-In figure~\ref{fig:thresholds} the distances for nearby documents we recommend can be viewed. On the horizontal axis, the documents are shown in sorted order.  The vertical axis displays the cosine distance for that document has from the new document. Different d
+After creating the descriptors for a document and finding a new document's nearest neighbors, a subpart of those links needs to be returned by the linker application. An average document in Starfish has x links. To create a dynamic threshold which returns similar a similar amount of documents, a document from the Starfish data is extracted and then to re-inserted to test the number of links the system returns to the number of links the document had in the original system.
 
-It is clear that different vecotrizers return different curves for  increase of distance. The lines for documents with zero links do not seem to follow a specific pattern, the lines for documents with more links are better clustered. 
-
+In figure~\ref{fig:thresholds}, the distances for nearby documents the system recommends can be viewed. On the horizontal axis, the documents are shown in sorted order. The vertical axis displays the cosine distance for that document has from the new document. The patterns for all vectorizers seem very noisy, especially for documents that had very little links in the original document. The documents which had more links in the original dataset seem to be less scattered and more plausible to fit to a line.
 
 \begin{figure}[h]
-\subfigure[Weighted tags]{	\includegraphics[width =0.45\textwidth]{images/threshold_weighted_tag} }
-\subfigure[text]{	\includegraphics[width =0.45\textwidth]{images/threshold_text} }
-\subfigure[tag smoothing]{	\includegraphics[width =0.45\textwidth]{images/threshold_smoothing} }
-\subfigure[glossaries]{	\includegraphics[width =0.45\textwidth]{images/threshold_glossary} }
+\subfigure[Weighted tags]{	\includegraphics[width =0.45\textwidth]{images/threshold_weighted_tag}	}
+\subfigure[text]{				\includegraphics[width =0.45\textwidth]{images/threshold_text} 			}
+\subfigure[tag smoothing]{	\includegraphics[width =0.45\textwidth]{images/threshold_smoothing} 		}
+\subfigure[glossaries]{		\includegraphics[width =0.45\textwidth]{images/threshold_glossary} 		}
 \caption{The blue purple gradient represents documents with 0 links (blue) to >10 links (purple)}
 \label{fig:thresholds}
 \end{figure}
+
+The the threshold should depend on multiple factors which mostly depend on the setting in which the document linker will be used. Two major factors determine how the threshold should work.
+\begin{enumerate}[1.]
+	\item The degree of certainty we expect from the returned documents.
+	\item The maximum number of documents that should be returned for a specific application.
+\end{enumerate}
+If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users.
 
 Explan motivation, theory and implementation
