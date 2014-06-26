@@ -202,7 +202,22 @@ higher then when two documents have hight weights for different words. This
 measure does not satisfy the four conditions for a distance metric, however
 it may still be useful in the document similarity domain.
 
-\paragraph{Cross-correlation} Finally a method often used to compute the
-similarity between histograms is the cross-correlation. Correlletation measures
-the dependence between two sample sets. However, as shown
-\todo[inline]{Show that correlations is equivalent to cosine distance?}
+\paragraph{Sample Correlation Coefficient} Finally a method often used to compute the
+similarity between histograms is the correlation. Correlletation measures
+the dependence between two sample sets. Pearson's correlation when applied to
+a sample is defined as:
+\begin{align}
+  d_{\textrm{corr}}(q,p) &= \frac{\sum_{i=1}^n(q_i - \overline{q})(p_i - \overline{p})}{\sqrt{\sum_{i=1}^n(q_i - \overline{q})^2}\sqrt{\sum{i=1}^n(p_i - \overline{p})}} \\
+    &= \frac{(q - \overline{q}) \cdot (p - \overline{p})}{||q - \overline{q}||\,||p - \overline{p}||} \\
+    &= d_\textrm{cos}(q - \overline{q}, p - \overline{p})
+\end{align}
+As shown above the pearson correlation is the cosine distance when the 
+documents descriptors are first converted to have mean zero. This means that
+the pearson correlation is, like the cosine distance, scale invariant. However,
+unlike the cosine distance the pearson correlation is also shift invariant. This
+means that when a scalar is added to all elements of the documents descriptor
+the correlation is still the same.
+
+\begin{align*}
+  d_\textrm{cor}(p,q) = d_\textrm{cor}(p, q\times2 + 3)
+\end{align*}
