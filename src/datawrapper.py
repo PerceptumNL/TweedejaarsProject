@@ -59,7 +59,7 @@ class DataWrapper(object):
         link = self.item(link_id)
 
         # Ignore if link simply is the author of the doucment
-        if (item.get('author') == link):
+        if (item.get('author') == link_id):
             return True
         
         # Ignore if link is glossary 
@@ -69,6 +69,7 @@ class DataWrapper(object):
         # Ignore if link is simply a document written by person described by document
         if (item['type'] == 'Person' and link.get('author') == item_id):
             return True
+
         return False
 
     def remove_invalid_links(self):
