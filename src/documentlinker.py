@@ -186,7 +186,7 @@ class DocumentLinker(object):
         """
         if(not self.links):
             # First create links before formatting them
-            return False
+            self.links = [] 
         nlinks = {}
         links = [i[0] for i in self.links]
 
@@ -232,6 +232,19 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     docs = {}
     total_recall = 0
     total_precision = 0
+
+    precision_per_type = {}
+    recall_per_type = {}
+    types = {}
+
+    types = set(data.item(x)['type'] for x in data.items())
+    table_format = {}
+    for ntype in types:
+        table_format[ntype] = {}
+        for itype in types:
+            table_format[ntype][itype] = 0
+    types = table_format
+
     for new_doc, datawrapper in data.test_data():
         if new_doc['type'] == 'Glossary':
             continue
@@ -262,16 +275,55 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
             c -= 1
             continue
 
+        # Save precision and recall
         total_recall += recall
         total_precision += precision
+        if not precision_per_type.has_key(new_doc['type']):
+            precision_per_type[new_doc['type']] = [precision]
+        else:
+            precision_per_type[new_doc['type']].append(precision)
+        if not recall_per_type.has_key(new_doc['type']):
+            recall_per_type[new_doc['type']] = [recall]
+        else:
+            recall_per_type[new_doc['type']].append(recall)
+
+        # Save linktypes
+        for link in linker.links:
+            linktype = data.item(link[0])['type']            
+            types[new_doc['type']][linktype] += 1
+
         print('Document {0}, proposed links: {1}, real links: {2}'.format(new_doc['id'], \
             len(linker.links), len(new_doc['links'])))
         print('Recall: {0}'.format(recall))
         print('Precision: {0} \n'.format(precision))
 
+    print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+    print('Performance report')
+    print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n')
+
     print('Average recall: {0}'.format(Decimal(total_recall)/c))
     print('Average precision: {0}'.format(Decimal(total_precision)/c))
-    print('Total number of documents: {0}\n'.format(c))
+
+    print('\nAverage recall per type')
+    for key in recall_per_type:
+        print('{0}: \t {1}'.format(key, np.mean(recall_per_type[key])))
+    print('\nAverage precision per type')
+    for key in precision_per_type:
+        print('{0}: \t {1}'.format(key, np.mean(precision_per_type[key])))
+
+    print('\nLink distribution per type in percentages')
+    for ntype in types:
+        print('{0}:'.format(ntype))
+        nsum = sum(types[ntype].values())
+        for i in types[ntype]:
+            if types[ntype][i] == 0:
+                mean = 0
+            else:
+                mean = types[ntype][i]/float(nsum)*100
+            print('{0}: \t{1}'.format(i, mean))
+        print('')
+
+    print('\nTotal number of documents: {0}'.format(c))
 
     file = open(filename, "w")
     file.write(json.dumps(docs))
