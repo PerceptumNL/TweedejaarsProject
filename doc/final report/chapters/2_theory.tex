@@ -20,9 +20,9 @@ TF-IDF is a statistic that reflects the importance of a word in a document
 within a corpus and can be calculated as follows:
 
 \begin{align}
-\textrm{tf}(t,d) = 0.5 + \frac{0.5 \times {f}(t, d)}{\max\{{f}(w, d):w \in d\}}\\
-\textrm{idf}(t, D) =  \log \frac{N}{|\{d \in D: t \in d\}|}\\
-\textrm{tfidf}(t,d,D) = \textrm{tf}(t,d) \times \textrm{idf}(t, D)
+  \textrm{tf}(t,d)      &= 0.5 + \frac{0.5 \times {f}(t, d)}{\max\{{f}(w, d):w \in d\}}\\
+  \textrm{idf}(t, D)    &=  \log \frac{N}{|\{d \in D: t \in d\}|}\\
+  \textrm{tfidf}(t,d,D) &= \textrm{tf}(t,d) \times \textrm{idf}(t, D)
 \end{align}
 
 The TF-IDF induces a trade off between the term frequency, the number of times
