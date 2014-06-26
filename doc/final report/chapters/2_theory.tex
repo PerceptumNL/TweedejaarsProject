@@ -145,7 +145,10 @@ where $\varphi$ is the angle between $q$ and $p$. Given that $q \cdot p = ||q||
 \,||p|| \cos(\varphi)$ we can easily compute the $\cos(\varphi)$. This results
 in the definition of the cosine distance metric in equation~\ref{eq:cos}. It is
 very efficient to compute the cosine distance on sparse vectors as only the
-non-zero values are important for the computation.
+non-zero values are important for the computation. Another advantage of the
+cosine similarity is that it is independent of document length. The cosine
+similarity does not strictly satisfy the conditions for a metric, but in 
+practise unless the vectors are normalized.
 
 \begin{align}
   d_\textrm{cos}(q,p) = \left| \frac{q \cdot p}{||q||\,||p||} - 1\right| \label{eq:cos}

@@ -91,18 +91,6 @@ s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 
 
 \subsubsection{Glossaries of tags}
-% The glossaries of tags approach is also based on the intuition certain tags
-% cover overlapping concepts, something which is not always directly reflected
-% by tag frequencies. In the Starfish system, a tag is expected to have a
-% glossary; a short English description of the concept a tag. If tags are
-% related then the glossaries of those will contain terms and words more
-% similar to each other than to other tags' glossaries. The glossaries of tags
-% approach aims to use the network between, visible through glossary
-% similarity, to calculate document similarity.  The vectorizer creates a
-% document descriptor based on the bag of words model for all glossaries. Each
-% tag with a glossary is transformed into a vector using TF-IDF, these vectors
-% are then summed to create the descriptor for a document.
-
 The glossaries of tags approach is also based on the intuition that certain
 tags cover overlapping concepts. Just like the simple tag vectorizer the
 glossaries of tags approach exploits this intuition. In the Starfish system a
@@ -147,8 +135,43 @@ results in a document descriptor that has high weights for words that are
 descriptive for tags that are descriptive for the document.
 
 \subsection{Bayesian weighting}
-Up to this point only the semantic similarity of documents has been taken
-into account.
+Up to this point only the semantic similarity of documents has been taken into
+account. This does however, not take the information in the current network
+into account. For example the probability of a document of type information
+linking to a document of type information is higher than that of the same
+document linking to a document of type project. For this $P(d_i \to d_j \mid
+\Sigma_{ij})$ and $P(d_i \to d_j)$ are interessting. Or in other words the
+probability that two documents are linked given the number of tags they have in
+common and the probability that two document of a given type are linked. These
+probabilies can be estimated from the data. First it is shown how to compute
+$P(d_i \to d_j \mid \Sigma_{ij})$.
+
+\begin{align}
+  P(d_i \to d_j \mid \Sigma_{ij}) &= \frac{P(\Sigma_{ij} \mid d_i \to d_j)P(d_i \to d_j)}{P(\Sigma_{ij})} \\
+  P(\Sigma) &= \frac{{D_\Sigma \choose 2}}{{|D| \choose 2}} \\ 
+  P(\Sigma \mid d_i \to d_j) &= \frac{\textrm{Number of links that have $\Sigma$ tags in common}}{|L|} \\
+  P(d_i \to d_j) &= \frac{|L|}{{|D| \choose 2}}
+\end{align}
+Where $L$ is the set of all links and $D$ is the set of all documents.
+$\Sigma_{ij}$ is the number of tags that document $d_i$ and $d_j$ have in
+common. As is shown above $P(d_i \to d_j)$ is computed as a uniform probability
+for all documents. However this can also be computer while taking the document
+types into account. This is computed next:
+\begin{align}
+  P(d_i \to d_j) &= \frac{|L|}{{|D| \choose 2}}
+\end{align}
+These probabilities will be used to scale the distances that are
+computed by the nearest neighbor algorithm. Because the distances for documents
+that have a high probability should be low therefore the final distances are
+computed in the following way:
+\begin{align}
+  d_i = (1 - P(d_i\to d_j \mid \Sigma_{ij})) \times (1-P(d_i \to d_j)) \times \delta_i
+\end{align}
+where $\delta_i$ is the distance as computed by the nearest neighbor algorithm
+and $d_i$ the final distance that is used to select the proposed documents to
+be linked. This may seem a rather simple statistical model, however due to the
+limited set of items in the dataset it is very hard to learn a more complicated
+model.
 
 \subsection{Thresholds}
 After creating the descriptors for a document and finding a new document's
