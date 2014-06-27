@@ -1,10 +1,10 @@
 \section{Experiments}
 \label{sec:experiments}
 \subsection{Evaluation metrics}
-In order to evaluate the performance of the different algorithms, three different metrics were used. For each of these methods we hold on to the closed world assumption that if a link is not present within the given data set, it should not be a link. 
+In order to evaluate the performance of the different algorithms, two different metrics were used. Both methods use a `take one out principle', where a document is taken out of the entire knowledge graph. The document and the remaining set of documents are then used as input for the document linker. This is repeated for all the documents in the training set. Because of the small dataset no cross validation was used. For each of these methods we hold on to the closed world assumption that if a link is not present within the given data set, it should not be a link. 
 
 \subsubsection{Precision and recall} 
-Precision and recall can be calculated when the complete system pipeline is used. Precision reflects the fraction of relevant documents from all proposed documents and can thus be calculated as follows:
+Precision and recall can be calculated when the complete system pipeline (including the threshold) is used. Precision reflects the fraction of relevant documents from all proposed documents and can thus be calculated as follows:
 
 \begin{align*}
   \textrm{precision} = \frac{|\;\textrm{relevant\;documents} \cap \textrm{retrieved\;documents}\;|}{|\textrm{retrieved\;documents}\;|}
@@ -26,15 +26,19 @@ The F1-measure can be used to capture both precision and recall into one number.
 
 All these metrics can be unraveled into precision, recall and F1-measure per
 document type to give more insight into the performance of the algorithms with
-regards to different document types. 
+regards to different document types. All of these metrics will be reported in terms
+of averages over the entire knowledge graph, as calculated using the earlier discussed `take one out
+principle'. 
 
 \subsubsection{K-links}
-The k-links metric is used to evaluate the algorithms, without being influenced by the threshold for the number of proposed links. For a document with a given number of correct links, it proposes the same amount of links that the document is known to have. This evaluation metric thus makes the assumption that the algorithm knows in advance how many links should be returned. By doing so, the recall and precision are equivalent since the number of relevant and retrieved document is the same. It prevents the precision from being too optimistic, which would be the case if the fixed number would be lower than the actual amount of links. It also prevents the recall for being too optimistic in the cases that the actual amount of links is lower than the fixed number of proposed links. 
+The k-links metric is used to evaluate the algorithms without being influenced by the threshold for the number of proposed links. For a document with a given number of correct links, it proposes the same amount of links that the document is known to have. This evaluation metric thus makes the assumption that the algorithm knows in advance how many links should be returned. By doing so, the recall and precision are equivalent since the number of relevant and retrieved document is the same. It prevents the precision from being too optimistic, which would be the case if the fixed number would be lower than the actual amount of links. It also prevents the recall for being too optimistic in the cases that the actual amount of links is lower than the fixed number of proposed links. 
 
 The disadvantage of the k-links metric is of course that it does not take into account the certainty the algorithm has due to the distances. For example, it could be that the distance of the first two ranked documents is very small, but the distance of the third is very large. If the original document has 10 links, the system is forced to additionally return the nine documents, even though these are likely to be wrong because they have a relatively big distance. 
 
-\begin{table}
+\subsection{Distance evaluation}
+The results of the k-link measurements for all documents with each of the distance metrics is shown in table \ref{klink}. This table shows that of all distance metrics, cosine seems to perform best on all vectorizers except for the glossaries of tags. The correlation metric is a close follow-up with approximately the same accuracies, which makes sense since these two metrics are very similar. The intersection vectorizer does not seem to be of much use, since it returns the same documents for each vectorizer. The eucledian distance has an accuracy of only 3.25\% and 1.08\% on the text and weighted text vectorizers respectively. It performs a bit better on the simple tag vectorizers and glossaries of tags (16.56\% and 14.75\% respectively) but still performs lower than the cosine metric. The bhattacharyaa vectorizer performs best on the glossaries of tags ans weighted tag vectorizers, though the difference with the cosine metric is not as high. Due to implementation difficulties, the tag smoothing vectorizer could not be measured with the eucledian distance and the simple tag vectorizer did not work for the bhattacharyya vectorizers.
 
+\begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | l |}
 \hline
 {\bf CORRELATION} & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\bf Average} \\
@@ -75,7 +79,7 @@ Weighted tag & 4.15 & 3.51 & 10.71 & 19.06 & 0.00 & 24.21 & {\bf 4.45} \\
 Textvectorizer & 3.04 & 3.95 & 17.86 & 0 & 0.85 & 21.43 & {\bf 3.25} \\ 
 Tag smoothing & 1.32 & 1.32 & 7.14 & 0 & 0.43 & 0 & {\bf 1.08} \\ 
 Simple tag & 14.05 & 10.53  & 30.36 & 38.23 & 14.36 & 35.71 & {\bf 16.56} \\ 
-Tag smoothing & 0 & 0 & 0 & 0 & 0 & 0 & {\bf 0} \\ 
+Tag smoothing & - & - & - & - & - & - & {\bf 0} \\ 
 Glossaries of tags & 15.64 & 10.53 & 41.07 & 31.46 & 7.95 & 40.47 & {\bf 14.75} \\ 
 Weighted tags & 15.64 & 10.53 & 41.07 & 31.46 & 7.95 & 40.47 & {\bf 14.75} \\ 
 \hline
@@ -99,7 +103,7 @@ Weighted tag & 18.36 & 17.98 & 48.21 & 48.13 & 10.51 & 40.45 & {\bf 19.39} \\
 \subsection{Text-based descriptors}
 Table \ref{klink} shows the k-link values of all vectorizers, including those of the textvectorizer and the weighted-text vectorizer. The best performance of the textvectorizers is obtained by the cosine distance. This can be attributed
  to the fact that the cosine distance is independent to document length and only
- computes a similarity in document structure. In other words when a document
+ computes a similarity in document structure. In other words, when a document
  has the exact same words as a seconds document but only twice as much the
  cosine similarity classifies these documents as exactly equal. As the textvectorizer
  encodes the number of word occurrences in a vector the cosine distance can 
@@ -107,45 +111,9 @@ Table \ref{klink} shows the k-link values of all vectorizers, including those of
 
 The cosine distance metric gives the best results for the text vectorizers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions.
 
-Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons. However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance on persons. 
+Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons. However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance of the textvectorizer on persons. 
 
 Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. In the case of two different languages, there are less words that the two documents have in common. If important keywords entail word such as `clickers' versus `stemsysteem', there is no way of relating the two documents. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
-
-Table~\ref{klink} shows the k-link values of all vectorizers, including those
-of the textvectorizer and the weighted-text vectorizer. The best performance of
-the textvectorizers is obtained by the cosine distance. This can be
-attributed to the fact that the cosine distance is independent to document
-length and only computes a similarity in document structure. In other words
-when a document has the exact same words as a seconds document but only twice
-as much the cosine similarity classifies these documents as exactly equal. As
-the textvectorizer encodes the number of word occurrences in a vector the
-cosine distance can  easily find document that use the same words frequently.
-
-The cosine distance metric gives the best results for the text vectorizers. On
-average, 19.49\% and 19.59\% percent of the number of proposed links
-respectively are correct. The weighted text vectorizer performs a bit better,
-which is mainly due to an improvement in performance on information and
-questions. % ROBBERT, FIND SOME QUALTITATIVE EXAMPLES FOR THIS. 
-
-Both textvectorizers have a low percentage correct with regards to proposing
-links for Persons. A further analysis shows that 76.36\% (not weighted) and
-69.09\% (weighted) of the links for Persons are towards other Persons (see
-appendix X). However, within the Starfish network such links almost never occur
-(see table~\ref{bayes_table3} for the distribution of document types within
-Starfish). This could explain the low performance on persons. 
-
-Overall, both textvectorizers are slow in performance even though the corpus is
-small. Additionally, the the bag-of-words approach imposes a few limitations on
-the document linker. Firstly, it performs badly when different languages are
-used. Figure x shows the differences of vectors of three texts when an English
-document is combined with an English proposed document and a Dutch proposed
-document. In the case of two different languages, there are less words that the
-two documents have in common. If important keywords include words such as
-`clickers' versus `stemsysteem', there is no way of relating the two documents.
-Secondly, the current StarFish network consists of mainly textual content.
-However, in the future this is likely to be extended with images, videos and
-other non-textual content. These sources should then somehow be converted to
-text.
 
 \subsection{Tag-based descriptors}
 
@@ -163,10 +131,8 @@ similar seems to happen with Persons, of which 50.91\% of the connections are
 with other Persons.  Apparently, persons with similar expertise are tagged
 similarly.  However, as mentioned with the text vectorizer, in Starfish persons
 almost never refer to other persons.
-Moreover, if a document is badly labeled
-this can also induce problems. For example, the question `TurnitIn licence at the 
-UvA' has two tags, but the simple tag similarity is unable to find both it's links because 
-the link `What is TurnitIn?' is not tagged with `TurnitIn'. The text vectorizer returns both
+Moreover, if a document is badly labeled this can also induce problems. For example, the question `TurnitIn licence' at the `UvA' has two tags, but the simple tag similarity is unable to find both it's links because 
+the link `What is TurnitIn?' is not tagged with `TurnitIn'. The text vectorizer, on the other hand, returns both
 links correctly. Good practices, events and projects perform better, 
 but these document types only make up to 3.2\%, 2.7\% and 5.4\% of the
 total amount of documents respectively so have less influence on the average
@@ -197,9 +163,8 @@ long. This results in weak vectors which aren't very well distinctive from other
 which have little tags or little tags with glossaries. The information needed to link the 
 documents does not seem to be present in the current dataset.
 
-
 \subsubsection{Weighted tag glossaries}
-Table~\ref{klink} shows that the weighted tag vectorizer, an extension of the glossaries of tags vectorizer, performs exactly the same as the glossaries of tags vectorizer. It thus seems that applying the weights has no influence on the performance of this vectorizer. The histogram in figure~\ref{weightedtag} shows the number of tags that appear in a certain amount of documents. From this can be derived that there are many tags that almost all the tags appear in 10 documents or less. There are only a few tags that appear in a lot of documents. Thus, the influence of the weighted tag vectorizer is caused by the fact that many tags assign the same or a similar weight to vector, making it approximately the same as the glossaries of tags vectorizer.  
+Table~\ref{klink} shows that the weighted tag vectorizer, an extension of the glossaries of tags vectorizer, performs exactly the same as the glossaries of tags vectorizer. It thus seems that applying the weights has no influence on the performance of this vectorizer. The histogram in figure~\ref{weightedtag} shows the number of tags that appear in a certain amount of documents. From this can be derived that there are many tags that almost all the tags appear in about 13 documents or less. There are only a few tags that appear in a lot of documents. Thus, the small influence of the weighted tag vectorizer is caused by the fact that many tags assign the same or a similar weight to vector. This could explain why it proposes the same links as the glossaries of tags vectorizer.  
 
 \begin{figure}
 \center
@@ -209,8 +174,7 @@ Table~\ref{klink} shows that the weighted tag vectorizer, an extension of the gl
 \end{figure}
 
 \subsubsection{Hybrid}
-Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document has no tags, it will be handeled by the textvectoriser, otherwise the simple tag similarity will do this. Boht vectorizers use the cosine distance metric. The results are show in table \ref{hybrid}. This hybrid vectorizer performs significantly better than the two vectorizers themselves. 
-
+Given the previous results, it can be concluded that the text vectorizer works better on Questions than the tag vectorizers, though it performs less good on other document types. This difference is probably due to the fact that many Questions have no tags. The hybrid vectorizer takes the best of both worlds by combining the textvectorizer and simple tag similarity into one vectorizer. The textvectorizer was used instead of the weighted text vectorizer because they differed only little in performance, but the textvectorizer is a bit faster. If a document has no tags, it will be handeled by the textvectoriser, otherwise the simple tag similarity will propose links. This vectorizer works best if cosine distance is used. These results are shown in table \ref{hybrid}. This table shows that the hybrid vectorizer performs significantly better with an accuracy of 26.13\% than the text and tag vectorizers themselves, which had an accuracy of 19.49\% and 22.80\% respectively. The percentage of correctly answered questions, 31.93\%, is much higher than that of the simple tag vectorizers. For the other document types, the accuracy is comparable with that of the simple text vectorizer. Thus, the hybrid vectorizer indeed improves accuracy on Questions. 
 
 \begin{table}[h!]
 \begin{tabular}{| l | l | l | l | l | l | l | l |}
@@ -250,14 +214,7 @@ Table~\ref{bayes_table1}  shows the distribution of links in the simple tag
 similarity vectorizer, with and without the probabilities (all based on k-link
 measuring). It is clear that the links with probabilities have a sharper
 distribution: the sparseness of the table shows that many types of links do not
-even exist. This effect could be caused by overfitting - the data set could be
-too small to calculate reliable probabilities. The preferred effect of having no
-Persons link to other Persons was done correctly. However, Good Practices, for
-example, are now only assigned to be a person. The vectorizer without
-probabilities has a distribution that seems to be more reliable for these types
-of documents. The distributions with and without probabilities can be compared
-with the original distribution of links in the current Starfish knowledge base,
-as shown in table~\ref{bayes_table2}.  
+even exist. There seem to be some correlations between the vectorizer with probabilities and the real distribution of links. The original distribution of links in the current Starfish knowledge base is shown in table~\ref{bayes_table2}. The preferred effect of having no Persons link to other Persons, which was mentioned as a flaw of both the tag and text vectorizers, was done correctly. However, the Information documents are all linked to other Information documents. Table~\ref{bayes_table2} shows that Information documents indeed often are linked to other Information documents, but they also often link to other Persons, which is not captured by the vectorizer that uses probabilities. If the vectorizer does not use the probabilities, the distribution is less sharp, as shown in the lower half of table~\ref{bayes_table1}. This distribution seems to have no correlation with the real document distribution.
 
 \begin{table}
 \begin{tabular}{| l | l | l | l | l | l | l | }
@@ -306,17 +263,20 @@ NO DEVALUATION & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{
 \end{table}
 
 Figure \ref{distribution} gives insight into the reason why the probabilities
-do not improve the performance. The figure shows a histogram of the percentage
+do not improve the performance, even though they offer a distribution of links between document types that is closer to the real distribution. The figure shows a histogram of the percentage
 of documents that have a certain probability. The left side shows the
 distribution for the tag probabilities, where the red bars represent incorrect
-links and the green bars show the correct ones. One would expect that a higher
-percentage of correct links would be on the righthand side of the histogram,
+links and the green bars show the correct ones. These numbers are obtained by
+making the simple tag vectorizer propose as many links as there are documents.
+One would expect that a higher percentage of correct links would be on the righthand side of the histogram,
 since these should have a higher probability. However, this is clearly not the
 case. On the contrary, about 75\% of the incorrect links have a chance of
 0.0014, the highest probability. The link probability, shown on the right hand
 side of the figure, is a bit more promising since the incorrect links are a bit
 higher on the left hand side of the histogram. However, there is still no clear
-difference in distribution. 
+difference in distribution between correct and incorrect links. This could also be
+an explanation of the bad performance of the vectorizers that use probabilities, besides
+the sharp distribution that was discussed before. 
 
 \begin{figure}
 \includegraphics[width =\textwidth]{images/probabilities}
@@ -416,10 +376,12 @@ Hybrid &  23.53 & 35.31 & 44.72 & 34.61 & 13.85 & 31.17 &{\bf 23.92} \\
 
 Knowing that the pipeline until thresholding returns sane results, the actual performance
 of the proposed threshold formula is tested on the dataset. The performance of the 
-automated threshold was measured for all vectorizers with the cosine metric since that one gave the overall best reuslts. Now, precision and recall are different because the threshold can 
-return a different number of links than the links that are known to be correct. Table~\ref{tab:thresh_eval} 
+automated threshold was measured for all vectorizers with the cosine metric since that one gave the overall best reuslts. Now - in contrast with the k-link measurements, precision, recall and the F1-measure can be calculated because the threshold can return a different number of links than the links that are known to be correct. Table~\ref{tab:thresh_eval} 
 shows the precision, recall and f1-measure for each of the vectorizers, including an unraveling for
-each type of document. A comparison between this table and table \ref{klink} and table \ref{hybrid}, which were measured with the k-link metric, shows that the f1-measure of most outcomes is comparable with the k-link accuracy that was measured, even though performance decreases a bit for all vectorizers. The hybrid vectorizer still performs the best. This difference in performance is probably due to the fact that k-link is optimistic with regards to both precision and recall, as explained in the evaluation metric of this chapter. % However, the glossaries of tags and weighted tag vectorizer seem to have significantly better results - an f1-measure of 28.08 compared to a 18.02 k-link measurement. This seems to be caused by a much higher precision and recall for the Person type of documents. In the knowledge base, a Person has on average about 1.6 links. However, the thresholded glossaries of tags returns 5.9 links on average. For example, the Person Andre Heck is linked to two documents, an Event and a Project. The k-link vectorizer returns two false documents - a Good Practice and a Qeustion. The thresholded vectorizer returns a total of 5 links, including the correct Event. It depends on a preference for recall or precision whether or not this difference in performance is desirable. 
+each type of document. A comparison between this table and table \ref{klink} and table \ref{hybrid}, which were measured with the k-link metric, shows that the f1-measure of most outcomes is comparable with the k-link accuracy that was measured. Since these two metrics are calculated differently, we cannot compare the
+results directly. However, the differences between the different vectorizers are approximately the same. For the tag vectorizers, precision and recall are in approximately the same range. This indicates that the threshold does not have a clear preference for eighter returning too many (which would result in a higher recall) or too little (which would return in a higher precision) links. However, the textvectorizers seem to have a preference for returning too little documents,  with a recall and precision of respectively 15.66\% and 15.11\%. The glossaries of tags approaches seem to have a preference for a higher recall, with 38.80\% and 17.26\% for recall and precision respectively. This seems to be caused by a much higher precision and recall for the Person type of documents. In the knowledge base, a Person has on average about 1.6 links. However, the thresholded glossaries of tags returns 5.9 links on average. For example, the Person Andre Heck is linked to two documents, an Event and a Project. The k-link vectorizer returns two false documents - a Good Practice and a Qeustion. The thresholded vectorizer returns a total of 5 links, including the correct Event. It depends on a preference for recall or precision whether or not this difference in performance is desirable. 
+
+Of all vectorizers, the hybrid vectorizer still performs the best. Precision and recall are 27.26\% and 28.61\% respectively. The reason why the F1-measure is lower than these two, is due to the fact that we are dealing with an average measurement. Apparently, there is quite often a difference between precision and recall per document. 
 
 \begin{table}
 

@@ -13,7 +13,7 @@
 \usepackage{pdfpages}
 \usepackage{tabularx} % in the preamble
 \usepackage{setspace}
-
+\addtocontents{toc}{\protect\enlargethispage{\baselineskip}}
 
 % Graphics
 \usepackage{graphicx}
@@ -99,31 +99,32 @@ Universiteit van Amsterdam
 
 % Front Matter
 \begin{abstract}
-This report describes the results of the second year's project for the Perceptum team. The project focused on creating a \emph{document link recommender system} to the document knowledge base of the Starfish website. Because users do not have knowledge of all the documents in the entire knowledge base, an system that can perform this automatically is needed. The product created during performs this task using several different algorithms. 
+This report describes the results of the second year's project for the Perceptum team. The project focused on creating a \emph{document link recommender system} to the document knowledge base of the Starfish website, a platform where educators can share information about educational innovation. Because users of Starfish do not have knowledge of all the documents in the entire knowledge base, a system that can perform this automatically is needed. This report describes the implementation and analysis of several algorithms that can perform this task. 
 
-To perform this task, a descriptor-based technique was used. Firstly, each of the documents is transformed into a descriptor by algorithms called \emph{vectorizers}. Two vectorizers based on the text of documents (textvectorizer and weighted text vectorizers), two others use the tags of documents (simple tag similarity and tag smoothing). The last two perform the textual transformation on text-based descriptions of tags (glossaries of tags and weighted tags). Secondly, a ranking is made of all documents based on the similarity of the document descriptors and the descriptor of the new added document. This was done using the Nearest Neighbor algorithm with several
-distance metrics, of which cosine turned out to work the best. Then, it is possible to re-rank the proposed documents based on the probability that two documents are linked together, a number derived from the knowledge base distributions. The last step in the pipeline is to determine how many of the nearest neighbours should be returned. For this a threshold was set that compares the distance as calculated Nearest Neighbor of consecutive ranks. 
+To create the document linker, a document descriptor-based technique was used. Firstly, each of the documents is transformed into a descriptor by algorithms called \emph{vectorizers}. Six vectorizers were implemented. Two vectorizers are based on the text of documents (textvectorizer and weighted text vectorizers) and two others use the tags of documents (simple tag similarity and tag smoothing). The last two vectorizers perform the textual transformation on text-based descriptions of tags (glossaries of tags and weighted tags). Additionally, a hybrid method of a text-based and tag-based is proposed. After creating the document descriptors, a ranking is made of all documents based on the similarity of the document descriptors and the descriptor of the new added document. This was done using the $K$-Nearest Neighbor algorithm with several distance metrics, of which the cosine distance turned out to work the best. The system also provides a method that can re-rank this set of proposed documents based on the probability that two documents are linked together.  The last step in the pipeline determines how many of the nearest neighbours should be returned. For this a threshold was set that compares the distance as calculated with $K$-Nearest Neighbor of two documents with consecutive ranks. 
 
-Three main conclusions can be drawn from this study. Firstly, the
-text vectorizers perform significantly better for questions, however these do
-perform badly on documents of type `person'. On documents of type `person' the
-tag vectorizers do perform well. Suprisingly the simple tag vectorizer has the
-best performance.  Secondly the probabilistic model of the network that is proposed 
-is either to simplistic or the data available is too little. In either case it might be off interest to
+Three main conclusions were drawn from this study. Firstly, the
+text vectorizers performs the best if the newly added document is a Question (42.02-44.82\% accuracy on k-link measuring). However, it cannot deal with
+documents that have different languages or non-textual documents such as images, videos
+and audio. The simple tag vectorizer has the
+best performance (22.80\% overall average accuracy on k-link measuring) and is the fastest. The best overall performance with the k-link measurement
+is gained with the hybrid vectorizer (26.13\%) that uses the textvectorizer if no tags are
+available and the simple tag vectorizer otherwise. This vectorizer performs as
+good on most document types as the simple tag vectorizer, but performs significantly
+better on questions (31.93\% versus 16.67\%). Secondly the probabilistic model of the network that is proposed 
+is either to simplistic
+or the data available is too little. In either case it might be off interest to
 further investigate a similar model on a bigger data set. Lastly the method
-of selecting the number of documents shows that the precision and recall do
-not change significantly if a threshold is added to most vectorizers. Only the
-glossaries of tags and weighted glossaries of tags get a significantly higher
-recall for persons. The best overall performance with the k-link measurement
-is gained with the hybrid vectorizer that uses the textvectorizer if no tags are
-available and the simple tag vectorizer otherwise. 
+of selecting the number of documents shows that the overall performance 
+does not change significantly if the threshold is added to most vectorizers.
+However, the text vectorizers seem to have a bias towards a higher precision in the
+trade off between precision and recall. The
+glossaries of tags and weighted glossaries of tags get a higher
+recall for persons. The best performance while using the threshold was obtained
+using the hybrid vectorizer, with an average precision, recall and F1 measure of respectively 28.61\%, 27.26\% and 23.92\%. 
 
-Whilst this study is based on only a small network of documents taken together
-these findings do show that the chosen solution is capable of recommending
-links between documents with a certainty far above the guessing level. It is
-now up to the client to choose if a precision of 28.61\%
-is good enough to let the user select a document to link and if a recall of 27.26\%
-covers enough of the documents within the knowledge base. 
+These results are clearly not good enough for an automatic linking system, but could be considered high enough for a recommender system since they are far above guessing level. It is now up to the client to choose if a precision of 28.61\% is good enough to let the user select a document to link and if a recall of 27.26\%
+covers enough of the documents within the knowledge base.  
 \end{abstract}
 \clearpage
 

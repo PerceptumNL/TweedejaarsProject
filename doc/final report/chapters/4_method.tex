@@ -1,5 +1,4 @@
 \section{Method}
-
 \subsection{Data preprocessing}
 Starfish text content is serialized as HTML, a format which is not suitable for
 calculating semantical similarity. Before processing, the data is sanitized by
@@ -21,22 +20,22 @@ removed, the data is ready for processing.
 
 The first set of vectorizers focuses on the texts of the documents. The
 \emph{textvectorizer} is a very generic approach that can be used on any corpus
-of textual documents. In the Starfish context, we define 'content' as the title
-and text-fields of a document. The only exception on this are Persons, of which
-we will use the name and about-fields. 
+of textual documents. In the Starfish context, the content of a document is defined as the `title'
+and `text'-fields of a document. The only exception on this are Persons, of which
+the `name' and `about'-fields are used. 
 
 The textvectorizer first transforms the set of documents into a bag of words
 and calculates the TF-IDF values for all words. This was done using the
 TFIDFVectorizer of scikitlearn \citep{scikit-learn}.  Though the TF-IDF values
-of words that are used very often should be low, common words such as 'and',
-'or' and 'of' are still present in the vectors. This could be caused by the
+of words that are used very often should be low, common words such as `and',
+`or' and `of' are still present in the vectors. This could be caused by the
 different types of documents. For example, a Question often structured in a
 less complex way than a Project description. To prevent this from happening,
 the English stopwords list that comes standard with scikit learn was used to
 remove these words from the document descriptors.
 
 \subsubsection{Weighted textvectorizer}
-The weighted text vectorizer is an extension of the textvectorizer that takes
+The \emph{weighted text vectorizer} is an extension of the textvectorizer that takes
 into account the links of the proposed documents. The vectors of the links of a
 document are added with some weight to the vectors of the documents themselves.
 Intuitively, this would add semantic information about a document based on its
@@ -47,7 +46,7 @@ what documents could be related to that Person.
 
 The vectors of links of a document are added in a recursive way, where
 documents that are linked directly have a higher weight than documents that are
-linked transitively. The algorithm is displayed in algorithm~\ref{algo:wtv}.
+linked transitively. The recursive algorithm is displayed in algorithm~\ref{algo:wtv}.
 
 \begin{algorithm}                      
   \caption{Weighted textvectorizer}      
@@ -70,22 +69,21 @@ linked transitively. The algorithm is displayed in algorithm~\ref{algo:wtv}.
   \end{algorithmic}
 \end{algorithm}
 
-
-
 \subsection{Tag descriptors}
 \subsubsection{Simple tag vectorizer}
 The tag-based approach is more Starfish specific than the text-based approach,
 since it depends on the tags that are available in Starfish. The tags on
 Starfish are added by the users themselves, so offer a human-based vision on
-what a document is really about. The simple tag vectorizer is a very
+what subject(s) a document really covers. The \emph{simple tag vectorizer} is a very
 straightforward implementation of the idea of using tags. The vectors of this
 transformation consist of a binary list that tells whether or not a tag is
 attached to the document. 
 
 \subsubsection{Tag smoothing}
-The tag smoothing vectorizers creates descriptors based on the tag set of a
-document. A tag co-occurs with other tags in a document, we assume documents
-with similar tags should be linked in Starfish. Let the frequency of occurrence
+The \emph{tag smoothing vectorizer} creates descriptors based on the tag set of a
+document. If a tag co-occurs with other tags in a document, we assume that these
+tags are similar. In this approach it is assumed that documents with such similar tags 
+should be linked in Starfish. Let the frequency of occurrence
 with other tags across the dataset form a vector for each tag. The
 descriptor for a document is then created by combining the occurrence vectors
 for all the document's tags. Now documents with tags that occur together will
@@ -121,20 +119,20 @@ s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 \end{equation}
 
 \subsubsection{Glossaries of tags}
-The glossaries of tags approach is also based on the intuition that certain
+The \emph{glossaries of tags} approach is also based on the intuition that certain
 tags cover overlapping concepts. Just like the simple tag vectorizer the
 glossaries of tags approach exploits this intuition. In the Starfish system a
 tag is expected to have a glossary; a short English description of the concept
 of a tag. These glossaries contain terms and words that are descriptive for the
-tag. The glossary of tags vectorizer aims to use these terms to create a
-document descriptor based on the tags associated with a document. In other
-words the set of
+tag. The glossary of tags vectorizer aims to use these terms by creating a
+document descriptor based on the descriptions of the tags that are associated 
+with a document. 
 
 First for each tag a tag descriptor $t_i$ is created. This tag descriptor is
 a TF-IDF bag of words vector created from the glossaries of each tag. These
 descriptors form the basis for the document descriptors. For each document
 a document descriptor $d_i$ is created by summing the tag descriptors of the
-associated tags.
+associated tags:
 \begin{align}
   d_i = \sum_{j \in T(d_i)} t_j
 \end{align}
@@ -143,7 +141,7 @@ way a document descriptor is created based on a semantic representation of
 the tags associated with the document.
 
 \subsubsection{Weighted tag vectorizer}
-The weighted tag vectorizer is similar to the glossaries of tags vectorizer
+The \emph{weighted tag vectorizer} is similar to the glossaries of tags vectorizer
 discussed in the previous section. However instead of just summing the tag
 descriptors an weight is used to scale the tag descriptor. This way tags that
 are associated with a lot of documents don't contribute as much to the document
@@ -162,17 +160,24 @@ This vectorizer first gives extra importance to descriptive words in each of
 the tag descriptors by using the TF-IDF bag of words. After this more
 importance is given to tags that are more descriptive using the weights. This
 results in a document descriptor that has high weights for words that are
-descriptive for tags that are descriptive for the document.
+descriptive for tags which themselves are descriptive for the document.
+
+\subsubsection{Hybrid}
+The \emph{hybrid} vectorizer is a hybrid of the textvectorizer and simple tag
+similarity vectorizer. If a document has no tags, this vectorizer uses the textvectorizer.
+Otherwise, the simple tag vectorizer is used. This prevents the simple tag vectorizer
+from randomly assigning documents with one tag to a document that has no tags. 
+
 
 \subsection{Bayesian weighting}
 Up to this point only the semantic similarity of documents has been taken into
 account. This does however, not take the information in the current network
-into account. For example the probability of a document of type information
+into account. For example, the probability of a document of type information
 linking to a document of type information is higher than that of the same
 document linking to a document of type project. For this $P(d_i \to d_j \mid
-\Sigma_{ij})$ and $P(d_i \to d_j)$ are interessting. Or in other words the
+\Sigma_{ij})$ and $P(d_i \to d_j)$ are interesting, which are the
 probability that two documents are linked given the number of tags they have in
-common and the probability that two document of a given type are linked. These
+common and the probability that two document of a given type are linked, respectively. These
 probabilies can be estimated from the data. First it is shown how to compute
 $P(d_i \to d_j \mid \Sigma_{ij})$.
 
@@ -185,14 +190,14 @@ $P(d_i \to d_j \mid \Sigma_{ij})$.
 Where $L$ is the set of all links and $D$ is the set of all documents.
 $\Sigma_{ij}$ is the number of tags that document $d_i$ and $d_j$ have in
 common. As is shown above $P(d_i \to d_j)$ is computed as a uniform probability
-for all documents. However this can also be computed while taking the document
+for all documents. However, this can also be computed while taking the document
 types into account. This results in a probability for every document type
 to every document type. In total this are $\tau^2$ probabilities where $\tau$
 is the number of document types.
 \begin{align}
   P(d_i \to d_j) &= \frac{|\{(m, n) \mid m \to n \in L \land \tau(m) = \tau(d_i) \land \tau(n) = \tau(d_j)\}|}{|L|} \label{eq:linkprob}
 \end{align}
-Where $\tau(x)$ is the type of document $x$. In other words the number of links
+Where $\tau(x)$ is the type of document $x$. In other words, the number of links
 that have the type of $d_i$ as from document and the type of $d_j$ as to
 document divided by the total number of links. The results of this for the
 current network are displayed in table~\ref{table:linkprob}. This clearly shows
@@ -206,7 +211,7 @@ the final distances are computed in the following way:
 \end{align}
 where $\delta_i$ is the distance as computed by the nearest neighbor algorithm
 and $d_i$ the final distance that is used to select the proposed documents to
-be linked. This may seem a rather simple statistical model, however due to the
+be linked. This may seem a rather simple statistical model. However, due to the
 limited set of items in the dataset it is very hard to learn a more complicated
 model.
 
@@ -230,7 +235,7 @@ Event            & 0.008393 & 0.004796 & 0.001199 & 0.004796 & 0.003597 & 0.0095
 \subsection{Thresholds}
 After creating the descriptors for a document and finding a new document's
 nearest neighbors, a subpart of those links needs to be returned by the linker
-application. An average document in Starfish has x links. To create a dynamic
+application. An average document in Starfish has 3.9 links. To create a dynamic
 threshold which returns similar a similar amount of documents, a document from
 the Starfish data is extracted and then to re-inserted to test the number of
 links the system returns to the number of links the document had in the
@@ -244,14 +249,14 @@ outgoing links in the current network.
 \label{fig:link_histogram}
 \end{figure}
 
-The the threshold should depend on multiple factors which mostly depend on the setting in which the document linker will be used. Two major factors determine how the threshold should work.
+The threshold should depend on multiple factors which mostly depend on the setting in which the document linker will be used. Two major factors determine how the threshold should work.
 \begin{enumerate}[1.]
 	\item The degree of certainty we expect from the returned documents.
 	\item The maximum number of documents that should be returned for a specific application.
 \end{enumerate}
-If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned, the amount should be based on the contents of the current system. If the system will be used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users. To ensure the flexibility for choice of algorithm and integration of the application, the threshold algorithm will contain a configurable parameter.
+If the system is used to directly create the links into the Starfish system, the first aspect is very important. Only documents with a very high degree of linking certainty should then be returned. The amount should be based on the contents of the current system. If the system is used to create recommendations which a user must accept or reject, the first aspect becomes less important and the system should return an amount of links which can quickly be reviewed by users. To ensure the flexibility for choice of algorithm and integration of the application, the threshold algorithm will contain a configurable parameter.
 
-When adding a document to Starfish, it is assumed that there is always at least one related document. Based on the distance of the nearest neighbor for the new document, the index of a and the configurable parameter, the threshold is defined as in equation~\ref{eq:thresh}. In this equation, $\alpha$ is the configurable parameter, $m$ is the number of documents returned by the nearest neighbor algorithm, $d_0$ is the distance to the closest document, $\frac{m - n}{m}$ is a factor that ensures the maximum allowed distance decreases for documents ranked further away. This is based on the differences between two nearest neighbors which are visualized in figure~\ref{fig:thresholds_differences}. The distances have a long tail form: the distances between the nearest neighbors is relatively large for the closest documents and smaller between the documents further away. 
+When adding a document to Starfish, it is assumed that there is always at least one related document. Based on the distance of the nearest neighbor for the new document, the index of a document and the configurable parameter, the threshold, is defined as in equation~\ref{eq:thresh}. In this equation, $\alpha$ is the configurable parameter, $m$ is the number of documents returned by the nearest neighbor algorithm, $d_0$ is the distance to the closest document, $\frac{m - n}{m}$ is a factor that ensures the maximum allowed distance decreases for documents ranked further away. This is based on the differences between two nearest neighbors which are visualized in figure~\ref{fig:thresholds_differences}. The distances have a long tail form: the distances between the nearest neighbors is relatively large for the closest documents and smaller between the documents further away. 
 
 \begin{equation}
 t_n = \alpha (1 - d_0) \frac{m - n}{m}

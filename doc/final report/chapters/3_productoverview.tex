@@ -3,34 +3,32 @@
 The product created in this project is a python program takes a set of
 documents and a new document and returns the subset of documents that should be
 linked with the new document. For this, a descriptor-based approach was used,
-which consists of three steps. Firstly, each of the documents is transformed
-into a descriptor. Secondly, a ranking is made of all documents based on the
+which consists of three steps. First, each of the documents is transformed
+into a descriptor. Second, a ranking is made of all documents based on the
 similarity of the document descriptors and the descriptor of the new added
-document. This was done using the Nearest Neighbor algorithm with several
+document. This was done using the $K$-Nearest Neighbor algorithm with several
 distance metrics. Lastly, an algorithm chooses the proper amount of proposed
-links that must be returned.
-
-We will now discuss each of these parameters, since these will give more
+links that must be returned. We will now discuss each of these steps, since these will give more
 insight into the approach that was chosen to solve the problem. For the
-performance of the different parameters we refer to the experiment section. 
+performance of the different algorithms we refer to the experiment section. 
 
 \subsection{Vectorizer}
-The first step is to create document descriptors, which is done by algorithms that we call \emph{vectorizers}. Two main paths have been explored: transformation based on text and transformation based on tags.
+The first step is to create document descriptors, which is done by algorithms that called \emph{vectorizers}. Two main paths have been explored: transformation based on text and transformation based on tags.
 
 \subsubsection{Text-based transformation}
 \begin{description}
 \item [Textvectorizer] The text-based vectorizers use the textual content of the documents and are therefore generally applicable to knowledge bases that contain text-based documents. The textual content is first transformed into a bag of words. Then, based on all the documents in the knowledge base, the \emph{TF-IDF} value is calculated for each of the words in the bag of words.  
 
-\item[Weighted\_textvectorizer] The weighted textvectorizer is implemented as an extension of the textvectorizer. First, all descriptors of the documents are calculated similarly as in the textvectorizer. Then each document descriptor is increased with the sum of the descriptors of the document it is linked to itself, decreased by some weight. This captures the idea that if a new document resembles some of the documents that are linked to one particular document, it is more likely to be linked to this particular document. 
+\item[Weighted\_textvectorizer] The weighted textvectorizer is implemented as an extension of the textvectorizer. First, all descriptors of the documents are calculated similarly as in the textvectorizer. Then each document descriptor is recursively increased with the sum of the descriptors of it's links, decreased by some weight parameter. This captures the idea that if a new document resembles some of the documents that are linked to one particular document, it is more likely to be linked to this particular document. 
 \end{description}
 
 \subsubsection{Tag-based transformations}
 \begin{description}
-\item[Simple\_tag\_similarity] The tag-based transformations are more StarFish specific, since they make use of the tags that are assigned to the documents. A tag is a keyword that describes a topic/term that is important for that document. For example, 'Online Support and Online Assessment for Teaching and Learning Chemistry' is tagged with 'chemistry', 'e-learning' and 'assessment'. The simple tag similarity vectorizer creates a vector where each value indicates whether or not one particular tag is assigned to the document. 
+\item[Simple\_tag\_similarity] The tag-based transformations are more Starfish specific, since these make use of the tags that are assigned to the documents - Starfish feature. A tag is a keyword that describes a topic/term that is important for that document. For example, `Online Support and Online Assessment for Teaching and Learning Chemistry' is tagged with `chemistry', `e-learning' and `assessment'. The simple tag similarity vectorizer creates a vector where each value indicates whether or not one particular tag is assigned to the document. 
 
 \item [Tag\_smoothing] The tag smoothing vectorizer uses the co-occurence of tags in estimating document similarity. Even though tags might not co-occur on any document in the data set, they can still provide information about each other. For example, the dataset consists of documents with associated tags like $\{\{t_1, t_2\}, \{t_1, t_3\}\}$. From the co-occurence it does not follow that $t_2$ and $t_3$ are related, however by transitivity with $t_1$ we want to create a small implicit link between $t_2$ and $t_3$. The tag smoothing method does this based on work from \citet{zhou2011web}.
 
-\item [Glossaries\_of\_tags] Another way of capturing tag similarity is by using tag Glossaries. They can be used by applying a text-based transformation on the glossaries to indicate the similarity between tags. Thus, glossaries\_of\_tags can be seen as a hybrid form of the tag and text-based approaches, where the glossary of a tag is turned into a TF-IDF bag of words. The document descriptor consists of the sum of vectors of each of its tags. 
+\item [Glossaries\_of\_tags] Another way of capturing tag similarity is by using tag Glossaries. They can be used by applying a text-based transformation on the glossaries to find similarities between tags. Thus, glossaries\_of\_tags can be seen as a hybrid form of the tag and text-based approaches, where the glossary of a tag is turned into a TF-IDF bag of words. The document descriptor consists of the sum of vectors of each of its tags. 
 
 \item [Weighted\_tag\_vectorizer] This is an extension of glossaries of tags.
   In the original glossaries of tags, it is assumed all tags contribute the
@@ -43,12 +41,14 @@ The first step is to create document descriptors, which is done by algorithms th
   of that tag in the dataset. The intuition for this is the same as that
   of the TF-IDF bag of words approach for creating vector representations
   of a text.
+
+\item [Hybrid] The hybrid vectorizer is a combination of the text and simple tag vectorizers. If a document does not have tags, the textvectorizer is used. Otherwise, the simple tag vectorizer is used to propose document links.
 \end{description}
 
 \subsection{Distance}
-A ranking is created using the Nearest Neighbor algorithm that sorts the
+A ranking is created using the $K$-Nearest Neighbor algorithm that sorts the
 document descriptors based on their distances with the newly added document.
-The following five distance metrics were implemented, these are discussed
+The following five distance metrics were implemented. These are discussed
 in section~\ref{sec:metrics}
 
 \begin{itemize}
@@ -63,17 +63,17 @@ The cosine distance is the default value, since that one seems to perform the
 best on the Starfish knowledge graph based on our experiments. 
 More on this in section~\ref{sec:experiments}. 
 
-\subsection{StarFish specific adaptations: Bayesian weighting}
-Both the tag-based and text-based approaches use some kind of 'semantic similarity' - the similarity of tags or text. However, except for the weighted text vectorizers, no information about possible links is used. For example, the text on a person's profile might be similar to other persons, but within Starfish a person is almost never linked to another person. In the Bayesian weighted vectorizer this is captured by weighting the vectors with the probability that two documents are linked together given their tags:
+\subsection{Starfish specific adaptations: Bayesian weighting}
+Both the tag-based and text-based approaches use some kind of `semantic similarity' - the similarity of tags or text. However, except for the weighted text vectorizers, no information about possible links is used. For example, the text on a person's profile might be similar to other persons, but within Starfish a Person document is almost never linked to another Person. To make more use of known links within the Starfish knowledge base, the ranking of document descriptors as created by $K$-Nearest Neighbor can be re-ranked using the probability that two documents are linked together given their tags:
 \begin{align}
 \nonumber P(D_a \rightarrow D_b | t)
 \end{align}
-Thus, the weight of a tag within a vector is equal to the chance that given this particular vector, a document of type a (the type of the newly added document) and a document of type b (equal to the type of proposed link) are linked. The inverse of this probability is multiplied with the distances that come from Nearest Neigbor in order to enlarge the distance of proposed links that are unlikely given the Starfish knowledge base. 
+Thus, the weight of a tag within a vector is equal to the chance that given this particular vector, a document of type a (the type of the newly added document) and a document of type b (equal to the type of proposed link) are linked. The inverse of an approximation of this probability is multiplied with the distances that come from $K$-Nearest Neighbor in order to enlarge the distance of proposed links that are unlikely given the Starfish knowledge base. 
 
 \subsection{Threshold value}
-The next step in the pipeline is to determine how many of the nearest neighbours should be returned. Depending on the application of the Starfish document linker, the desired number might vary. If one wants to immediately link the results, the certainty for relatedness should be high. If the links are presented to a user which can approve or reject them, the relatedness may be lower. Currently, this is configurable by setting the threshold parameter between 0 and 1. Zero will only return the closest document, 1 will return almost all. After exploration of the dataset the default value is 0.3, which roughly returns the same amount of links which is currently average for Starfish.
+The next step in the pipeline is to determine how many of the nearest neighbours should be returned. Depending on the application of the Starfish document linker, the desired number might vary. If one wants to immediately link the results, the certainty for relatedness should be high. If the links are presented to a user which can approve or reject them, the relatedness may be lower. Currently, this is configurable by setting a threshold parameter between 0 and 1. Zero will only return the closest document, 1 will return almost all. After exploration of the dataset the default value is 0.3, which roughly returns the same amount of links which is currently average in Starfish.
 
 \subsection{Output}
-The document linker can be run using the documentlinker.py file. There are two ways in which the results of the document linker are reported: a JSON file with the proposed links and a textual performance report. The JSON file can be viewed using \emph{view.html}, a HTML page that can be opened in a browser. A file can be selected using the 'choose file'-button. The HTML page then displays a list of all documents. The content and proposed links can be viewed by clicking on the corresponding buttons. The grey links indicate False Negatives, the green ones True Positives and the red ones False Positives. 
+The document linker can be run using the documentlinker.py file. There are two ways in which the results of the document linker are reported: a JSON file with the proposed links and a textual performance report. The JSON file can be viewed using \emph{view.html}, a HTML page that can be opened in a browser. A file can be selected using the `choose file'-button. The HTML page then displays a list of all documents. The content and proposed links can be viewed by clicking on the corresponding buttons. The grey links indicate False Negatives, the green ones True Positives and the red ones False Positives. 
 
 The performance reports is displayed in the terminal and shows the precision and accuracy (see the metric section in experiments) of the entire knowledge base and per document type. It also gives insight into the distribution of document types by presenting the percentages one type linked to another. For example, a percentage of 85\% on the Person row and Question column indicates that of all Person documents, 85\% of the links from a Person to another document types directed to Questions. 

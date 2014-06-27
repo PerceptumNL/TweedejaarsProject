@@ -1,5 +1,10 @@
 \begin{thebibliography}{}
 
+\bibitem[Chaudhuri, 2011]{bhat}
+Chaudhuri, G. (2011).
+\newblock Bhattacharyya distance.
+\newblock {\em Encyclopedia of Mathematics (www.encyclopediaofmath.org)}, (1).
+
 \bibitem[Park et~al., 2010]{park2010vector}
 Park, J., Choi, B.-C., and Kim, K. (2010).
 \newblock A vector space approach to tag cloud similarity ranking.
