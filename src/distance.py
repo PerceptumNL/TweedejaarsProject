@@ -73,7 +73,10 @@ def correlation(a,b):
         a = a.toarray()
     if issparse(b):
         b = b.toarray()
-    return np.abs(np.corrcoef(a,b)[0][1]-1)
+    r = np.abs(np.corrcoef(a,b)[0][1]-1)/2
+    if np.isnan(r):
+        r = cosine(a-np.mean(a), b-np.mean(b))
+    return r
 
 
 def intersection(a,b):

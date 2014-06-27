@@ -259,12 +259,6 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
 
         # First retrieve proposed links
         linker = DocumentLinker(datawrapper)
-        if new_doc['type'] == 'Question':
-            vectorizer = 'textvectorizer'
-            distancetype = 'cosine'
-        else:
-            vectorizer = 'simple_tag_similarity'
-            distancetype = 'correlation'
 
         linker.get_links(new_doc, vtype=vectorizer, dtype=distancetype, threshold=thresh, \
             l_deval = l_deval, t_deval = t_deval, k_link = k_link)
