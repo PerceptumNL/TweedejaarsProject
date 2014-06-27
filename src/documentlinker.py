@@ -31,6 +31,11 @@ class DocumentLinker(object):
         Returns the top k proposed links of document based on the data
         that was given during initialization. Both a vectorizer type and
         a distance measure can be given. If threshold = false, auto threshold
+        is used. If K_link is true then the number of links that are in the
+        network are used as threshold.
+
+        l_deval and t_deval are flags for the probabilistic link devaluation
+        and the probabilistic tag devaluation.
         """
         try:
             vectorizer = getattr(__import__('vectorizers.' + vtype), vtype)
@@ -50,6 +55,8 @@ class DocumentLinker(object):
 
         maxo = max(self.links,key=lambda item:item[1])[1]
 
+        # Devaluate using the probabilistic devluations schemes if flags
+        # are set.
         if l_deval:
             self.links = self.link_devaluation(self.data, document, self.links)
         if t_deval:
@@ -62,12 +69,15 @@ class DocumentLinker(object):
             factor = float(maxo)/maxn
         else:
             factor = 1
-
         self.links = [(x[0], factor*x[1]) for x in self.links] 
 
+        # If threshold is set use the threshold method to return a number
+        # of documents
         if threshold != False:            
             (self.links, x) = self.apply_threshold(self.links, threshold)
 
+        # If k-link is set return the number of links that are in the
+        # current network
         if (k_link):
             k = len(document['links'])
             self.links = self.links[0:k]
@@ -75,6 +85,12 @@ class DocumentLinker(object):
         return self.links
         
     def apply_threshold(self, links, threshold):
+        """
+        Given a list of links with a distance and a treshold return a number
+        T of first documents in the list as selected documents and return all
+        other documents as unselected documents. This number T is determined
+        based on the distance between documents in the links list.
+        """
         closest_distance = next((x[1] for x in links if x[1] > 0), None)
 
         if(closest_distance == None):
@@ -97,6 +113,13 @@ class DocumentLinker(object):
         return (l1, l2)
 
     def link_devaluation(self, data, new_doc, deltas):
+        """
+        Given a list with documents, distance tuples and a new document.
+        Compute the probability that the document will link to this document
+        and then multiply the distance with the inverse of this probability.
+        This way links with a low link probability are devaluated or in other
+        words get a higher distance.
+        """
         laplace_k = 1
         link_prob = prob.compute_link_probs(data, laplace_k)
 
@@ -110,10 +133,20 @@ class DocumentLinker(object):
         return  [(doc,d*lp(nd_type,dtype(doc))) for doc, d in deltas]
 
     def tag_devaluation(self, data, new_doc, deltas):
+        """
+        Given a list with documents, distance tuples and a new document.
+        Compute the probability that the document will link to this document
+        given the number of tags the two documents have in common and then
+        multiply the distance with the inverse of this probability.  This way
+        links with a low link probability are devaluated or in other words get
+        a higher distance.
+        """
         tags = lambda x: data.item(x)['tags']
         tag_int = lambda x, y: set(tags(x)).intersection(set(tags(y)))
         tl = lambda x: len(set(tags(x)).intersection(set(new_doc['tags'])))
 
+        # Compute item cardinality and compute the number of times a number
+        # of tag insersection set cardinality occurs
         item_card = len(list(data.items()))
         l_counter = Counter()
         for item_a in data.items():
@@ -125,6 +158,8 @@ class DocumentLinker(object):
         link_card = Counter([len(tag_int(*l)) for l in links()])
         total_link = sum(link_card.values())
 
+        # Compute the actual probabilities and finally used bayes rule
+        # to combine to a single probability. More on this in the report.
         l_counts = [l_counter[x] + 1 for x in range(0,11)]
         l_cards = [link_card[x] + 1 for x in range(0,11)]
         p_sigma = map(lambda x: x/float(item_card*(item_card-1)), l_counts)
@@ -134,17 +169,13 @@ class DocumentLinker(object):
 
         r = []
         for doc, delta in deltas:
-            if doc == new_doc['id']:
-                print("NOT DELETED")
             try:
                 r.append((doc, p(doc)*delta))
             except IndexError:
                 print(new_doc['id'], doc)
                 print(tags(doc))
                 print(new_doc['tags'])
-                print('-----------')
         return r
-        # return [(doc, p(doc)*delta) for doc,delta in deltas]
 
     def nearest_neighbor(self, data_vec, new_vec, k, dtype):
         """
@@ -224,6 +255,13 @@ class DocumentLinker(object):
         return doc 
 
 def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
+    """
+    Run the documentlinker with a given distancetype, threshold, link deval
+    option, tag devlauation optian, k_link options and a directory to write
+    output to. 
+    
+    This function is repsonsible for generating the reports.
+    """
     data = DataWrapper('../data/expert_maybe_false.pickle')
     data.remove_aliased_tags()
     data.remove_invalid_links()
@@ -344,6 +382,9 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     file.close()
 
 class valid_dir(argparse.Action):
+    """
+    Check if directory is valid
+    """
     def __call__(self,parser, namespace, values, option_string=None):
         prospective_dir = values
         if not os.path.isdir(prospective_dir):
@@ -354,6 +395,7 @@ class valid_dir(argparse.Action):
             raise argparse.ArgumentTypeError("Invalid directory: {0} is not a readable dir".format(prospective_dir))
 
 if __name__ == '__main__':
+    # Setup an argument parser
     parser = argparse.ArgumentParser(description="Recommend links for starfish objects.")
     vectorizer_names = [name for _, name, _ in pkgutil.iter_modules(['vectorizers'])]
     parser.add_argument('-vectorizer', default=None, type=str, choices=vectorizer_names,
@@ -375,9 +417,10 @@ if __name__ == '__main__':
     group_ex.add_argument('-threshold', default=-1, type=float,
             help="Value [0...1]", required=False)
 
+    # run parser 
     args = parser.parse_args()
-
     threshold = False if args.threshold == -1 else args.threshold
 
+    # run documentlinker via run function
     run(args.vectorizer, args.metric, threshold, args.link_devaluation, \
         args.tag_devaluation, args.k_link, args.directory)

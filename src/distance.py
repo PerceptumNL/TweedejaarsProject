@@ -56,19 +56,13 @@ def cosine(a, b):
     else:
         return np.abs((dot / float((norm_a*norm_b)))-1)
 
-def chi_square(a, b):
-    if issparse(a) or issparse(b):
-        a = a.toarray()
-        b = b.toarray()
-    a_total = np.sum(a)
-    b_total = np.sum(b)
-    a_norm = a / a_total
-    b_norm = b / b_total
-
-    
-    return sum([((a_norm[i] - b_norm[i])**2) / a_norm[i] for i in range(0,len(a_norm))])
-
 def correlation(a,b):
+    """
+    Compute the correlation coefficient. As reported in the report this is
+    a special version of the cosine distance. However we first try to compute
+    it with a function in numpy, if this fails we use the cosine method
+    to compute the correlation coefficient.
+    """
     if issparse(a):
         a = a.toarray()
     if issparse(b):
@@ -79,6 +73,10 @@ def correlation(a,b):
     return r
 
 def intersection(a,b):
+    """
+    The intersection is metric that expresses how much words have the same
+    weights and is taken from http://docs.opencv.org/doc/tutorials/imgproc/histograms/histogram_comparison/histogram_comparison.html
+    """
     if issparse(a):
         a = a.toarray()
     if issparse(b):
@@ -95,6 +93,10 @@ def intersection(a,b):
     return -sum([np.min([a_norm[i], b_norm[i]]) for i in range(0, len(a))])
 
 def bhattacharyya(a, b):
+    """
+    The Bhattacharyya is also a similarity metric and was taken from
+    http://docs.opencv.org/doc/tutorials/imgproc/histograms/histogram_comparison/histogram_comparison.html
+    """
     if issparse(a):
         a = a.toarray()
     if issparse(b):
@@ -108,11 +110,3 @@ def bhattacharyya(a, b):
         return 1
 
     return np.sqrt(1-(1/np.sqrt(a_bar*b_bar*N**2))*np.sum(np.sqrt(a*b)))
-
-    
-
-    
-
-
-
-
