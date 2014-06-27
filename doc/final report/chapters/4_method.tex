@@ -47,7 +47,30 @@ what documents could be related to that Person.
 
 The vectors of links of a document are added in a recursive way, where
 documents that are linked directly have a higher weight than documents that are
-linked transitively. The algorithm is displayed in figure xx.
+linked transitively. The algorithm is displayed in algorithm~\ref{algo:wtv}.
+
+\begin{algorithm}                      
+  \caption{Weighted textvectorizer}      
+  \label{algo:wtv}
+  \begin{algorithmic}
+    \STATE {\bf Function} weightedTextVectorize(document, depth, weight)
+      \STATE descriptor = TF-IDF(document)
+      \COMMENT{Convert document to vector}
+      \IF{depth == 0}
+        \RETURN descriptor
+      \ENDIF
+    \STATE linkdescriptor = $[0,0,\ldots,0]$
+    \FOR{link $\in$ links(document)}
+      \STATE linkdescriptor += weight $\times$ weightedTextVectorize(link, depth-1)
+    \ENDFOR
+    \STATE linkdescriptor = linkdescriptor / $|$links(document)$|$
+    \COMMENT{Divide by the number of links}
+    \RETURN descriptor + linkdescriptor
+    \STATE {\bf EndFunction}
+  \end{algorithmic}
+\end{algorithm}
+
+
 
 \subsection{Tag descriptors}
 \subsubsection{Simple tag vectorizer}
