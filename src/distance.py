@@ -78,7 +78,6 @@ def correlation(a,b):
         r = cosine(a-np.mean(a), b-np.mean(b))
     return r
 
-
 def intersection(a,b):
     if issparse(a):
         a = a.toarray()
