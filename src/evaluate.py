@@ -33,6 +33,7 @@ def evaluate(new_docs, data, vec='weighted_tagvectorizer', dis='cosine'):
 
 
 if __name__ == "__main__":
+    # create data wrapper, then test folds using e
     data = DataWrapper('../data/expert_maybe_true.pickle')
     results = []
     for new_docs, data in create_folds(data, 5):

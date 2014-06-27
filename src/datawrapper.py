@@ -6,7 +6,9 @@ from copy import deepcopy
 
 class DataWrapper(object):
     """
-    This class wraps the data object exported from starfish.
+    This class wraps the data object exported from starfish. This class is used
+    troughout the codebase to interact with the exported datafiles from
+    startifsh.
     """
 
     def __init__(self, data):
@@ -32,6 +34,7 @@ class DataWrapper(object):
         Remove tags that are an alias of another tag and replace with
         alias.
         """
+        # Walk trough items and remove aliased tags
         for k,v in self.data['items'].items():
             tags = set()
             for tag in v['tags']:
@@ -39,12 +42,19 @@ class DataWrapper(object):
                 tags.add(tag if alias is None else alias)
             v['tags'] = list(tags)
         del_tags = []
+        # remove aliased tags
         for tag in self.tags():
             tag_dic = self.tag(tag)
             if tag_dic['alias_of'] is not None and tag != tag_dic['alias_of']:
                 del_tags.append(tag)
         for tag in del_tags: del self.data['tags'][tag]
+
     def remove_glossaries(self):
+        """
+        Remove the glossaries from the data set. Use this method when the
+        glossaries should not be taken into account to for example compute
+        the correct proposed links.
+        """
         data = deepcopy(self.data)
         for k,v in self.data['items'].items():
             if v['type'] == 'Glossary':
@@ -74,7 +84,9 @@ class DataWrapper(object):
 
     def remove_invalid_links(self):
         """
-        Removes all links within the data that are invalid due to type or authorship
+        Removes all links within the data that are invalid due to type or
+        authorship. This links should not be proposed by the algorithm
+        because the are already automatically added in starfish.
         """
         for k,v in self.data['items'].items():
             tempLinks = v['links'][:]
