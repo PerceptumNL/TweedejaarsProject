@@ -100,10 +100,10 @@ Table \ref{klink} shows the k-link values of all vectorizers, including those of
 
 The cosine distance metric gives the best results for the text vectorizers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions. % ROBBERT, FIND SOME QUALTITATIVE EXAMPLES FOR THIS. 
 
-Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons (see appendix X). However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance on persons. 
+Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons (see appendix X\todo{what?}). However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance on persons. 
 
 Overall, both textvectorizers are slow in performance even though the corpus is small. Additionally, the the bag-of-words approach imposes a few limitations on the document linker. Firstly, it performs bad when different languages are used. Figure x shows the differences of vectors of three texts when an English document is combined with an English proposed document and a Dutch proposed document. In the case of two different languages, there are less words that the two documents have in common. If important keywords entail word such as `clickers' versus `stemsysteem', there is no way of relating the two documents. Secondly, the current StarFish network consists of mainly textual content. However, in the future this is likely to be extended with images, videos and other non-textual content. These sources should then somehow be converted to text.
-=======
+
 Table~\ref{klink} shows the k-link values of all vectorizers, including those
 of the textvectorizer and the weighted-text vectorizer. The best performance of
 the textvectorizers is obtained by the cosine distance. This can be
@@ -181,7 +181,6 @@ True Positives:
 False Negatives:
 - Tentamenlade Natuurkunde (Information)
 - Hoe kan ik inloggen in Tentamenlade? (Question)
-- Hoe kan ik inloggen in Tentamenlade? (Question)
 \end{lstlisting}
 \caption{Proposed links for the question `Is there an English version in Tentamenlade?'}
 \label{proposed}
@@ -190,8 +189,8 @@ False Negatives:
 \subsubsection{Tag smoothing}
 The performance of the simple tag vectorizer, as shown in table~\ref{klink}, is
 quite similar with the results of the tag similarity. It performs worse on the
-information, but better on questions. EXAMPLE THAT EXPLAINS WHY. It also
-performs worse on Persons. EXAMPLE THAT EXPLAINS WHY. 
+information, but better on questions.\todo{ `Expertise in Chemistry Teaching - ECTN database', `Hoe kan ik aan stemkastjes komen?'}. It also
+performs worse on Persons. \todo{`Starfish'}
 
 In the current implementation this vectorizer is relatively slow. In practice
 the similarity matrix can be pre calculated and updated in batches. Due to the
@@ -416,3 +415,4 @@ improve because for some documents recall improves drastically and for some
 documents precision improves. This explains why the final performance of 46.3\%
 precision and 43.5\% recall for the simple text vectorizer can be reached. 
 % Tell something about average number of differences in links & and draw conclusions from unraveling
+t
