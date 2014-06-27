@@ -92,7 +92,7 @@ Weighted tag & 18.36 & 17.98 & 48.21 & 48.13 & 10.51 & 40.45 & {\bf 19.39} \\
 \hline
 \end{tabular}
 
-\caption{Performance k-link measuring of all vectorizers with each of the distance metrics per document type}
+\caption{This table shows the performance based on k-link measuring of all documents. This means that the numbers are the percentage of correctly returned links, given the constraint that the number of links that is returned is equal to the known number of links a document has. These are averages over the entire document base. The left upper corner of each table tells which distance metric was used. Each row describes the performance of one vectorizer. Each column describes the performance of each document type. Thus, the first number 20.49 means that the average percentage correctly returned links of documents of the type 'Information' for the textvectorizer using the correlation distance is 20.49\%.}
 \label{klink}
 \end{table}
 
@@ -220,7 +220,7 @@ Given the previous results, the best results can be obtained if the textvectoriz
 Accuracy hybrid & 21.21 & 31.93 & 69.64 & 37.81 & 19.15 & 46.83 & {\bf 26.13}\\
 \hline
 \end{tabular}
-\caption{Accuracy of a hybrid form that uses the cosine textvectorizer for questions and the correlation simple tag similarity vectorizer otherwise}
+\caption{This table shows the accuracy of a vectorizer that is a hybrid between the textvectorizer and the simple tag vectorizer using cosine distance. It shows the average percentage of correctly returned links for a given document type if the known number of correct links is proposed by the vectorizer.}
 \label{hybrid}
 \end{table}
 
@@ -238,7 +238,7 @@ Glossaries of tags & 4.61 & 13.16 & 0.00 & 6.23 & 6.41 & 0 & {\bf 6.61}\\
 Weighted tags & 4.61 & 13.16 & 0.00 & 6.23 & 6.41 & 0 & {\bf 6.61}\\
 \hline
 \end{tabular}
-\caption{Percentage correct links per vectorizer per document type after a k-link measurement whilst using tag and link devaluation NOT YET CORRECT VALUES!!!!}
+\caption{The average k-link accuracy per vectorizer per document type if both tag and link devaluation are used to re rank the documents. All vectorizers used the cosine distance.}
 \label{bayes_table1}
 \end{table}
 
@@ -284,7 +284,7 @@ NO DEVALUATION & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{
 \hline
 \end{tabular}
 
-\caption{Percentage of links from one type (row) to another (column) for simple\_tag\_vectorizer with tag and link devaluation (above) and without (below), measured using k-link. The rows sum up to 100\%.}
+\caption{This table shows the percentage of links from one type (row) to another (column) for simple\_tag\_vectorizer with tag and link devaluation (above) and without (below), measured using k-link.  The rows sum up to 100\%. Thus, the first value 100.0\% means that if tag and link devaluation is performed, all proposed links for all newly added documents of the type Information are themselves also Information documents.}
 \label{bayes_table2}
 \end{table}
 
@@ -301,7 +301,7 @@ NO DEVALUATION & {\bf Inf. }& {\bf Question }& {\bf Good Pr.} & {\bf Project }&{
 {\bf Event }& 28.57 & 0.00 & 14.29 & 9.52 & 33.33 & 14.29\\
 \hline
 \end{tabular}
-\caption{Percentage of links from one type (row) to another (column) for the real links in the document base}
+\caption{This table shows the percentage of links from one type (row) to another (column) for the links as they are in the document base of Starfish. Thus, the first value 39.86\% means that 39.86\% of the proposed links for Information documents are of the type Question.}
 \label{bayes_table3}
 \end{table}
 
@@ -320,7 +320,7 @@ difference in distribution.
 
 \begin{figure}
 \includegraphics[width =\textwidth]{images/probabilities}
-\caption{The distribution in percentages of correct (green) and incorrect (red) document links. Left hand side shows the tag probabilities and the right hand side the link probabilities.}
+\caption{The distribution in percentages of correct (green) and incorrect (red) document links as proposed by a simple tag vectorizer that proposed all the documents in the dataset. Left hand side shows the tag probabilities and the right hand side the link probabilities. Thus, about 30\% of the correct links as proposed by the simple tag vectorizer have a probability between 0 and 0.00005.}
 \label{distribution}
 \end{figure}
 
@@ -410,7 +410,7 @@ Hybrid &  23.53 & 35.31 & 44.72 & 34.61 & 13.85 & 31.17 &{\bf 23.92} \\
 \hline
 \end{tabular}
 
-\caption{Percentage correct links per vectorizer per document type after a k-link measurement}
+\caption{This table shows the precision, recall and F1 measure for all vectorizers per document type if they are thresholded with the parameter 0.3. All vectorizers used cosine distance. Thus, the first value 12.05 menas that the textvectorizer had a 12.5\% average precision documents of the type Information. }
 \label{tab:thresh_eval}
 \end{table}
 
