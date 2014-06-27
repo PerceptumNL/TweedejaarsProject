@@ -400,13 +400,13 @@ Hybrid & 28.43 & 39.91 & 62.50 & 56.25 & 13.33 & 38.89 & {\bf 28.61}\\
 \hline
 THRESH F1-MEASURE & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\bf Average} \\
 \hline
-Textvectorizer & 16.56 & 44.23 & 26.70 & 22.58 & 8.61 & 10.85 & {\bf 18.97 } \\
-Weighted text & 19.06 & 34.76 & 24.72 & 25.28 & 6.50 & 24.20 & {\bf 18.24 } \\
-Simple tag & 26.11 & 18.95 & 54.47 & 39.66 & 13.87 & 31.30 & {\bf 23.48} \\
-Tag smoothing & 24.93 & 19.22 & 0& 0 & 0 & 0 &{\bf } \\
-Glossaries of tags & 29.68 & 17.84 & 27.27 & 34.69 & 25.69 & 45.32 &{\bf 28.08} \\
-Weighted tag & 29.68 & 17.84 & 27.27 & 34.69 & 25.69 & 45.32 &{\bf 28.08 } \\
-Hybrid &  26.11 & 40.64 & 37.46 & 39.66 & 16.11 & 31.62 &{\bf 27.91} \\
+Textvectorizer & 14.92 & 37.59 & 26.66 & 20.03 & 5.60 &  22.72 & {\bf 16.59 } \\
+Weighted text & 16.53 & 31.47 & 23.06 & 23.24 & 6.58 & 23.33 & {\bf 16.57 } \\
+Simple tag & 23.53 & 17.31 & 44.72 & 34.61 & 12.56 & 31.17& {\bf 20.27} \\
+Tag smoothing & 22.04 & 17.54 & 45.23 & 29.76 & 11.26 & 48.29  &{\bf 19.49} \\
+Glossaries of tags & 16.74 & 20.75 & 38.26 & 28.28 & 9.49 & 44.44 &{\bf 17.26} \\
+Weighted tags & 16.74 & 20.75 & 38.26 & 28.28 & 9.49 & 44.44 &{\bf 17.26} \\
+Hybrid &  23.53 & 35.31 & 44.72 & 34.61 & 13.85 & 31.17 &{\bf 23.92} \\
 \hline
 \end{tabular}
 
@@ -419,7 +419,7 @@ of the proposed threshold formula is tested on the dataset. The performance of t
 automated threshold was measured for all vectorizers with the cosine metric since that one gave the overall best reuslts. Now, precision and recall are different because the threshold can 
 return a different number of links than the links that are known to be correct. Table~\ref{tab:thresh_eval} 
 shows the precision, recall and f1-measure for each of the vectorizers, including an unraveling for
-each type of document. A comparison between this table and table \ref{klink} and table \ref{hybrid}, which were measured with the k-link metric, shows that the f1-measure of most outcomes is comparable with the k-link accuracy that was measured. However, the glossaries of tags and weighted tag vectorizer seem to have significantly better results - an f1-measure of 28.08 compared to a 18.02 k-link measurement. This seems to be caused by a much higher precision and recall for the Person type of documents. In the knowledge base, a Person has on average about 1.6 links. However, the thresholded glossaries of tags returns 5.9 links on average. For example, the Person Andre Heck is linked to two documents, an Event and a Project. The k-link vectorizer returns two false documents - a Good Practice and a Qeustion. The thresholded vectorizer returns a total of 5 links, including the correct Event. It depends on a preference for recall or precision whether or not this difference in performance is desirable. 
+each type of document. A comparison between this table and table \ref{klink} and table \ref{hybrid}, which were measured with the k-link metric, shows that the f1-measure of most outcomes is comparable with the k-link accuracy that was measured, even though performance decreases a bit for all vectorizers. The hybrid vectorizer still performs the best. This difference in performance is probably due to the fact that k-link is optimistic with regards to both precision and recall, as explained in the evaluation metric of this chapter. % However, the glossaries of tags and weighted tag vectorizer seem to have significantly better results - an f1-measure of 28.08 compared to a 18.02 k-link measurement. This seems to be caused by a much higher precision and recall for the Person type of documents. In the knowledge base, a Person has on average about 1.6 links. However, the thresholded glossaries of tags returns 5.9 links on average. For example, the Person Andre Heck is linked to two documents, an Event and a Project. The k-link vectorizer returns two false documents - a Good Practice and a Qeustion. The thresholded vectorizer returns a total of 5 links, including the correct Event. It depends on a preference for recall or precision whether or not this difference in performance is desirable. 
 
 \begin{table}
 
