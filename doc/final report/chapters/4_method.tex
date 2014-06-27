@@ -47,7 +47,30 @@ what documents could be related to that Person.
 
 The vectors of links of a document are added in a recursive way, where
 documents that are linked directly have a higher weight than documents that are
-linked transitively. The algorithm is displayed in figure xx.
+linked transitively. The algorithm is displayed in algorithm~\ref{algo:wtv}.
+
+\begin{algorithm}                      
+  \caption{Weighted textvectorizer}      
+  \label{algo:wtv}
+  \begin{algorithmic}
+    \STATE {\bf Function} weightedTextVectorize(document, depth, weight)
+      \STATE descriptor = TF-IDF(document)
+      \COMMENT{Convert document to vector}
+      \IF{depth == 0}
+        \RETURN descriptor
+      \ENDIF
+    \STATE linkdescriptor = $[0,0,\ldots,0]$
+    \FOR{link $\in$ links(document)}
+      \STATE linkdescriptor += weight $\times$ weightedTextVectorize(link, depth-1)
+    \ENDFOR
+    \STATE linkdescriptor = linkdescriptor / $|$links(document)$|$
+    \COMMENT{Divide by the number of links}
+    \RETURN descriptor + linkdescriptor
+    \STATE {\bf EndFunction}
+  \end{algorithmic}
+\end{algorithm}
+
+
 
 \subsection{Tag descriptors}
 \subsubsection{Simple tag vectorizer}
@@ -96,7 +119,6 @@ transform.
 \begin{equation} \label{eq:tag_similarity}
 s_{i,j} = \frac{f_{i,j}}{f_i + f_j - f_{i,j}}
 \end{equation}
-
 
 \subsubsection{Glossaries of tags}
 The glossaries of tags approach is also based on the intuition that certain
@@ -163,23 +185,47 @@ $P(d_i \to d_j \mid \Sigma_{ij})$.
 Where $L$ is the set of all links and $D$ is the set of all documents.
 $\Sigma_{ij}$ is the number of tags that document $d_i$ and $d_j$ have in
 common. As is shown above $P(d_i \to d_j)$ is computed as a uniform probability
-for all documents. However this can also be computer while taking the document
-types into account. This is computed next:
+for all documents. However this can also be computed while taking the document
+types into account. This results in a probability for every document type
+to every document type. In total this are $\tau^2$ probabilities where $\tau$
+is the number of document types.
 \begin{align}
-  P(d_i \to d_j) &= \frac{|L|}{{|D| \choose 2}}
+  P(d_i \to d_j) &= \frac{|\{(m, n) \mid m \to n \in L \land \tau(m) = \tau(d_i) \land \tau(n) = \tau(d_j)\}|}{|L|} \label{eq:linkprob}
 \end{align}
-These probabilities will be used to scale the distances that are
-computed by the nearest neighbor algorithm. Because the distances for documents
-that have a high probability should be low therefore the final distances are
-computed in the following way:
+Where $\tau(x)$ is the type of document $x$. In other words the number of links
+that have the type of $d_i$ as from document and the type of $d_j$ as to
+document divided by the total number of links. The results of this for the
+current network are displayed in table~\ref{table:linkprob}. This clearly shows
+that a link from a type have preference to other types. This information should
+be usefull when filtering bad links. These probabilities will be used to scale
+the distances that are computed by the nearest neighbor algorithm. Because the
+distances for documents that have a high probability should be low therefore
+the final distances are computed in the following way:
 \begin{align}
-  d_i = (1 - P(d_i\to d_j \mid \Sigma_{ij})) \times (1-P(d_i \to d_j)) \times \delta_i
+  d_i = (1 - P(d_i\to d_j \mid \Sigma_{ij})) \times (1-P(d_i \to d_j)) \times \delta_i 
 \end{align}
 where $\delta_i$ is the distance as computed by the nearest neighbor algorithm
 and $d_i$ the final distance that is used to select the proposed documents to
 be linked. This may seem a rather simple statistical model, however due to the
 limited set of items in the dataset it is very hard to learn a more complicated
 model.
+
+
+\begin{table}[h!]
+\center
+\begin{tabular}{l | l l l l l l l}
+ & Informat & Glossary & Question & Good Pr. & Project & Person &  Event \\ \hline
+Information      & 0.069544 & 0.057554 & 0.015588 & 0.008393 & 0.010791 & 0.065947 & 0.008393\\
+Glossary         & 0.094724 & 0.052758 & 0.008393 & 0.011990 & 0.021583 & 0.070743 & 0.004796\\
+Question         & 0.017986 & 0.013189 & 0.022782 & 0.011990 & 0.011990 & 0.021583 & 0.005995\\
+Good Practice    & 0.009592 & 0.008393 & 0.007194 & 0.003597 & 0.004796 & 0.009592 & 0.005995\\
+Project          & 0.014388 & 0.016787 & 0.007194 & 0.003597 & 0.011990 & 0.017986 & 0.007194\\
+Person           & 0.092326 & 0.074341 & 0.017986 & 0.009592 & 0.019185 & 0.002398 & 0.011990\\
+Event            & 0.008393 & 0.004796 & 0.001199 & 0.004796 & 0.003597 & 0.009592 & 0.00479 
+\end{tabular}
+\caption{The probability that a document of a type in the left column links to a document of a type in the top row as calculated using equation~\ref{eq:linkprob}.}
+\label{table:linkprob}
+\end{table}
 
 \subsection{Thresholds}
 After creating the descriptors for a document and finding a new document's
