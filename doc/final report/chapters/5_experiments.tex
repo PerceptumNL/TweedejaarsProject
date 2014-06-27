@@ -3,23 +3,30 @@
 \subsection{Evaluation metrics}
 In order to evaluate the performance of the different algorithms, three different metrics were used. For each of these methods we hold on to the closed world assumption that if a link is not present within the given data set, it should not be a link. 
 
-\subsubsection{Precision and recall} \todo{Are precision and recall equally important for the client?  Would it also make sense to report F-measure (possible with a weight favoring either P or R if they are not equally important)?}
+\subsubsection{Precision and recall} \todo{So, do we thrive for higher precision or higher recall?}
 Precision and recall can be calculated when the complete system pipeline is used. Precision reflects the fraction of relevant documents from all proposed documents and can thus be calculated as follows:
 
 \begin{align*}
   \textrm{precision} = \frac{|\;\textrm{relevant\;documents} \cap \textrm{retrieved\;documents}\;|}{|\textrm{retrieved\;documents}\;|}
 \end{align*}
 
-Recall represents the fraction of relevant documents of all originally linked documents and can be calculated as follows:
+Within a recommender system, the precision indicates how sensible the proposed links seem to the user. A precision of 50\% means that if for example two links are proposed to the user, at least one of them is correct. If one strives for a high user friendliness of the system, a high precision should be pursued. 
 
+Recall represents the fraction of relevant documents of all originally linked documents and can be calculated as follows:
 \begin{align}
   \nonumber \textrm{recall} = \frac{|\;\textrm{relevant\;documents} \cap \textrm{retrieved\;documents}\;|}{|\;\textrm{relevant\;documents}\;|}
 \end{align}
-The precision and recall can be unraveled into precision and recall per
+
+The recall thus gives an indication of how well the sytem covers all the documents in the knowledge base. If the main goal of the system is to make the knowledge base as complete as possible, without taking user friendliness into account, a high recall should be obtained. 
+
+The F1-measure can be used to capture both precision and recall into one number. If precision and recall are equally important, this can be calculated in the following way:
+\begin{align}
+  \nonumber \textrm{F1-measure} = \frac{2*\textrm{recall}*\textrm{precision}}{\textrm{recall} + \textrm{precision}}
+\end{align}
+
+All these metrics can be unraveled into precision, recall and F1-measure per
 document type to give more insight into the performance of the algorithms with
-regards to different document types. To the client precision might be more
-important as the goal is to limit the number of incorrect proposals. Therefore
-a focus on precision is conceivable.
+regards to different document types. 
 
 \subsubsection{K-links}
 The k-links metric is used to evaluate the algorithms, without being influenced by the threshold for the number of proposed links. For a document with a given number of correct links, it proposes the same amount of links that the document is known to have. This evaluation metric thus makes the assumption that the algorithm knows in advance how many links should be returned. By doing so, the recall and precision are equivalent since the number of relevant and retrieved document is the same. It prevents the precision from being too optimistic, which would be the case if the fixed number would be lower than the actual amount of links. It also prevents the recall for being too optimistic in the cases that the actual amount of links is lower than the fixed number of proposed links. 
@@ -70,7 +77,7 @@ Tag smoothing & 1.32 & 1.32 & 7.14 & 0 & 0.43 & 0 & {\bf 1.08} \\
 Simple tag & 14.05 & 10.53  & 30.36 & 38.23 & 14.36 & 35.71 & {\bf 16.56} \\ 
 Tag smoothing & 0 & 0 & 0 & 0 & 0 & 0 & {\bf 0} \\ 
 Glossaries of tags & 15.64 & 10.53 & 41.07 & 31.46 & 7.95 & 40.47 & {\bf 14.75} \\ 
-Weighted tag & 0 & 0 & 0 & 0 & 0 & 0 & {\bf 0} \\ 
+Weighted tags & 15.64 & 10.53 & 41.07 & 31.46 & 7.95 & 40.47 & {\bf 14.75} \\ 
 \hline
 \\
 \hline
@@ -81,7 +88,7 @@ Weighted text & 18.72 & 29.04 & 30.35 & 11.99 & 7.95 & 21.43 & {\bf 16.63} \\
 Simple tag & - & - & - & - & - & - & {\bf -} \\ 
 Tag smoothing & 4.16 & 3.51 & 10.71 & 19.06 & 0 & 24.2 & {\bf 4.44} \\ 
 Glossaries of tags & 18.36 & 17.98 & 48.21 & 48.13 & 10.51 & 40.45 & {\bf 19.39} \\ 
-Weighted tag & 0 & 0 & 0 & 0 & 0 & 0 & {\bf 0} \\ 
+Weighted tag & 18.36 & 17.98 & 48.21 & 48.13 & 10.51 & 40.45 & {\bf 19.39} \\ 
 \hline
 \end{tabular}
 
@@ -202,6 +209,9 @@ performing significantly better when it is presented with more tags.
 
 \subsubsection{Glossaries of tags}
 To be continued.
+
+\subsubsection{Weighted tag glossaries}
+Table~\ref{klink} shows that the weighted tag vectorizer, an extention of the glossaries of tags vectorizer, performs exactly the same as the glossaries of tags vectorizer. It thus seems that applying the weights has no influence on the performance of this vectorizer. \todo{Please given an explanation of this (maybe some implementation mistake?}
 
 \subsubsection{Hybrid}
 Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document is a Question, it will be handled by the cosine textvectorizer, otherwise the simple tag similarity with correlation will do this. The results are shown in table \ref{hybrid}. 
