@@ -53,7 +53,8 @@ class DocumentLinker(object):
         # Remove invalid links
         self.links = self.data.remove_invalid_links_for_item(document, self.links)
 
-        maxo = max(self.links,key=lambda item:item[1])[1]
+        if l_deval or t_deval:
+            maxo = max(self.links,key=lambda item:item[1])[1]
 
         # Devaluate using the probabilistic devluations schemes if flags
         # are set.
@@ -64,12 +65,13 @@ class DocumentLinker(object):
         self.links = sorted(self.links, key=lambda x: x[1])
 
         # Set the distances into the same range as before applying probabilities
-        maxn = max(self.links,key=lambda item:item[1])[1]
-        if maxn != 0:
-            factor = float(maxo)/maxn
-        else:
-            factor = 1
-        self.links = [(x[0], factor*x[1]) for x in self.links] 
+        if l_deval or t_deval:
+            maxn = max(self.links,key=lambda item:item[1])[1]
+            if maxn != 0:
+                factor = float(maxo)/maxn
+            else:
+                factor = 1
+            self.links = [(x[0], factor*x[1]) for x in self.links] 
 
         # If threshold is set use the threshold method to return a number
         # of documents
@@ -278,9 +280,11 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     docs = {}
     total_recall = 0
     total_precision = 0
+    total_f1 = 0
 
     precision_per_type = {}
     recall_per_type = {}
+    f1_per_type = {}
     types = {}
 
     types = set(data.item(x)['type'] for x in data.items())
@@ -322,14 +326,15 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
             c -= 1
             continue
 
-        print('Returned links: {0}'.format(len(linker.links)))
-        print('Correct links: {0}'.format(correct))
-        print('False links: {0}'.format(len(linker.links) - correct))
-        print('Number of known links: {0}'.format(len(new_doc['links'])))
+        if recall == 0 and precision == 0:
+            f1 = 0
+        else: 
+            f1 = (recall*precision*2)/(recall + precision)
 
         # Save precision and recall
         total_recall += recall
         total_precision += precision
+        total_f1 += f1
         if not precision_per_type.has_key(new_doc['type']):
             precision_per_type[new_doc['type']] = [precision]
         else:
@@ -338,6 +343,10 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
             recall_per_type[new_doc['type']] = [recall]
         else:
             recall_per_type[new_doc['type']].append(recall)
+        if not f1_per_type.has_key(new_doc['type']):
+            f1_per_type[new_doc['type']] = [f1]
+        else:
+            f1_per_type[new_doc['type']].append(f1)
 
         # Save linktypes
         for link in linker.links:
@@ -347,14 +356,16 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
         print('Document {0}, proposed links: {1}, real links: {2}'.format(new_doc['id'], \
             len(linker.links), len(new_doc['links'])))
         print('Recall: {0}'.format(recall))
-        print('Precision: {0} \n'.format(precision))
+        print('Precision: {0}'.format(precision))
+        print('F1-measure: {0} \n'.format(f1))
 
     print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-    print('Performance report')
+    print('Performance report of ' + vectorizer)
     print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n')
 
     print('Average recall: {0}'.format(Decimal(total_recall)/c))
     print('Average precision: {0}'.format(Decimal(total_precision)/c))
+    print('Average f1-measure: {0}'.format(Decimal(total_f1)/c))
 
     print('\nAverage recall per type')
     for key in recall_per_type:
@@ -362,6 +373,9 @@ def run(vectorizer, distancetype, thresh, l_deval, t_deval, k_link, directory):
     print('\nAverage precision per type')
     for key in precision_per_type:
         print('{0}: \t {1}'.format(key, np.mean(precision_per_type[key])))
+    print('\nAverage f1 per type')
+    for key in f1_per_type:
+        print('{0}: \t {1}'.format(key, np.mean(f1_per_type[key])))
 
     print('\nLink distribution per type in percentages')
     for ntype in types:
