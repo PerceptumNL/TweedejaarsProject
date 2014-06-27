@@ -211,7 +211,15 @@ performing significantly better when it is presented with more tags.
 To be continued.
 
 \subsubsection{Weighted tag glossaries}
-Table~\ref{klink} shows that the weighted tag vectorizer, an extention of the glossaries of tags vectorizer, performs exactly the same as the glossaries of tags vectorizer. It thus seems that applying the weights has no influence on the performance of this vectorizer. \todo{Please given an explanation of this (maybe some implementation mistake?}
+Table~\ref{klink} shows that the weighted tag vectorizer, an extention of the glossaries of tags vectorizer, performs exactly the same as the glossaries of tags vectorizer. It thus seems that applying the weights has no influence on the performance of this vectorizer. The histogram in figure~\ref{weightedtag} shows the number of tags that appear in a certain amount of documents. From this can be derived that there are many tags that almost all the tags appear in 10 documents or less. There are only a few tags that appear in a lot of documents. Thus, the influence of the weighted tag vectorizer is caused by the fact that many tags assign the same or a similar weight to vector, making it approximately the same as the glossaries of tags vectorizer.  
+
+\begin{figure}
+\center
+\includegraphics[width =0.6\textwidth]{images/weightedtagexplanation}
+\caption{This histogram shows the number of tags that appear in a certain amount of documents. Almost all tags appear in 10 documents or less. Only a few tags are very common and these appear in about 60 different documents.}
+\label{weightedtag}
+\end{figure}
+
 
 \subsubsection{Hybrid}
 Given the previous results, the best results can be obtained if the textvectorizer and simple tag similarity are combined into one vectorizer. If a document is a Question, it will be handled by the cosine textvectorizer, otherwise the simple tag similarity with correlation will do this. The results are shown in table \ref{hybrid}. 
@@ -382,7 +390,7 @@ THRESHOLD RECALL & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\b
 \hline
 Textvectorizer & 12.05 & 39.65 & 19.64 & 20.73 & 5.21 & 21.43 & {\bf 15.66}\\
 Weighted text & 14.80 & 29.82 & 19.64 & 24.37 & 5.24 & 21.43 & {\bf 15.11}\\
-Simple tag & 54.97 & 20.61 & 32.14 & 30.73 & 58.21 & 17.86 & {\bf 46.34}\\
+Simple tag & 24.14 & 20.61 & 48.21 & 30.63 & 19.49 & 26.19 & {\bf 23.26}\\
 Tag smoothing & 55.56 & 20.61 & 42.86 & 34.90 & 63.33 & 33.73 & {\bf 49.56}\\
 Glossaries of tags & 36.51 & 23.25 & 21.43 & 36.35 & 50.20 & 44.05 & {\bf 38.80}\\
 Weighted tag & 36.52 & 23.25 & 21.43 & 36.35 & 50.20 & 44.05 & {\bf 38.80}\\
@@ -394,7 +402,7 @@ THRESH PRECISION & Inf. &  Question &  Good Pr.& Project & Person &  Event & {\b
 \hline
 Textvectorizer & 26.47 & 50.00 & 41.67 & 24.79 & 24.79 & 7.26 & {\bf 24.05}\\
 Weighted text & 26.76 & 41.67 & 33.33 & 26.25 & 8.55 & 27.78 & {\bf 23.00}\\
-Simple Tag & 64.19 & 17.11 & 37.50 & 62.50 & 39.32 & 33.33 & {\bf 45.09}\\
+Simple Tag & 28.43 & 17.54 & 62.60 & 56.25 & 10.77 & 38.89 & {\bf 23.71}\\
 Tag smoothing & 46.12 & 18.60 & 43.75 & 56.25 & 36.32 & 44.44 & {\bf 38.29}\\
 Glossaries of tags & 25.00 & 14.47 & 37.50 & 33.18 & 17.26 & 46.67 & {\bf 22.00}\\
 Weighted tag & 25.00 & 14.47 & 37.50 & 33.18 & 17.26 & 46.67 & {\bf 22.00}\\
