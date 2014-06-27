@@ -105,7 +105,7 @@ Table \ref{klink} shows the k-link values of all vectorizers, including those of
  encodes the number of word occurrences in a vector the cosine distance can 
  easily find document that use the same words frequently.
 
-The cosine distance metric gives the best results for the text vectorizers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions. % ROBBERT, FIND SOME QUALTITATIVE EXAMPLES FOR THIS. 
+The cosine distance metric gives the best results for the text vectorizers. On average, 19.49\% and 19.59\% percent of the number of proposed links respectively are correct. The weighted text vectorizer performs a bit better, which is mainly due to an improvement in performance on information and questions.
 
 Both textvectorizers have a low percentage correct with regards to proposing links for Persons. A further analysis shows that 76.36\% (not weighted) and 69.09\% (weighted) of the links for Persons are towards other Persons (see appendix X\todo{what?}). However, within the Starfish network such links almost never occur (see table \ref{bayes_table3} for the distribution of document types within Starfish). This could explain the low performance on persons. 
 
@@ -162,42 +162,21 @@ tag, which makes it sensitive to attaching Questions to Questions. Something
 similar seems to happen with Persons, of which 50.91\% of the connections are
 with other Persons.  Apparently, persons with similar expertise are tagged
 similarly.  However, as mentioned with the text vectorizer, in Starfish persons
-almost never refer to other persons. \todo{Didn't you say above persons are are often linked to other persons?}
+almost never refer to other persons.
 Moreover, if a document is badly labeled
-this can also induce problems. For example, take the question `Is there an
-English version in Tentamenlade', tagged with `ToetsenEnToetsgestuurdleren'.
-The proposed links are visible in table~\ref{proposed}, which shows that  the
-three proposed questions all have the tag `ToetsEnToetsGestuudLeren'. However,
-if the question was tagged with the tag `Tentamenlade', which seems very
-reasonable given the proposed question, the false negatives would likely be
-returned correctly by the system. Good practices, events and projects perform
-better, but these document types only make up to 3.2\%, 2.7\% and 5.4\% of the
+this can also induce problems. For example, the question `TurnitIn licence at the 
+UvA' has two tags, but the simple tag similarity is unable to find both it's links because 
+the link `What is TurnitIn?' is not tagged with `TurnitIn'. The text vectorizer returns both
+links correctly. Good practices, events and projects perform better, 
+but these document types only make up to 3.2\%, 2.7\% and 5.4\% of the
 total amount of documents respectively so have less influence on the average
 precision.
-
-\begin{table}
-\begin{lstlisting}
-False Positives:
-- Wat is het verschil tussen Learning Analytics en TTL (Question)
-- Formatieve meerkeuze toetsen om begin kennisniveau te toetsen (Good Practice)
-- De toetscyclus (Information)
-
-True Positives:
-- Tentamenlade2.5 (Project)
-
-False Negatives:
-- Tentamenlade Natuurkunde (Information)
-- Hoe kan ik inloggen in Tentamenlade? (Question)
-\end{lstlisting}
-\caption{Proposed links for the question `Is there an English version in Tentamenlade?'}
-\label{proposed}
-\end{table}
 
 \subsubsection{Tag smoothing}
 The performance of the simple tag vectorizer, as shown in table~\ref{klink}, is
 quite similar with the results of the tag similarity. It performs worse on the
-information, but better on questions.\todo{ `Expertise in Chemistry Teaching - ECTN database', `Hoe kan ik aan stemkastjes komen?'}. It also
-performs worse on Persons. \todo{`Starfish'}
+information. This is visible in the `Peer-instruction' information document, in which the tag smoothing fails to make a recommendation the simple tags do. It also
+performs worse on Persons, which is visible in the `Claire McDonnell' person document. That document has more tags than average but does not return any correct links.
 
 In the current implementation this vectorizer is relatively slow. In practice
 the similarity matrix can be pre calculated and updated in batches. Due to the
