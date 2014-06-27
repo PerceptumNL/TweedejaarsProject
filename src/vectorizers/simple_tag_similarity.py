@@ -3,7 +3,19 @@ import numpy as np
 from numpy.linalg import cholesky
 from math import sqrt, acos
 
+"""
+Simple tag vectorizer
+=====================
+
+First every tag is coupled with a index into the tag vectors for each document
+then for each document a vector is created where a 1 is added to the indexes
+of the tags associated with the document.
+
+This vector can for example be used with KNN 
+"""
+
 def vectorize(data, new_doc):
+    # Find all tags
     tagDict = {}
     descriptors = []
     i = 0
@@ -13,6 +25,7 @@ def vectorize(data, new_doc):
             tagDict[tag] = len(tagDict)
         new_doc_descriptor[tagDict[tag]] = 1
     
+    # Create vector for each document
     for item in data.items():
         vector = {}
         for tag in data.item(item)['tags']:
@@ -31,11 +44,6 @@ def vectorize(data, new_doc):
             else:
                 nvector.append(0)
         ndescriptors.append(np.matrix(nvector))
-
-    # print ndescriptors[1]
-    #ndescriptors = np.matrix(ndescriptors)
-    # print type(ndescriptors)
-
     nnew_doc_descriptor = []
 
     for tag in tagDict:
@@ -44,6 +52,5 @@ def vectorize(data, new_doc):
         else:
             nnew_doc_descriptor.append(0)
     nnew_doc_descriptor = np.matrix(nnew_doc_descriptor)
-    # print type(nnew_doc_descriptor)
     # Asssociate document ids with descriptors and return.
     return(zip(data.items(), ndescriptors), nnew_doc_descriptor)

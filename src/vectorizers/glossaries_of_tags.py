@@ -3,7 +3,22 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import preprocessing
 from scipy import sparse
 
+"""
+Glossaries of tags vectorizer
+=============================
+
+This vectorizer created document descriptors based on the tags of each
+document. The descriptor is created using the following steps.
+
+1. For each glossary of a tag a TF-IDF bag of word vector w_i  is created
+2. For each documents a descriptor is made by summing the w_i vectors for
+   each tag associated with the document
+"""
+
 def vectorize(data, new_doc, local=False):
+    """
+    Converts data and new doc to vectors that can be used in KNN
+    """
 
     vectorizer = TfidfVectorizer(use_idf=True)
     glossaries = dict(map(lambda x: (x, data.tag_glossary(x)), data.tags()))

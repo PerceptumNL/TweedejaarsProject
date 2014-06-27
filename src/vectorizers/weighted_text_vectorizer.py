@@ -4,13 +4,25 @@ import preprocessing
 import textvectorizer
 from scipy import sparse
 
+"""
+Weigthed tag vectorizer
+=======================
+
+Create a TF-IDF vectorizer of each document. Also for each document run the
+weighted tag vectorizer with depth - 1. This way a descriptor for a
+part of the network is created assuming that documents in the neighborghood
+say something about the document in question.
+"""
+
 def vectorize(data, new_doc, local = False):
     data_bows, new_doc_bow, vectorizer = textvectorizer.vectorize(data, new_doc, True)
     descriptors = dict(data_bows)
 
+    # create a zero vector
     zero_vector = sparse.csc_matrix((1, len(vectorizer.get_feature_names())))
     depth = 2
 
+    # Create descriptors for documents in network
     for i in range(0, depth):
         tmp_descriptors = {}
 

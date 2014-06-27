@@ -3,6 +3,13 @@ import numpy as np
 from numpy.linalg import cholesky
 from math import sqrt, acos
 
+"""
+Tag smoothing vectorizer
+========================
+
+This vectorizer used the tag smooting technique as decribed in the report.
+"""
+
 
 def vectorize(data, new_doc):
     item_tags = [data.item(x)['tags'] for x in data.items()]

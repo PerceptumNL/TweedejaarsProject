@@ -9,6 +9,10 @@ about, headline, title and text field on every item.
 """
 
 def vectorize(data, new_doc, local=False):
+    """
+    Convert each document and new document to a vector. This is done
+    by converting them using TF-IDF
+    """
     content = ('headline', 'about', 'title', 'text')
     new_doc_pre = data.value_for_keys_with_item(new_doc, *content)
 
