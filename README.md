@@ -6,8 +6,7 @@ Calling
 
  	python documentlinker.py -h 
 
- will explain all the needed parameters.
-For an explanation of all the parameters we refer to the report.
+ will explain all the needed parameters. For an explanation of all the parameters we refer to the report.
 
 - datawrapper.py 		contains the class that keeps track of the data and data preprocessing steps
 - distance.py 			contains the implementations of all distance metrics
