@@ -15,6 +15,20 @@
 \usepackage{setspace}
 \addtocontents{toc}{\protect\enlargethispage{\baselineskip}}
 
+
+% THESE COUPLE LINES ARE THAT YOU NEED FOR THE 2ND PART
+\AtBeginDocument{
+  \addtocontents{toc}{\small}
+  \addtocontents{lof}{\small}
+}
+
+% THESE COUPLE LINES ARE THAT YOU NEED FOR THE 1ST PART
+\usepackage{xpatch}
+\makeatletter
+\xpatchcmd{\tableofcontents}{\contentsname \@mkboth}{\small\contentsname \@mkboth}{}{}
+\xpatchcmd{\listoffigures}{\chapter *{\listfigurename }}{\chapter *{\small\listfigurename }}{}{}
+\makeatother
+
 % Graphics
 \usepackage{graphicx}
 \graphicspath{{./images/}}
@@ -101,7 +115,7 @@ Universiteit van Amsterdam
 \begin{abstract}
 This report describes the results of the second year's project for the Perceptum team. The project focused on creating a \emph{document link recommender system} to the document knowledge base of the Starfish website, a platform where educators can share information about educational innovation. Because users of Starfish do not have knowledge of all the documents in the entire knowledge base, a system that can perform this automatically is needed. This report describes the implementation and analysis of several algorithms that can perform this task. 
 
-To create the document linker, a document descriptor-based technique was used. Firstly, each of the documents is transformed into a descriptor by algorithms called \emph{vectorizers}. Six vectorizers were implemented. Two vectorizers are based on the text of documents (textvectorizer and weighted text vectorizers) and two others use the tags of documents (simple tag similarity and tag smoothing). The last two vectorizers perform the textual transformation on text-based descriptions of tags (glossaries of tags and weighted tags). Additionally, a hybrid method of a text-based and tag-based is proposed. After creating the document descriptors, a ranking is made of all documents based on the similarity of the document descriptors and the descriptor of the new added document. This was done using the $K$-Nearest Neighbor algorithm with several distance metrics, of which the cosine distance turned out to work the best. The system also provides a method that can re-rank this set of proposed documents based on the probability that two documents are linked together.  The last step in the pipeline determines how many of the nearest neighbours should be returned. For this a threshold was set that compares the distance as calculated with $K$-Nearest Neighbor of two documents with consecutive ranks. 
+To create the document linker, a document descriptor-based technique was used. Firstly, each of the documents is transformed into a descriptor by algorithms called \emph{vectorizers}. Six vectorizers were implemented. Two vectorizers are based on the text of documents (textvectorizer and weighted text vectorizers) and two others use the tags of documents (simple tag similarity and tag smoothing). The last two vectorizers perform the textual transformation on text-based descriptions of tags (glossaries of tags and weighted tags). Additionally, a hybrid method of a text-based and tag-based is proposed. After creating the document descriptors, a ranking is made of all documents based on the similarity of the document descriptors and the descriptor of the new added document. This was done using the $K$-Nearest Neighbor algorithm with several distance metrics, of which the bhattacharyya distance worked the best for glossaries of tags and the cosine distance for the other vectorizers. The system also provides a method that can re-rank this set of proposed documents based on the probability that two documents are linked together.  The last step in the pipeline determines how many of the nearest neighbours should be returned. For this a threshold was set that compares the distance as calculated with $K$-Nearest Neighbor of two documents with consecutive ranks. 
 
 Three main conclusions were drawn from this study. Firstly, the
 text vectorizers performs the best if the newly added document is a Question (42.02-44.82\% accuracy on k-link measuring). However, it cannot deal with
@@ -129,6 +143,7 @@ covers enough of the documents within the knowledge base.
 \clearpage
 
 \tableofcontents
+
 \clearpage
 
 % Main Matter

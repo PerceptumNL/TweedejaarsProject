@@ -410,26 +410,28 @@ class valid_dir(argparse.Action):
 
 if __name__ == '__main__':
     # Setup an argument parser
-    parser = argparse.ArgumentParser(description="Recommend links for starfish objects.")
+    parser = argparse.ArgumentParser(description="The documentlinker calculates the average performance for all documents in the Starfish knowledge base using the take one out principle.",\
+        usage='documentlinker.py [options]')
     vectorizer_names = [name for _, name, _ in pkgutil.iter_modules(['vectorizers'])]
-    parser.add_argument('-vectorizer', default=None, type=str, choices=vectorizer_names,
-            help="The vectorizer to perform neares neighbors with", required=True)
+    distances = ['euclidean', 'cosine', 'correlation', 'intersection', 'bhattacharyya']
+    parser.add_argument('-vectorizer', default='hybrid', type=str, choices=vectorizer_names,
+            help="The vectorizer used to transform the documents. This argument is required.", required=True)
     parser.add_argument('-directory', default='../data', action=valid_dir,
-            help="Give the name of the directory the files should be saved to, default is '../data'",\
+            help="The name of the directory the JSON output files should be saved to, default is '../data'",\
             required=False)
-    parser.add_argument('-metric', default='cosine', type=str,
-            help="Distance metric for nearest neighbor, default = 'cosine'", required=True)
+    parser.add_argument('-metric', default='cosine', choices=distances, type=str,
+            help="Distance metric for nearest neighbor, the default metric used is 'cosine'", required=True)
     parser.add_argument('-link_devaluation', action='store_true', 
-            help="Give argument to activate link devaluation", required=False)
+            help="If this agrument is given, the link probabilitie is applied to the distances", required=False)
     parser.add_argument('-tag_devaluation', action='store_true',
-            help="Give argument to activate tag devaluation", required=False)
+            help="If this agrument is given, the tag probabilitie is applied to the distances", required=False)
 
     group_ex = parser.add_mutually_exclusive_group()
 
     group_ex.add_argument('-k_link', action='store_true',
-            help="Give argument to return number of links as in original document", required=False)
+            help="Induces k-link measuring, i.e. the same number of links as in the original document were are proposed. Is mutually exlusive with -threshold", required=False)
     group_ex.add_argument('-threshold', default=-1, type=float,
-            help="Value [0...1]", required=False)
+            help="Induces the threshold meganism. Give the parameter for alpha, a value between [0...1]. If both k_link and threshold are not used, the linker proposes a fixed number of 10 links.", required=False)
 
     # run parser 
     args = parser.parse_args()
